@@ -117,7 +117,9 @@ namespace BezyFB
                 Console.WriteLine(magnet);
 
                 Clipboard.SetText(magnet);
-                Process.Start(magnet);
+                //Process.Start(magnet);
+
+                Freebox.Download(magnet);
             }
 
             Cursor = Cursors.Arrow;

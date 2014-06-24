@@ -12,9 +12,9 @@ using Newtonsoft.Json.Linq;
 
 namespace BezyFB
 {
-    public class Freebox
+    public static class Freebox
     {
-        public static void Main2()
+        public static void Download(String magnetUrl)
         {
             string appToken;
             string challenge;
@@ -53,16 +53,17 @@ namespace BezyFB
                 var sessionRequest = (string)session["result"]["session_token"];
 
                 // List download
-                string output = ApiConnector.Call("http://mafreebox.freebox.fr/api/v2/downloads/", WebMethod.Get, "application/json", null,
+                /*string output = ApiConnector.Call("http://mafreebox.freebox.fr/api/v2/downloads/", WebMethod.Get, "application/json", null,
                     null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
                 JObject o = JObject.Parse(output);
-                Console.WriteLine(o.ToString());
+                Console.WriteLine(o.ToString());*/
 
                 // Download
-                const string content = "download_url=http%3A%2F%2Fmirror.ovh.net%2Fubuntu-releases%2F14.04%2Fubuntu-14.04-desktop-amd64.iso.torrent";
+                //const string content = "download_url=http%3A%2F%2Fmirror.ovh.net%2Fubuntu-releases%2F14.04%2Fubuntu-14.04-desktop-amd64.iso.torrent";
+                string content = "download_url=" + magnetUrl;
                 string outputDown = ApiConnector.Call("http://mafreebox.freebox.fr/api/v2/downloads/add/", WebMethod.Post, "application/x-www-form-urlencoded", content,
                     null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
-                JObject obj = JObject.Parse(outputDown);
+                var obj = JObject.Parse(outputDown);
                 Console.WriteLine(obj.ToString());
 
                 // Logout
