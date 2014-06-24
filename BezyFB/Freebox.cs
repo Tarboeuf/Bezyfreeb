@@ -1,15 +1,15 @@
-﻿using System;
-using System.Net;
-using System.Text;
+﻿// Créer par : tkahn
+// Le : 24-06-2014
+
+using System;
 using System.IO;
-using System.Text.RegularExpressions;
-using System.Security.Cryptography;
-using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using Newtonsoft.Json.Linq;
 
-
-namespace TarboeufEzBsFb
+namespace BezyFB
 {
     public class Freebox
     {
@@ -182,7 +182,7 @@ namespace TarboeufEzBsFb
             }
         }
 
-        public static string Encode(string input, string key)
+        private static string Encode(string input, string key)
         {
             var encoding = new UTF8Encoding();
 

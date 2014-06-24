@@ -5,12 +5,12 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 
-namespace BesyFB
+namespace BezyFB
 {
     /// <summary>
     /// Logique d'interaction pour App.xaml
     /// </summary>
-    public partial class App : Application
+    public sealed partial class App : Application
     {
     }
 }

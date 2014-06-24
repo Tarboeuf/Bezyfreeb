@@ -1,7 +1,42 @@
-﻿<Window x:Class="BesyFB.MainWindow"
+﻿<Window x:Class="BezyFB.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:bezyFb="clr-namespace:BezyFB"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-    </Grid>
+    <Window.Resources>
+    </Window.Resources>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top">
+            <Button Content="Charger la liste des non vus" Click="Button_Click" />
+            <Button Content="Eztv" Click="Eztv_Click" />
+        </StackPanel>
+        <TextBlock TextWrapping="WrapWithOverflow" Name="tb" DockPanel.Dock="Top"></TextBlock>
+        <TreeView Name="tv" DockPanel.Dock="Bottom">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate DataType="bezyFb:rootShowsShow" ItemsSource="{Binding unseen}">
+                    <HierarchicalDataTemplate.ItemTemplate>
+                        <HierarchicalDataTemplate DataType="bezyFb:Episode" ItemsSource="{Binding notes}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding title}" VerticalAlignment="Center"></TextBlock>
+                                <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray" VerticalAlignment="Center"></TextBlock>
+                                <TextBlock Text="{Binding date}" Foreground="Gray" VerticalAlignment="Center"></TextBlock>
+                                <TextBlock Text=")" Foreground="Gray" VerticalAlignment="Center"></TextBlock>
+                                <Button Click="DlStClick" CommandParameter="{Binding .}" Margin="5">
+                                    <TextBlock Foreground="Gray" FontWeight="Bold" FontSize="10" FontFamily="Britannic Bold">SRT</TextBlock>
+                                </Button>
+                                <Button Click="GetMagnetClick" CommandParameter="{Binding .}" Margin="5">
+                                    <Image Source="Image/magnet.png" Width="16" Height="16" />
+                                </Button>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </HierarchicalDataTemplate.ItemTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding title}"></TextBlock>
+                        <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray"></TextBlock>
+                        <TextBlock Text="{Binding remaining}" Foreground="Gray"></TextBlock>
+                        <TextBlock Text=")" Foreground="Gray"></TextBlock>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </DockPanel>
 </Window>
