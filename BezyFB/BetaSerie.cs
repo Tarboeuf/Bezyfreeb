@@ -16,33 +16,35 @@ namespace BezyFB
 {
     public class BetaSerie
     {
-        private const string _APIAdresse = "http://api.betaseries.com";
+        private const string ApiAdresse = "http://api.betaseries.com";
 
-        private const string _EnteteArgs = "?v=2.2&key=d0256f2444ab";
+        private const string EnteteArgs = "?v=2.2&key=d0256f2444ab";
 
         //private const string _EnteteArgs = "?v=2.2&key=3c15b9796654";
 
-        private const string _Comments = "/comments";
-        private const string _Episodes = "/episodes";
-        private const string _Friends = "/friends";
-        private const string _Members = "/members";
-        private const string _Messages = "/messages";
-        private const string _Movies = "/movies";
-        private const string _Pictures = "/pictures";
-        private const string _Planning = "/planning";
-        private const string _Shows = "/shows";
-        private const string _Subtitles = "/subtitles";
-        private const string _Timeline = "/timeline";
+        private const string Comments = "/comments";
+        private const string Episodes = "/episodes";
+        private const string Friends = "/friends";
+        private const string Members = "/members";
+        private const string Messages = "/messages";
+        private const string Movies = "/movies";
+        private const string Pictures = "/pictures";
+        private const string Planning = "/planning";
+        private const string Shows = "/shows";
+        private const string Subtitles = "/subtitles";
+        private const string Timeline = "/timeline";
 
-        public string Error { get; set; }
+        public string Error { get; private set; }
 
-        public string Token { get; set; }
+        private string Token { get; set; }
 
         public BetaSerie()
         {
             try
             {
-                Error = Helper.LireRequetePOST(_APIAdresse, _EnteteArgs, _Members + "/auth.xml", "&login=Tarboeuf&password=55fc47e4665c3df4047618f941c054e5", false);
+                string link = ApiAdresse + Members + "/auth.xml" + EnteteArgs;
+                link += "&login=Tarboeuf&password=55fc47e4665c3df4047618f941c054e5";
+                Error = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
                 XDocument xdoc = XDocument.Parse(Error);
                 var t = from lv1 in xdoc.Descendants("token")
@@ -62,13 +64,13 @@ namespace BezyFB
             Error = "";
             try
             {
-                var xml = Helper.LireRequetePOST(_APIAdresse, _EnteteArgs, _Episodes + "/list", "&userid=Tarboeuf&token=" + Token, false);
+                string link = ApiAdresse + Episodes + "/list" + EnteteArgs;
+                link += "&userid=Tarboeuf&token=" + Token;
+                var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
-                EpisodeRoot rt = null;
-
-                XmlSerializer serializer = new XmlSerializer(typeof (EpisodeRoot), new XmlRootAttribute("root"));
+                var serializer = new XmlSerializer(typeof(EpisodeRoot), new XmlRootAttribute("root"));
                 var reader = GenerateStreamFromString(xml);
-                rt = (EpisodeRoot) serializer.Deserialize(reader);
+                var rt = (EpisodeRoot)serializer.Deserialize(reader);
                 reader.Close();
 
                 return rt;
@@ -82,8 +84,8 @@ namespace BezyFB
 
         private Stream GenerateStreamFromString(string s)
         {
-            MemoryStream stream = new MemoryStream();
-            StreamWriter writer = new StreamWriter(stream);
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
             writer.Write(s);
             writer.Flush();
             stream.Position = 0;
@@ -100,12 +102,13 @@ namespace BezyFB
             Error = "";
             try
             {
-                var xml = Helper.LireRequetePOST(_APIAdresse, _EnteteArgs, _Subtitles + "/episode", "&id=" + episode + "&language=vf&token=" + Token, false);
-                SousTitreRoot rt = null;
+                string link = ApiAdresse + Subtitles + "/episode" + EnteteArgs;
+                link += "&id=" + episode + "&language=vf&token=" + Token;
+                var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
-                XmlSerializer serializer = new XmlSerializer(typeof (SousTitreRoot), new XmlRootAttribute("root"));
+                var serializer = new XmlSerializer(typeof(SousTitreRoot), new XmlRootAttribute("root"));
                 var reader = GenerateStreamFromString(xml);
-                rt = (SousTitreRoot) serializer.Deserialize(reader);
+                var rt = (SousTitreRoot)serializer.Deserialize(reader);
                 reader.Close();
 
                 return rt;
@@ -117,20 +120,20 @@ namespace BezyFB
             return null;
         }
 
-        private static string GetMd5Hash(MD5 md5Hash, string input)
+        private static string GetMd5Hash(HashAlgorithm md5Hash, string input)
         {
             // Convert the input string to a byte array and compute the hash.
             byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
 
             // Create a new Stringbuilder to collect the bytes
             // and create a string.
-            StringBuilder sBuilder = new StringBuilder();
+            var sBuilder = new StringBuilder();
 
             // Loop through each byte of the hashed data
             // and format each one as a hexadecimal string.
-            for (int i = 0; i < data.Length; i++)
+            foreach (byte t in data)
             {
-                sBuilder.Append(data[i].ToString("x2"));
+                sBuilder.Append(t.ToString("x2"));
             }
 
             // Return the hexadecimal string.

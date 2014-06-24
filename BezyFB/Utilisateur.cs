@@ -15,7 +15,7 @@ namespace BezyFB
             return new Utilisateur();
         }
 
-        public List<ShowConfiguration> ShowConfigurations { get; set; }
+        private List<ShowConfiguration> ShowConfigurations { get; set; }
 
         public readonly Dictionary<string, string> SeriePath;
         public readonly Dictionary<string, string> EztvPath;
@@ -32,13 +32,17 @@ namespace BezyFB
                 }
             }
 
-            SeriePath = new Dictionary<string, string>();
-            SeriePath.Add("17", "\\\\192.168.2.254\\Disque dur\\Vidéos\\Californication\\");
-            SeriePath.Add("1275", "\\\\192.168.2.254\\Disque dur\\Vidéos\\Walking dead\\");
+            SeriePath = new Dictionary<string, string>
+            {
+                {"17", "\\\\192.168.2.254\\Disque dur\\Vidéos\\Californication\\"},
+                {"1275", "\\\\192.168.2.254\\Disque dur\\Vidéos\\Walking dead\\"}
+            };
 
-            EztvPath = new Dictionary<string, string>();
-            EztvPath.Add("17", "40");
-            EztvPath.Add("1275", "428");
+            EztvPath = new Dictionary<string, string>
+            {
+                {"17", "40"},
+                {"1275", "428"}
+            };
         }
     }
 }

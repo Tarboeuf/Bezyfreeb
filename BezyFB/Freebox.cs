@@ -2,6 +2,7 @@
 // Le : 24-06-2014
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -51,28 +52,28 @@ namespace BezyFB
             {
                 var sessionRequest = (string)session["result"]["session_token"];
 
-                string output = ApiCall("http://mafreebox.freebox.fr/api/v2/downloads/", "", "application/json", sessionRequest, "GET");
+                // List download
+                string output = ApiConnector.Call("http://mafreebox.freebox.fr/api/v2/downloads/", WebMethod.Get, "application/json", null,
+                    null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
                 JObject o = JObject.Parse(output);
                 Console.WriteLine(o.ToString());
 
+                // Download
                 const string content = "download_url=http%3A%2F%2Fmirror.ovh.net%2Fubuntu-releases%2F14.04%2Fubuntu-14.04-desktop-amd64.iso.torrent";
-                string outputDown = ApiCall("http://mafreebox.freebox.fr/api/v2/downloads/add/", content, "application/x-www-form-urlencoded", sessionRequest, "POST");
+                string outputDown = ApiConnector.Call("http://mafreebox.freebox.fr/api/v2/downloads/add/", WebMethod.Post, "application/x-www-form-urlencoded", content,
+                    null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
                 JObject obj = JObject.Parse(outputDown);
                 Console.WriteLine(obj.ToString());
 
-                Logout(sessionRequest);
+                // Logout
+                ApiConnector.Call("http://mafreebox.freebox.fr/api/v2/login/logout/", WebMethod.Post, null, null,
+                    null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
             }
         }
 
         private static JObject AppTokenRequest()
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://mafreebox.freebox.fr/api/v2/login/authorize/");
-            httpWebRequest.ContentType = "application/json";
-            httpWebRequest.Method = "POST";
-
-            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-            {
-                var o = new JObject
+            var o = new JObject
                 {
                     { "app_id", "fr.freebox.testapp" },
                     { "app_name", "Test App" },
@@ -80,106 +81,34 @@ namespace BezyFB
                     { "device_name", "PC-Tristan" }
                 };
 
-                streamWriter.Write(o.ToString());
-                streamWriter.Flush();
-                streamWriter.Close();
-
-                var httpResponse = httpWebRequest.GetResponse().GetResponseStream();
-                if (httpResponse == null) return null;
-                using (var streamReader = new StreamReader(httpResponse))
-                {
-                    var json = streamReader.ReadToEnd();
-                    return JObject.Parse(json);
-                }
-            }
+            var json = ApiConnector.Call("http://mafreebox.freebox.fr/api/v2/login/authorize/", WebMethod.Post, "application/json", o.ToString());
+            return JObject.Parse(json);
         }
 
         private static JObject AppTokenStatus(string trackid)
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://mafreebox.freebox.fr/api/v2/login/authorize/" + trackid);
-            httpWebRequest.Method = "GET";
-
-            var httpResponse = httpWebRequest.GetResponse().GetResponseStream();
-            if (httpResponse == null) return null;
-            using (var streamReader = new StreamReader(httpResponse))
-            {
-                var json = streamReader.ReadToEnd();
-                return JObject.Parse(json);
-            }
+            var json = ApiConnector.Call("http://mafreebox.freebox.fr/api/v2/login/authorize/" + trackid, WebMethod.Get);
+            return JObject.Parse(json);
         }
 
         private static JObject ChallengeRequest()
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://mafreebox.freebox.fr/api/v2/login/");
-            httpWebRequest.Method = "GET";
-
-            var httpResponse = httpWebRequest.GetResponse().GetResponseStream();
-            if (httpResponse == null) return null;
-            using (var streamReader = new StreamReader(httpResponse))
-            {
-                var json = streamReader.ReadToEnd();
-                return JObject.Parse(json);
-            }
-        }
-
-        private static void Logout(string sessionid)
-        {
-            ApiCall("http://mafreebox.freebox.fr/api/v2/login/logout/", "", "application/json", sessionid, "POST");
+            var json = ApiConnector.Call("http://mafreebox.freebox.fr/api/v2/login/", WebMethod.Get);
+            return JObject.Parse(json);
         }
 
         private static JObject SessionRequest(string appid, string apptoken, string challenge)
         {
             string password = Encode(challenge, apptoken);
 
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://mafreebox.freebox.fr/api/v2/login/session/");
-            httpWebRequest.ContentType = "application/json";
-            httpWebRequest.Method = "POST";
-
-            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-            {
-                var o = new JObject
+            var o = new JObject
                 {
                     { "password", password },
                     { "app_id", appid }
                 };
 
-                streamWriter.Write(o.ToString());
-                streamWriter.Flush();
-                streamWriter.Close();
-
-                var httpResponse = httpWebRequest.GetResponse().GetResponseStream();
-                if (httpResponse == null) return null;
-                using (var streamReader = new StreamReader(httpResponse))
-                {
-                    var json = streamReader.ReadToEnd();
-                    return JObject.Parse(json);
-                }
-            }
-        }
-
-        private static string ApiCall(string url, string content, string contentType, string sessionid, string method)
-        {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
-            httpWebRequest.Method = method;
-            httpWebRequest.ContentType = contentType;
-            httpWebRequest.Headers.Add("X-Fbx-App-Auth", sessionid);
-
-            if (!String.IsNullOrEmpty(content))
-            {
-                using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-                {
-                    streamWriter.Write(content);
-                    streamWriter.Flush();
-                    streamWriter.Close();
-                }
-            }
-
-            Stream httpResponse = httpWebRequest.GetResponse().GetResponseStream();
-            if (null == httpResponse) return null;
-            using (var streamReader = new StreamReader(httpResponse))
-            {
-                return streamReader.ReadToEnd();
-            }
+            var json = ApiConnector.Call("http://mafreebox.freebox.fr/api/v2/login/session/", WebMethod.Post, "application/json", o.ToString());
+            return JObject.Parse(json);
         }
 
         private static string Encode(string input, string key)
