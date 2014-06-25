@@ -15,7 +15,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace BezyFB
@@ -25,23 +24,23 @@ namespace BezyFB
     /// </summary>
     public partial class MainWindow : Window
     {
-        private BetaSerie _Bs;
-        private Utilisateur _User;
+        private readonly BetaSerie _bs;
+        private readonly Utilisateur _user;
 
         public MainWindow()
         {
             InitializeComponent();
-            _Bs = new BetaSerie();
-            tb.Text = _Bs.Error;
-            _User = Utilisateur.Current();
+            _bs = new BetaSerie();
+            tb.Text = _bs.Error;
+            _user = Utilisateur.Current();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var shows = _Bs.GetListeNouveauxEpisodesTest();
+            var shows = _bs.GetListeNouveauxEpisodesTest();
             if (null != shows)
                 tv.ItemsSource = shows.shows;
-            tb.Text = _Bs.Error;
+            tb.Text = _bs.Error;
         }
 
         private void DlStClick(object sender, RoutedEventArgs e)
@@ -51,41 +50,44 @@ namespace BezyFB
 
             if (episode != null)
             {
-                string pathFreebox = _User.GetSeriePath(episode.show_id, episode.show_title);
+                string pathFreebox = _user.GetSeriePath(episode.show_id, episode.show_title);
 
-                var str = _Bs.GetPathSousTitre(episode.id);
+                var str = _bs.GetPathSousTitre(episode.id);
                 if (str.subtitles.Any())
                 {
                     var sousTitre = str.subtitles.OrderByDescending(c => c.quality).Select(s => s.url).FirstOrDefault();
 
-                    WebClient wc = new WebClient();
-                    var st = wc.DownloadData(sousTitre);
-                    if (sousTitre.EndsWith("zip"))
+                    var wc = new WebClient();
+                    if (sousTitre != null)
                     {
-                        Stream stream = new MemoryStream(st);
-                        st = UnzipFromStream(stream);
-                    }
-
-                    string fileName = episode.show_title + "_" + episode.code + ".srt";
-                    string pathreseau = pathFreebox + episode.season + "\\";
-                    foreach (var file in Directory.GetFiles(pathreseau))
-                    {
-                        if (file.Contains(episode.code))
+                        var st = wc.DownloadData(sousTitre);
+                        if (sousTitre.EndsWith("zip"))
                         {
-                            fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
-                            pathreseau = "";
+                            Stream stream = new MemoryStream(st);
+                            st = UnzipFromStream(stream);
                         }
-                    }
 
-                    File.WriteAllBytes(pathreseau + fileName, st);
+                        string fileName = episode.show_title + "_" + episode.code + ".srt";
+                        string pathreseau = pathFreebox + episode.season + "/";
+                        foreach (var file in Directory.GetFiles(pathreseau))
+                        {
+                            if (file.Contains(episode.code))
+                            {
+                                fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
+                                pathreseau = "";
+                            }
+                        }
+
+                        File.WriteAllBytes(pathreseau + fileName, st);
+                    }
                 }
             }
             Cursor = Cursors.Arrow;
         }
 
-        public byte[] UnzipFromStream(Stream zipStream)
+        private static byte[] UnzipFromStream(Stream zipStream)
         {
-            ZipInputStream zipInputStream = new ZipInputStream(zipStream);
+            var zipInputStream = new ZipInputStream(zipStream);
             ZipEntry zipEntry = zipInputStream.GetNextEntry();
             while (zipEntry != null)
             {
@@ -99,8 +101,7 @@ namespace BezyFB
 
         private void Eztv_Click(object sender, RoutedEventArgs e)
         {
-            var eztv = new Eztv();
-            Console.WriteLine(eztv.GetMagnetSerieEpisode("40", "S07E10"));
+            Console.WriteLine(Eztv.GetMagnetSerieEpisode("40", "S07E10"));
         }
 
         private void GetMagnetClick(object sender, RoutedEventArgs e)
@@ -108,14 +109,14 @@ namespace BezyFB
             Cursor = Cursors.Wait;
             var episode = ((Button)sender).CommandParameter as Episode;
 
-            var eztv = new Eztv();
             if (episode != null)
             {
-                var magnet = eztv.GetMagnetSerieEpisode(_User.GetIdEztv(episode.show_id, episode.show_title), episode.code);
+                var magnet = Eztv.GetMagnetSerieEpisode(_user.GetIdEztv(episode.show_id, episode.show_title), episode.code);
                 Console.WriteLine(magnet);
 
                 Clipboard.SetText(magnet);
-                Process.Start(magnet);
+
+                Freebox.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
             }
 
             Cursor = Cursors.Arrow;

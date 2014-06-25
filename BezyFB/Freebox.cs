@@ -2,6 +2,7 @@
 // Le : 24-06-2014
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -13,11 +14,15 @@ using Newtonsoft.Json.Linq;
 
 namespace BezyFB
 {
-    public class Freebox
+    public static class Freebox
     {
         private const string _ADDR_FREEBOX = "http://88.120.230.2/";
 
-        public static void Main2()
+        //private const string _ADDR_FREEBOX = "http://mafreebox.freebox.fr/";
+
+        private const string _PATH_VIDEO = "Disque dur/Vidéos/";
+
+        public static void Download(String magnetUrl, string directory)
         {
             string appToken;
             string challenge;
@@ -53,32 +58,51 @@ namespace BezyFB
             }
 
             JObject session = SessionRequest(Settings.Default.AppId, appToken, challenge);
+            AjouterTorrent(session, magnetUrl, directory);
         }
 
-        public static string AjouterTorrent(JObject session, string torrentPath, string directory)
+        public static void AjouterTorrent(JObject session, string torrentPath, string directory)
         {
             if (session != null)
             {
                 var sessionRequest = (string)session["result"]["session_token"];
 
+                // List download
+                /*string output = ApiConnector.Call(_ADDR_FREEBOX + "/api/v2/downloads/", WebMethod.Get, "application/json", null,
+                    null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
                 string output = ApiCall(_ADDR_FREEBOX + "/api/v2/downloads/", "", "application/json", sessionRequest, "GET");
                 JObject o = JObject.Parse(output);
-                Console.WriteLine(o.ToString());
+                Console.WriteLine(o.ToString());*/
 
-                string content = "download_url=" + torrentPath + "&download_dir=" + directory;
-                string outputDown = ApiCall(_ADDR_FREEBOX + "/api/v2/downloads/add/", content, "application/x-www-form-urlencoded", sessionRequest, "POST");
-                JObject obj = JObject.Parse(outputDown);
-                Console.WriteLine(obj.ToString());
+                // Download
+                //const string content = "download_url=http%3A%2F%2Fmirror.ovh.net%2Fubuntu-releases%2F14.04%2Fubuntu-14.04-desktop-amd64.iso.torrent";
+                try
+                {
+                    var path = System.Web.HttpUtility.UrlEncode(torrentPath);
+                    string content = "download_url=" + path + "\r\n&download_dir=" + Helper.EncodeTo64(_PATH_VIDEO + directory, Encoding.UTF8);
+                    string outputDown = ApiConnector.Call(_ADDR_FREEBOX + "api/v2/downloads/add/", WebMethod.Post, "application/x-www-form-urlencoded", content,
+                                                          null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
+                    var obj = JObject.Parse(outputDown);
+                    Console.WriteLine(obj.ToString());
+                    string idDL = (string)obj["result"]["id"];
+                    Console.WriteLine(idDL);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
 
-                string id = obj.GetValue("result").First["id"].ToString();
+                //outputDown = ApiConnector.Call(_ADDR_FREEBOX + "api/v2/downloads/" + idDL, WebMethod.Post, null, null,
+                //                               null, new List<Tuple<string, string>> {new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest)});
+                //obj = JObject.Parse(outputDown);
+                //string nomFichier = (string) obj["result"]["name"];
 
-                outputDown = ApiCall(_ADDR_FREEBOX + "/api/v2/downloads/add/", id, "application/x-www-form-urlencoded", sessionRequest, "POST");
-                obj = JObject.Parse(outputDown);
-                string nomFichier = obj.GetValue("result").First["name"].ToString();
-                Logout(sessionRequest);
-                return nomFichier;
+                // Logout
+                ApiConnector.Call(_ADDR_FREEBOX + "api/v2/login/logout/", WebMethod.Post, null, null,
+                                  null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
+
+                //return nomFichier;
             }
-            return null;
         }
 
         public static void GenererToken()
@@ -105,120 +129,42 @@ namespace BezyFB
 
         private static JObject AppTokenRequest()
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(_ADDR_FREEBOX + "/api/v2/login/authorize/");
-            httpWebRequest.ContentType = "application/json";
-            httpWebRequest.Method = "POST";
-
-            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-            {
-                var o = new JObject
-                    {
-                        {"app_id", Settings.Default.AppId},
-                        {"app_name", Settings.Default.AppName},
-                        {"app_version", Settings.Default.AppVersion},
-                        {"device_name", Environment.MachineName}
-                    };
-
-                streamWriter.Write(o.ToString());
-                streamWriter.Flush();
-                streamWriter.Close();
-
-                var httpResponse = httpWebRequest.GetResponse().GetResponseStream();
-                if (httpResponse == null) return null;
-                using (var streamReader = new StreamReader(httpResponse))
+            var o = new JObject
                 {
-                    var json = streamReader.ReadToEnd();
-                    return JObject.Parse(json);
-                }
-            }
+                    {"app_id", Settings.Default.AppId},
+                    {"app_name", Settings.Default.AppName},
+                    {"app_version", Settings.Default.AppVersion},
+                    {"device_name", Environment.MachineName}
+                };
+
+            var json = ApiConnector.Call(_ADDR_FREEBOX + "/api/v2/login/authorize/", WebMethod.Post, "application/json", o.ToString());
+            return JObject.Parse(json);
         }
 
         private static JObject AppTokenStatus(string trackid)
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(_ADDR_FREEBOX + "/api/v2/login/authorize/" + trackid);
-            httpWebRequest.Method = "GET";
-
-            var httpResponse = httpWebRequest.GetResponse().GetResponseStream();
-            if (httpResponse == null) return null;
-            using (var streamReader = new StreamReader(httpResponse))
-            {
-                var json = streamReader.ReadToEnd();
-                return JObject.Parse(json);
-            }
+            var json = ApiConnector.Call(_ADDR_FREEBOX + "api/v2/login/authorize/" + trackid, WebMethod.Get);
+            return JObject.Parse(json);
         }
 
         private static JObject ChallengeRequest()
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(_ADDR_FREEBOX + "/api/v2/login/");
-            httpWebRequest.Method = "GET";
-
-            var httpResponse = httpWebRequest.GetResponse().GetResponseStream();
-            if (httpResponse == null) return null;
-            using (var streamReader = new StreamReader(httpResponse))
-            {
-                var json = streamReader.ReadToEnd();
-                return JObject.Parse(json);
-            }
-        }
-
-        private static void Logout(string sessionid)
-        {
-            ApiCall(_ADDR_FREEBOX + "/api/v2/login/logout/", "", "application/json", sessionid, "POST");
+            var json = ApiConnector.Call(_ADDR_FREEBOX + "api/v2/login/", WebMethod.Get);
+            return JObject.Parse(json);
         }
 
         private static JObject SessionRequest(string appid, string apptoken, string challenge)
         {
             string password = Encode(challenge, apptoken);
 
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(_ADDR_FREEBOX + "/api/v2/login/session/");
-            httpWebRequest.ContentType = "application/json";
-            httpWebRequest.Method = "POST";
-
-            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-            {
-                var o = new JObject
-                    {
-                        {"password", password},
-                        {"app_id", appid}
-                    };
-
-                streamWriter.Write(o.ToString());
-                streamWriter.Flush();
-                streamWriter.Close();
-
-                var httpResponse = httpWebRequest.GetResponse().GetResponseStream();
-                if (httpResponse == null) return null;
-                using (var streamReader = new StreamReader(httpResponse))
+            var o = new JObject
                 {
-                    var json = streamReader.ReadToEnd();
-                    return JObject.Parse(json);
-                }
-            }
-        }
+                    {"password", password},
+                    {"app_id", appid}
+                };
 
-        private static string ApiCall(string url, string content, string contentType, string sessionid, string method)
-        {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
-            httpWebRequest.Method = method;
-            httpWebRequest.ContentType = contentType;
-            httpWebRequest.Headers.Add("X-Fbx-App-Auth", sessionid);
-
-            if (!String.IsNullOrEmpty(content))
-            {
-                using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-                {
-                    streamWriter.Write(content);
-                    streamWriter.Flush();
-                    streamWriter.Close();
-                }
-            }
-
-            Stream httpResponse = httpWebRequest.GetResponse().GetResponseStream();
-            if (null == httpResponse) return null;
-            using (var streamReader = new StreamReader(httpResponse))
-            {
-                return streamReader.ReadToEnd();
-            }
+            var json = ApiConnector.Call(_ADDR_FREEBOX + "api/v2/login/session/", WebMethod.Post, "application/json", o.ToString());
+            return JObject.Parse(json);
         }
 
         private static string Encode(string input, string key)

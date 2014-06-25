@@ -12,14 +12,14 @@ namespace BezyFB
     public class Utilisateur
     {
         private const string _PATH_DEFAUT_FB = "\\\\192.168.2.254\\";
-        private const string _PATH_VIDEOS = "Disque dur/Vidéos/";
+        private const string _PATH_VIDEOS = "/Disque dur/Vidéos/";
 
         public static Utilisateur Current()
         {
             return new Utilisateur();
         }
 
-        public List<ShowConfiguration> ShowConfigurations { get; set; }
+        private List<ShowConfiguration> ShowConfigurations { get; set; }
 
         private readonly Dictionary<string, string> SeriePath;
         private readonly Dictionary<string, string> EztvPath;
@@ -29,7 +29,7 @@ namespace BezyFB
             if (SeriePath.ContainsKey(IdBetaserie))
                 return SeriePath[IdBetaserie];
 
-            return _PATH_DEFAUT_FB + _PATH_VIDEOS + nomSerie + "\\";
+            return nomSerie + "\\";
         }
 
         public string GetIdEztv(string IdBetaserie, string nomSerie)
@@ -61,14 +61,16 @@ namespace BezyFB
             }
 
             SeriePath = new Dictionary<string, string>();
-            SeriePath.Add("17", "Californication\\");
-            SeriePath.Add("1275", "Walking dead\\");
-            SeriePath.Add("1275", "Devious Maid\\");
+            SeriePath.Add("17", "Californication/");
+            SeriePath.Add("1275", "Walking dead/");
+            SeriePath.Add("5579", "Devious Maid/");
 
-            EztvPath = new Dictionary<string, string>();
-            EztvPath.Add("17", "40");
-            EztvPath.Add("1275", "428");
-            EztvPath.Add("1275", "854");
+            EztvPath = new Dictionary<string, string>
+                {
+                    {"17", "40"},
+                    {"1275", "428"},
+                    {"5579", "854"}
+                };
         }
     }
 }

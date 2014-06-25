@@ -5,13 +5,13 @@ namespace BezyFB
 {
     public class ShowConfiguration
     {
-        public string IdBetaSerie { get; set; }
+        private string IdBetaSerie { get; set; }
 
-        public string PathFreeBox { get; set; }
+        private string PathFreeBox { get; set; }
 
-        public string IdEztv { get; set; }
+        private string IdEztv { get; set; }
 
-        public string NomSerie { get; set; }
+        private string NomSerie { get; set; }
 
         public ShowConfiguration(string collection)
         {
