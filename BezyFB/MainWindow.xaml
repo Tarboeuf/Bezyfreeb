@@ -5,9 +5,10 @@
     <Window.Resources>
     </Window.Resources>
     <DockPanel>
-        <StackPanel DockPanel.Dock="Top">
-            <Button Content="Charger la liste des non vus" Click="Button_Click" />
-            <Button Content="Eztv" Click="Eztv_Click" />
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <Button Content="Charger la liste des non vus" Click="Button_Click" Margin="5" />
+            <Button Content="Configuration" Click="Configuration_Click" Margin="5" />
+            <Button Content="Test FB" Click="FB_Click" Margin="5" />
         </StackPanel>
         <TextBlock TextWrapping="WrapWithOverflow" Name="tb" DockPanel.Dock="Top"></TextBlock>
         <TreeView Name="tv" DockPanel.Dock="Bottom">

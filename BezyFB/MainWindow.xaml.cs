@@ -51,7 +51,7 @@ namespace BezyFB
 
             if (episode != null)
             {
-                string pathFreebox = _User.SeriePath[episode.show_id];
+                string pathFreebox = _User.GetSeriePath(episode.show_id, episode.show_title);
 
                 var str = _Bs.GetPathSousTitre(episode.id);
                 if (str.subtitles.Any())
@@ -111,7 +111,7 @@ namespace BezyFB
             var eztv = new Eztv();
             if (episode != null)
             {
-                var magnet = eztv.GetMagnetSerieEpisode(_User.EztvPath[episode.show_id], episode.code);
+                var magnet = eztv.GetMagnetSerieEpisode(_User.GetIdEztv(episode.show_id, episode.show_title), episode.code);
                 Console.WriteLine(magnet);
 
                 Clipboard.SetText(magnet);
@@ -119,6 +119,15 @@ namespace BezyFB
             }
 
             Cursor = Cursors.Arrow;
+        }
+
+        private void Configuration_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void FB_Click(object sender, RoutedEventArgs e)
+        {
+            Freebox.GenererToken();
         }
     }
 }

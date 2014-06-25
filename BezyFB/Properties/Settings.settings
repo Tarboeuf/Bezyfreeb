@@ -5,5 +5,20 @@
     <Setting Name="ShowConfigurationList" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="AppName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">BezyFreeb</Value>
+    </Setting>
+    <Setting Name="AppVersion" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Beta</Value>
+    </Setting>
+    <Setting Name="AppId" Type="System.String" Scope="User">
+      <Value Profile="(Default)">fr.freebox.bezyfreeb</Value>
+    </Setting>
+    <Setting Name="TokensFreebox" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Setting" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

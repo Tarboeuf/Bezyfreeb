@@ -4,12 +4,16 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using BezyFB.Properties;
 
 namespace BezyFB
 {
     public class Utilisateur
     {
+        private const string _PATH_DEFAUT_FB = "\\\\192.168.2.254\\";
+        private const string _PATH_VIDEOS = "Disque dur/Vidéos/";
+
         public static Utilisateur Current()
         {
             return new Utilisateur();
@@ -17,8 +21,32 @@ namespace BezyFB
 
         public List<ShowConfiguration> ShowConfigurations { get; set; }
 
-        public readonly Dictionary<string, string> SeriePath;
-        public readonly Dictionary<string, string> EztvPath;
+        private readonly Dictionary<string, string> SeriePath;
+        private readonly Dictionary<string, string> EztvPath;
+
+        public string GetSeriePath(string IdBetaserie, string nomSerie)
+        {
+            if (SeriePath.ContainsKey(IdBetaserie))
+                return SeriePath[IdBetaserie];
+
+            return _PATH_DEFAUT_FB + _PATH_VIDEOS + nomSerie + "\\";
+        }
+
+        public string GetIdEztv(string IdBetaserie, string nomSerie)
+        {
+            if (EztvPath.ContainsKey(IdBetaserie))
+                return EztvPath[IdBetaserie];
+
+            Eztv ez = new Eztv();
+            var show = ez.GetListShow().FirstOrDefault(s => s.Name == nomSerie);
+            if (null != show)
+            {
+                EztvPath.Add(IdBetaserie, show.Id);
+                return show.Id;
+            }
+
+            return null;
+        }
 
         private Utilisateur()
         {
@@ -33,12 +61,14 @@ namespace BezyFB
             }
 
             SeriePath = new Dictionary<string, string>();
-            SeriePath.Add("17", "\\\\192.168.2.254\\Disque dur\\Vidéos\\Californication\\");
-            SeriePath.Add("1275", "\\\\192.168.2.254\\Disque dur\\Vidéos\\Walking dead\\");
+            SeriePath.Add("17", "Californication\\");
+            SeriePath.Add("1275", "Walking dead\\");
+            SeriePath.Add("1275", "Devious Maid\\");
 
             EztvPath = new Dictionary<string, string>();
             EztvPath.Add("17", "40");
             EztvPath.Add("1275", "428");
+            EztvPath.Add("1275", "854");
         }
     }
 }
