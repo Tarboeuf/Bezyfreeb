@@ -20,6 +20,12 @@ namespace BezyFB
 
         private const string EnteteArgs = "?v=2.2&key=d0256f2444ab";
 
+        private const string _Login = "Tarboeuf";
+        private const string _Password = "55fc47e4665c3df4047618f941c054e5";
+
+        //private const string _Login = "haiecapique";
+        //private const string _Password = "d9fb8a057fb2af1c9c9557e49eee7dd4";
+
         //private const string _EnteteArgs = "?v=2.2&key=3c15b9796654";
 
         private const string Comments = "/comments";
@@ -43,7 +49,7 @@ namespace BezyFB
             try
             {
                 string link = ApiAdresse + Members + "/auth.xml" + EnteteArgs;
-                link += "&login=Tarboeuf&password=55fc47e4665c3df4047618f941c054e5";
+                link += "&login=" + _Login + "&password=" + _Password;
                 Error = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
                 XDocument xdoc = XDocument.Parse(Error);
@@ -65,7 +71,7 @@ namespace BezyFB
             try
             {
                 string link = ApiAdresse + Episodes + "/list" + EnteteArgs;
-                link += "&userid=Tarboeuf&token=" + Token;
+                link += "&userid=" + _Login + "&token=" + Token;
                 var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
                 var serializer = new XmlSerializer(typeof(EpisodeRoot), new XmlRootAttribute("root"));
