@@ -16,9 +16,9 @@ namespace BezyFB
 {
     public static class Freebox
     {
-        private const string _ADDR_FREEBOX = "http://88.120.230.2/";
+        //private const string _ADDR_FREEBOX = "http://88.120.230.2/";
 
-        //private const string _ADDR_FREEBOX = "http://mafreebox.freebox.fr/";
+        private const string _ADDR_FREEBOX = "http://mafreebox.freebox.fr/";
 
         private const string _PATH_VIDEO = "Disque dur/Vidéos/";
 
