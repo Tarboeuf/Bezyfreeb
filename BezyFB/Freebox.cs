@@ -137,7 +137,7 @@ namespace BezyFB
                     {"device_name", Environment.MachineName}
                 };
 
-            var json = ApiConnector.Call(_ADDR_FREEBOX + "/api/v2/login/authorize/", WebMethod.Post, "application/json", o.ToString());
+            var json = ApiConnector.Call(_ADDR_FREEBOX + "api/v2/login/authorize/", WebMethod.Post, "application/json", o.ToString());
             return JObject.Parse(json);
         }
 
