@@ -36,6 +36,8 @@ namespace BezyFB
 
         public string Error { get; private set; }
 
+        public EpisodeRoot Root { get; private set; }
+
         private string Token { get; set; }
 
         public BetaSerie()
@@ -68,17 +70,18 @@ namespace BezyFB
                 link += "&userid=Tarboeuf&token=" + Token;
                 var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
-                var serializer = new XmlSerializer(typeof(EpisodeRoot), new XmlRootAttribute("root"));
+                var serializer = new XmlSerializer(typeof (EpisodeRoot), new XmlRootAttribute("root"));
                 var reader = GenerateStreamFromString(xml);
-                var rt = (EpisodeRoot)serializer.Deserialize(reader);
+                var rt = (EpisodeRoot) serializer.Deserialize(reader);
                 reader.Close();
-
+                Root = rt;
                 return rt;
             }
             catch (Exception e)
             {
                 Error = "GetListeNouveauxEpisodesTest : " + e.Message;
             }
+            Root = null;
             return null;
         }
 
@@ -106,9 +109,9 @@ namespace BezyFB
                 link += "&id=" + episode + "&language=vf&token=" + Token;
                 var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
-                var serializer = new XmlSerializer(typeof(SousTitreRoot), new XmlRootAttribute("root"));
+                var serializer = new XmlSerializer(typeof (SousTitreRoot), new XmlRootAttribute("root"));
                 var reader = GenerateStreamFromString(xml);
-                var rt = (SousTitreRoot)serializer.Deserialize(reader);
+                var rt = (SousTitreRoot) serializer.Deserialize(reader);
                 reader.Close();
 
                 return rt;
@@ -118,6 +121,42 @@ namespace BezyFB
                 Error = "GetPathSousTitre : " + e.Message;
             }
             return null;
+        }
+
+        public void SetEpisodeDownnloaded(Episode episode)
+        {
+            Error = "";
+            try
+            {
+                string link = ApiAdresse + Episodes + "/downloaded" + EnteteArgs;
+                link += "&id=" + episode.id + "&token=" + Token;
+                var xml = ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
+                episode.user[0].downloaded = "1";
+            }
+            catch (Exception e)
+            {
+                Error = "GetPathSousTitre : " + e.Message;
+            }
+        }
+
+        public void SetEpisodeSeen(Episode episode)
+        {
+            Error = "";
+            try
+            {
+                string link = ApiAdresse + Episodes + "/watched" + EnteteArgs;
+                link += "&id=" + episode.id + "&token=" + Token;
+                var xml = ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
+                foreach (var rootShowsShow in Root.shows)
+                {
+                    if (rootShowsShow.unseen.Contains(episode))
+                        rootShowsShow.unseen = rootShowsShow.unseen.Where(e => e != episode).ToArray();
+                }
+            }
+            catch (Exception e)
+            {
+                Error = "GetPathSousTitre : " + e.Message;
+            }
         }
 
         private static string GetMd5Hash(HashAlgorithm md5Hash, string input)

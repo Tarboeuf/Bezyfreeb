@@ -17,6 +17,8 @@
                     <HierarchicalDataTemplate.ItemTemplate>
                         <HierarchicalDataTemplate DataType="bezyFb:Episode" ItemsSource="{Binding notes}">
                             <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding user[0].downloaded}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0"></TextBlock>
+                                <TextBlock Text="{Binding code}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0"></TextBlock>
                                 <TextBlock Text="{Binding title}" ToolTip="{Binding id}" VerticalAlignment="Center"></TextBlock>
                                 <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray" VerticalAlignment="Center"></TextBlock>
                                 <TextBlock Text="{Binding date}" Foreground="Gray" VerticalAlignment="Center"></TextBlock>
@@ -26,6 +28,12 @@
                                 </Button>
                                 <Button Click="GetMagnetClick" CommandParameter="{Binding .}" Margin="5">
                                     <Image Source="Image/magnet.png" Width="16" Height="16" />
+                                </Button>
+                                <Button Click="SetDl" CommandParameter="{Binding .}" Margin="5">
+                                    <TextBlock Foreground="Gray" FontWeight="Bold" FontSize="10" FontFamily="Britannic Bold">DL</TextBlock>
+                                </Button>
+                                <Button Click="SetSetSeen" CommandParameter="{Binding .}" Margin="5">
+                                    <Image Source="Image/eye.png" Width="16" Height="16" />
                                 </Button>
                             </StackPanel>
                         </HierarchicalDataTemplate>

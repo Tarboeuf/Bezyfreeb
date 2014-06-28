@@ -37,16 +37,49 @@ namespace BezyFB
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var shows = _bs.GetListeNouveauxEpisodesTest();
+            EpisodeRoot shows = _bs.GetListeNouveauxEpisodesTest();
             if (null != shows)
                 tv.ItemsSource = shows.shows;
             tb.Text = _bs.Error;
         }
 
-        private void DlStClick(object sender, RoutedEventArgs e)
+        private void SetDl(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            var episode = ((Button)sender).CommandParameter as Episode;
+            var episode = ((Button) sender).CommandParameter as Episode;
+
+            if (episode != null)
+            {
+                _bs.SetEpisodeDownnloaded(episode);
+            }
+            MajItemsSource();
+            Cursor = Cursors.Arrow;
+        }
+
+        private void MajItemsSource()
+        {
+            tv.ItemsSource = null;
+            tv.ItemsSource = _bs.Root.shows;
+        }
+
+        private void SetSetSeen(object sender, RoutedEventArgs e)
+        {
+            Cursor = Cursors.Wait;
+            var episode = ((Button) sender).CommandParameter as Episode;
+
+            if (episode != null)
+            {
+                _bs.SetEpisodeSeen(episode);
+            }
+            MajItemsSource();
+            Cursor = Cursors.Arrow;
+        }
+
+        private
+            void DlStClick(object sender, RoutedEventArgs e)
+        {
+            Cursor = Cursors.Wait;
+            var episode = ((Button) sender).CommandParameter as Episode;
 
             if (episode != null)
             {
@@ -68,7 +101,7 @@ namespace BezyFB
                         }
 
                         string fileName = episode.show_title + "_" + episode.code + ".srt";
-                        string pathreseau = pathFreebox + episode.season + "/";
+                        string pathreseau = pathFreebox + (episode.season == "1" ? "" : episode.season + "/");
                         foreach (var file in Directory.GetFiles(pathreseau))
                         {
                             if (file.Contains(episode.code))
@@ -107,7 +140,7 @@ namespace BezyFB
         private void GetMagnetClick(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            var episode = ((Button)sender).CommandParameter as Episode;
+            var episode = ((Button) sender).CommandParameter as Episode;
 
             if (episode != null)
             {

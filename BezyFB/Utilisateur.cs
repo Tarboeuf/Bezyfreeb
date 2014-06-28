@@ -27,9 +27,9 @@ namespace BezyFB
         public string GetSeriePath(string IdBetaserie, string nomSerie)
         {
             if (SeriePath.ContainsKey(IdBetaserie))
-                return SeriePath[IdBetaserie];
+                return _PATH_DEFAUT_FB + _PATH_VIDEOS + SeriePath[IdBetaserie];
 
-            return nomSerie + "\\";
+            return _PATH_DEFAUT_FB + _PATH_VIDEOS + nomSerie + "\\";
         }
 
         public string GetIdEztv(string IdBetaserie, string nomSerie)
