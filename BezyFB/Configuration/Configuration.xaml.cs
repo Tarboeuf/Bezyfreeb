@@ -62,12 +62,7 @@ namespace BezyFB.Configuration
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Settings.Default.IpFreebox = "http://mafreebox.freebox.fr";
-
-            Settings.Default.TokenFreebox = Freebox.Freebox.GenererToken();
-
-            Settings.Default.IpFreebox = "http://" + Freebox.Freebox.GetPublicIp();
-
+            Freebox.Freebox.TestToken(true);
             FreeboxIp = Settings.Default.IpFreebox;
         }
 

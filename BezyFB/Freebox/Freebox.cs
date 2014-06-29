@@ -17,42 +17,31 @@ namespace BezyFB.Freebox
 {
     public static class Freebox
     {
-        public static string GetPublicIp()
+        public static bool TestToken(bool force = false)
         {
-            String direction = "";
-            WebRequest request = WebRequest.Create("http://checkip.dyndns.org/");
-            using (WebResponse response = request.GetResponse())
+            if (force || String.IsNullOrEmpty(Settings.Default.TokenFreebox))
             {
-                var r = response.GetResponseStream();
-                if (r != null)
-                {
-                    using (var stream = new StreamReader(r))
-                    {
-                        direction = stream.ReadToEnd();
-                    }
-                }
-            }
-
-            //Search for the ip in the html
-            int first = direction.IndexOf("Address: ") + 9;
-            int last = direction.LastIndexOf("</body>");
-            direction = direction.Substring(first, last - first);
-
-            return direction;
-        }
-
-        private static bool TestToken()
-        {
-            if (String.IsNullOrEmpty(Settings.Default.TokenFreebox))
-            {
-                Settings.Default.IpFreebox = "http://mafreebox.freebox.fr";
+                Settings.Default.IpFreebox = "mafreebox.freebox.fr";
 
                 var token = GenererToken();
                 if (String.IsNullOrEmpty(token))
                     return false;
 
                 Settings.Default.TokenFreebox = token;
-                Settings.Default.IpFreebox = GetPublicIp();
+
+                var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/connection/", WebMethod.Get, "application/json");
+                var j = JObject.Parse(json);
+
+                try
+                {
+                    Settings.Default.IpFreebox = (string)j["ipv4"];
+                }
+                catch (Exception)
+                {
+                    Settings.Default.IpFreebox = (string)j["ipv6"];
+                }
+
+                Settings.Default.Save();
             }
             return true;
         }
@@ -73,7 +62,7 @@ namespace BezyFB.Freebox
                     var path = System.Web.HttpUtility.UrlEncode(magnetUrl);
                     string content = "download_url=" + path + "\r\n&download_dir=" +
                                      Helper.EncodeTo64(Settings.Default.PathVideo + directory, Encoding.UTF8);
-                    ApiConnector.Call(Settings.Default.TokenFreebox + "/api/v2/downloads/add/", WebMethod.Post,
+                    ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/downloads/add/", WebMethod.Post,
                         "application/x-www-form-urlencoded", content,
                         null,
                         new List<Tuple<string, string>>
@@ -87,7 +76,7 @@ namespace BezyFB.Freebox
                 }
 
                 // Logout
-                ApiConnector.Call(Settings.Default.IpFreebox + "/api/v2/login/logout/", WebMethod.Post, null, null,
+                ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/logout/", WebMethod.Post, null, null,
                     null,
                     new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
             }
@@ -122,19 +111,19 @@ namespace BezyFB.Freebox
                     {"device_name", Environment.MachineName}
                 };
 
-            var json = ApiConnector.Call(Settings.Default.IpFreebox + "/api/v2/login/authorize/", WebMethod.Post, "application/json", o.ToString());
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/authorize/", WebMethod.Post, "application/json", o.ToString());
             return JObject.Parse(json);
         }
 
         private static JObject AppTokenStatus(string trackid)
         {
-            var json = ApiConnector.Call(Settings.Default.IpFreebox + "/api/v2/login/authorize/" + trackid, WebMethod.Get);
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/authorize/" + trackid, WebMethod.Get);
             return JObject.Parse(json);
         }
 
         private static JObject ChallengeRequest()
         {
-            var json = ApiConnector.Call(Settings.Default.IpFreebox + "/api/v2/login/", WebMethod.Get);
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/", WebMethod.Get);
             return JObject.Parse(json);
         }
 
@@ -148,7 +137,7 @@ namespace BezyFB.Freebox
                     {"app_id", appid}
                 };
 
-            var json = ApiConnector.Call(Settings.Default.IpFreebox + "/api/v2/login/session/", WebMethod.Post, "application/json", o.ToString());
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/session/", WebMethod.Post, "application/json", o.ToString());
             return JObject.Parse(json);
         }
 
