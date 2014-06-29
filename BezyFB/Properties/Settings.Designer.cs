@@ -72,24 +72,85 @@ namespace BezyFB.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection TokensFreebox {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TokenFreebox {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["TokensFreebox"]));
+                return ((string)(this["TokenFreebox"]));
             }
             set {
-                this["TokensFreebox"] = value;
+                this["TokenFreebox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://mafreebox.freebox.fr")]
+        public string IpFreebox {
+            get {
+                return ((string)(this["IpFreebox"]));
+            }
+            set {
+                this["IpFreebox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Disque dur/Vidéos/")]
+        public string PathVideo {
+            get {
+                return ((string)(this["PathVideo"]));
+            }
+            set {
+                this["PathVideo"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Setting {
+        public string LoginBetaSerie {
             get {
-                return ((string)(this["Setting"]));
+                return ((string)(this["LoginBetaSerie"]));
             }
             set {
-                this["Setting"] = value;
+                this["LoginBetaSerie"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PwdBetaSerie {
+            get {
+                return ((string)(this["PwdBetaSerie"]));
+            }
+            set {
+                this["PwdBetaSerie"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LoginEzTv {
+            get {
+                return ((string)(this["LoginEzTv"]));
+            }
+            set {
+                this["LoginEzTv"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PwdEzTv {
+            get {
+                return ((string)(this["PwdEzTv"]));
+            }
+            set {
+                this["PwdEzTv"] = value;
             }
         }
     }

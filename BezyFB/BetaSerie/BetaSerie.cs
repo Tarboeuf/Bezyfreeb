@@ -2,17 +2,16 @@
 // Le : 03-06-2014
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Windows;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using BezyFB.Helpers;
+using BezyFB.Properties;
 
-namespace BezyFB
+namespace BezyFB.BetaSerie
 {
     public class BetaSerie
     {
@@ -20,25 +19,28 @@ namespace BezyFB
 
         private const string EnteteArgs = "?v=2.2&key=d0256f2444ab";
 
-        private const string _Login = "Tarboeuf";
-        private const string _Password = "55fc47e4665c3df4047618f941c054e5";
+        //private const string Login = "Tarboeuf";
+        //private const string Password = "55fc47e4665c3df4047618f941c054e5";
 
         //private const string _Login = "haiecapique";
         //private const string _Password = "d9fb8a057fb2af1c9c9557e49eee7dd4";
 
         //private const string _EnteteArgs = "?v=2.2&key=3c15b9796654";
 
-        private const string Comments = "/comments";
+        //private const string Comments = "/comments";
         private const string Episodes = "/episodes";
-        private const string Friends = "/friends";
+
+        //private const string Friends = "/friends";
         private const string Members = "/members";
-        private const string Messages = "/messages";
-        private const string Movies = "/movies";
-        private const string Pictures = "/pictures";
-        private const string Planning = "/planning";
-        private const string Shows = "/shows";
+
+        //private const string Messages = "/messages";
+        //private const string Movies = "/movies";
+        //private const string Pictures = "/pictures";
+        //private const string Planning = "/planning";
+        //private const string Shows = "/shows";
         private const string Subtitles = "/subtitles";
-        private const string Timeline = "/timeline";
+
+        //private const string Timeline = "/timeline";
 
         public string Error { get; private set; }
 
@@ -46,39 +48,47 @@ namespace BezyFB
 
         private string Token { get; set; }
 
-        public BetaSerie()
+        public bool GenereToken(bool force = false)
         {
-            try
+            if (force || String.IsNullOrEmpty(Token))
             {
-                string link = ApiAdresse + Members + "/auth.xml" + EnteteArgs;
-                link += "&login=" + _Login + "&password=" + _Password;
-                Error = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
+                try
+                {
+                    string link = ApiAdresse + Members + "/auth.xml" + EnteteArgs;
+                    link += "&login=" + Settings.Default.LoginBetaSerie + "&password=" + Helper.GetMd5Hash(MD5.Create(), Settings.Default.PwdBetaSerie);
+                    Error = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
-                XDocument xdoc = XDocument.Parse(Error);
-                var t = from lv1 in xdoc.Descendants("token")
-                        select lv1.Value;
+                    XDocument xdoc = XDocument.Parse(Error);
+                    var t = from lv1 in xdoc.Descendants("token")
+                            select lv1.Value;
 
-                Token = t.First();
-                Error = Token;
+                    Token = t.First();
+                    Error = Token;
+                }
+                catch (Exception e)
+                {
+                    Error = e.Message;
+                    return false;
+                }
             }
-            catch (Exception e)
-            {
-                Error = e.Message;
-            }
+            return true;
         }
 
         public EpisodeRoot GetListeNouveauxEpisodesTest()
         {
+            if (!GenereToken())
+                return null;
+
             Error = "";
             try
             {
                 string link = ApiAdresse + Episodes + "/list" + EnteteArgs;
-                link += "&userid=" + _Login + "&token=" + Token;
+                link += "&userid=" + Settings.Default.LoginBetaSerie + "&token=" + Token;
                 var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
-                var serializer = new XmlSerializer(typeof (EpisodeRoot), new XmlRootAttribute("root"));
+                var serializer = new XmlSerializer(typeof(EpisodeRoot), new XmlRootAttribute("root"));
                 var reader = GenerateStreamFromString(xml);
-                var rt = (EpisodeRoot) serializer.Deserialize(reader);
+                var rt = (EpisodeRoot)serializer.Deserialize(reader);
                 reader.Close();
                 Root = rt;
                 return rt;
@@ -101,13 +111,11 @@ namespace BezyFB
             return stream;
         }
 
-        public List<Episode> GetListeNouveauxEpisodes()
-        {
-            return null;
-        }
-
         public SousTitreRoot GetPathSousTitre(string episode)
         {
+            if (!GenereToken())
+                return null;
+
             Error = "";
             try
             {
@@ -115,9 +123,9 @@ namespace BezyFB
                 link += "&id=" + episode + "&language=vf&token=" + Token;
                 var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
-                var serializer = new XmlSerializer(typeof (SousTitreRoot), new XmlRootAttribute("root"));
+                var serializer = new XmlSerializer(typeof(SousTitreRoot), new XmlRootAttribute("root"));
                 var reader = GenerateStreamFromString(xml);
-                var rt = (SousTitreRoot) serializer.Deserialize(reader);
+                var rt = (SousTitreRoot)serializer.Deserialize(reader);
                 reader.Close();
 
                 return rt;
@@ -131,12 +139,15 @@ namespace BezyFB
 
         public void SetEpisodeDownnloaded(Episode episode)
         {
+            if (!GenereToken())
+                return;
+
             Error = "";
             try
             {
                 string link = ApiAdresse + Episodes + "/downloaded" + EnteteArgs;
                 link += "&id=" + episode.id + "&token=" + Token;
-                var xml = ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
+                ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
                 episode.user[0].downloaded = "1";
             }
             catch (Exception e)
@@ -147,12 +158,15 @@ namespace BezyFB
 
         public void SetEpisodeSeen(Episode episode)
         {
+            if (!GenereToken())
+                return;
+
             Error = "";
             try
             {
                 string link = ApiAdresse + Episodes + "/watched" + EnteteArgs;
                 link += "&id=" + episode.id + "&token=" + Token;
-                var xml = ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
+                ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
                 foreach (var rootShowsShow in Root.shows)
                 {
                     if (rootShowsShow.unseen.Contains(episode))
@@ -163,26 +177,6 @@ namespace BezyFB
             {
                 Error = "GetPathSousTitre : " + e.Message;
             }
-        }
-
-        private static string GetMd5Hash(HashAlgorithm md5Hash, string input)
-        {
-            // Convert the input string to a byte array and compute the hash.
-            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
-
-            // Create a new Stringbuilder to collect the bytes
-            // and create a string.
-            var sBuilder = new StringBuilder();
-
-            // Loop through each byte of the hashed data
-            // and format each one as a hexadecimal string.
-            foreach (byte t in data)
-            {
-                sBuilder.Append(t.ToString("x2"));
-            }
-
-            // Return the hexadecimal string.
-            return sBuilder.ToString();
         }
     }
 }

@@ -15,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BezyFB.BetaSerie;
+using BezyFB.EzTv;
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace BezyFB
@@ -24,13 +26,13 @@ namespace BezyFB
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly BetaSerie _bs;
+        private readonly BetaSerie.BetaSerie _bs;
         private readonly Utilisateur _user;
 
         public MainWindow()
         {
             InitializeComponent();
-            _bs = new BetaSerie();
+            _bs = new BetaSerie.BetaSerie();
             tb.Text = _bs.Error;
             _user = Utilisateur.Current();
         }
@@ -46,7 +48,7 @@ namespace BezyFB
         private void SetDl(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            var episode = ((Button) sender).CommandParameter as Episode;
+            var episode = ((Button)sender).CommandParameter as Episode;
 
             if (episode != null)
             {
@@ -65,7 +67,7 @@ namespace BezyFB
         private void SetSetSeen(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            var episode = ((Button) sender).CommandParameter as Episode;
+            var episode = ((Button)sender).CommandParameter as Episode;
 
             if (episode != null)
             {
@@ -75,11 +77,10 @@ namespace BezyFB
             Cursor = Cursors.Arrow;
         }
 
-        private
-            void DlStClick(object sender, RoutedEventArgs e)
+        private void DlStClick(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            var episode = ((Button) sender).CommandParameter as Episode;
+            var episode = ((Button)sender).CommandParameter as Episode;
 
             if (episode != null)
             {
@@ -122,25 +123,21 @@ namespace BezyFB
         {
             var zipInputStream = new ZipInputStream(zipStream);
             ZipEntry zipEntry = zipInputStream.GetNextEntry();
-            while (zipEntry != null)
+            if (zipEntry == null)
+                return new byte[0];
+            while (true)
             {
                 String entryFileName = zipEntry.Name;
 
                 if (entryFileName.Contains(".srt"))
                     return zipEntry.ExtraData;
             }
-            return new byte[0];
-        }
-
-        private void Eztv_Click(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine(Eztv.GetMagnetSerieEpisode("40", "S07E10"));
         }
 
         private void GetMagnetClick(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            var episode = ((Button) sender).CommandParameter as Episode;
+            var episode = ((Button)sender).CommandParameter as Episode;
 
             if (episode != null)
             {
@@ -149,7 +146,7 @@ namespace BezyFB
 
                 Clipboard.SetText(magnet);
 
-                Freebox.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+                Freebox.Freebox.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
             }
 
             Cursor = Cursors.Arrow;
@@ -157,11 +154,8 @@ namespace BezyFB
 
         private void Configuration_Click(object sender, RoutedEventArgs e)
         {
-        }
-
-        private void FB_Click(object sender, RoutedEventArgs e)
-        {
-            Freebox.GenererToken();
+            var c = new Configuration.Configuration(_bs);
+            c.ShowDialog();
         }
     }
 }
