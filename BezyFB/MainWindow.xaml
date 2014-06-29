@@ -15,7 +15,7 @@
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate DataType="bezyFb:rootShowsShow" ItemsSource="{Binding unseen}">
                     <HierarchicalDataTemplate.ItemTemplate>
-                        <HierarchicalDataTemplate DataType="bezyFb:Episode" ItemsSource="{Binding notes}">
+                        <HierarchicalDataTemplate DataType="bezyFb:Episode">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding user[0].downloaded}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0"></TextBlock>
                                 <TextBlock Text="{Binding code}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0"></TextBlock>
@@ -23,16 +23,16 @@
                                 <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray" VerticalAlignment="Center"></TextBlock>
                                 <TextBlock Text="{Binding date}" Foreground="Gray" VerticalAlignment="Center"></TextBlock>
                                 <TextBlock Text=")" Foreground="Gray" VerticalAlignment="Center"></TextBlock>
-                                <Button Click="DlStClick" CommandParameter="{Binding .}" Margin="5">
+                                <Button Click="DlStClick" CommandParameter="{Binding .}" Margin="5 1">
                                     <TextBlock Foreground="Gray" FontWeight="Bold" FontSize="10" FontFamily="Britannic Bold">SRT</TextBlock>
                                 </Button>
-                                <Button Click="GetMagnetClick" CommandParameter="{Binding .}" Margin="5">
+                                <Button Click="GetMagnetClick" CommandParameter="{Binding .}" Margin="5 1">
                                     <Image Source="Image/magnet.png" Width="16" Height="16" />
                                 </Button>
-                                <Button Click="SetDl" CommandParameter="{Binding .}" Margin="5">
+                                <Button Click="SetDl" CommandParameter="{Binding .}" Margin="5 1">
                                     <TextBlock Foreground="Gray" FontWeight="Bold" FontSize="10" FontFamily="Britannic Bold">DL</TextBlock>
                                 </Button>
-                                <Button Click="SetSetSeen" CommandParameter="{Binding .}" Margin="5">
+                                <Button Click="SetSetSeen" CommandParameter="{Binding .}" Margin="5 1">
                                     <Image Source="Image/eye.png" Width="16" Height="16" />
                                 </Button>
                             </StackPanel>

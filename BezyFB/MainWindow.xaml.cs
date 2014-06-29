@@ -75,15 +75,14 @@ namespace BezyFB
             Cursor = Cursors.Arrow;
         }
 
-        private
-            void DlStClick(object sender, RoutedEventArgs e)
+        private void DlStClick(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
             var episode = ((Button) sender).CommandParameter as Episode;
 
             if (episode != null)
             {
-                string pathFreebox = _user.GetSeriePath(episode.show_id, episode.show_title);
+                string pathFreebox = _user.GetSeriePath(episode.show_id, episode.show_title, true);
 
                 var str = _bs.GetPathSousTitre(episode.id);
                 if (str.subtitles.Any())
@@ -102,6 +101,9 @@ namespace BezyFB
 
                         string fileName = episode.show_title + "_" + episode.code + ".srt";
                         string pathreseau = pathFreebox + (episode.season == "1" ? "" : episode.season + "/");
+                        if (!Directory.Exists(pathreseau))
+                            pathreseau = pathFreebox;
+
                         foreach (var file in Directory.GetFiles(pathreseau))
                         {
                             if (file.Contains(episode.code))
@@ -149,7 +151,7 @@ namespace BezyFB
 
                 Clipboard.SetText(magnet);
 
-                Freebox.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+                Freebox.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title, false));
             }
 
             Cursor = Cursors.Arrow;

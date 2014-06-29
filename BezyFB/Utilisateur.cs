@@ -24,12 +24,13 @@ namespace BezyFB
         private readonly Dictionary<string, string> SeriePath;
         private readonly Dictionary<string, string> EztvPath;
 
-        public string GetSeriePath(string IdBetaserie, string nomSerie)
+        public string GetSeriePath(string IdBetaserie, string nomSerie, bool includeBasePath)
         {
+            string str = includeBasePath ? _PATH_DEFAUT_FB + _PATH_VIDEOS : "";
             if (SeriePath.ContainsKey(IdBetaserie))
-                return _PATH_DEFAUT_FB + _PATH_VIDEOS + SeriePath[IdBetaserie];
+                return str + SeriePath[IdBetaserie];
 
-            return _PATH_DEFAUT_FB + _PATH_VIDEOS + nomSerie + "\\";
+            return str + nomSerie + "\\";
         }
 
         public string GetIdEztv(string IdBetaserie, string nomSerie)
