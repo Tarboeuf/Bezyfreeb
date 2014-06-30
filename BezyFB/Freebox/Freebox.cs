@@ -35,15 +35,12 @@ namespace BezyFB.Freebox
                 {
                     var sessionRequest = (string)session["result"]["session_token"];
 
-                    var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/connection/",
+                    var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/connection/config/",
                         WebMethod.Get, "application/json", null, null,
                         new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
                     JObject j = JObject.Parse(json);
 
-                    if (!String.IsNullOrEmpty((string)j["result"]["ipv6"]))
-                        Settings.Default.IpFreebox = (string)j["result"]["ipv6"];
-                    else
-                        Settings.Default.IpFreebox = (string)j["result"]["ipv4"];
+                    Settings.Default.IpFreebox = (string)j["result"]["remote_access_ip"] + ":" + (string)j["result"]["remote_access_port"];
 
                     Settings.Default.Save();
                     return true;
