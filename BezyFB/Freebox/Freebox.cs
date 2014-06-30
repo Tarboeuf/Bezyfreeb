@@ -29,19 +29,26 @@ namespace BezyFB.Freebox
 
                 Settings.Default.TokenFreebox = token;
 
-                var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/connection/", WebMethod.Get, "application/json");
-                var j = JObject.Parse(json);
-
-                try
+                var challenge = (string)ChallengeRequest()["result"]["challenge"];
+                JObject session = SessionRequest(Settings.Default.AppId, Settings.Default.TokenFreebox, challenge);
+                if (session != null)
                 {
-                    Settings.Default.IpFreebox = (string)j["ipv4"];
-                }
-                catch (Exception)
-                {
-                    Settings.Default.IpFreebox = (string)j["ipv6"];
-                }
+                    var sessionRequest = (string)session["result"]["session_token"];
 
-                Settings.Default.Save();
+                    var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/connection/",
+                        WebMethod.Get, "application/json", null, null,
+                        new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
+                    JObject j = JObject.Parse(json);
+
+                    if (!String.IsNullOrEmpty((string)j["result"]["ipv6"]))
+                        Settings.Default.IpFreebox = (string)j["result"]["ipv6"];
+                    else
+                        Settings.Default.IpFreebox = (string)j["result"]["ipv4"];
+
+                    Settings.Default.Save();
+                    return true;
+                }
+                return false;
             }
             return true;
         }
