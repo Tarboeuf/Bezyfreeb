@@ -136,8 +136,17 @@ namespace BezyFB.Freebox
 
                 try
                 {
+                    var dir = directory.Split('\\', '/');
+
+                    var pathDir = Settings.Default.PathVideo;
+                    foreach (var s in dir)
+                    {
+                        CreerDossier(s, pathDir);
+                        pathDir += "/" + s;
+                    }
+
                     var path = System.Web.HttpUtility.UrlEncode(magnetUrl);
-                    string content = "download_url=" + path /*+ "\r\n&download_dir=" + Helper.EncodeTo64(Settings.Default.PathVideo + directory, Encoding.UTF8)*/;
+                    string content = "download_url=" + path + "\r\n&download_dir=" + Helper.EncodeTo64(Settings.Default.PathVideo + directory, Encoding.UTF8);
                     ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/downloads/add/", WebMethod.Post,
                         "application/x-www-form-urlencoded", content,
                         null,
