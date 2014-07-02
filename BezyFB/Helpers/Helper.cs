@@ -1,6 +1,7 @@
 ﻿// Créer par : pepinat
 // Le : 25-06-2014
 
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
@@ -10,33 +11,31 @@ namespace BezyFB.Helpers
 {
     public static class Helper
     {
-        public static string EncodeTo64(string toEncode, Encoding encoding = null)
+        public static string EncodeTo64(string toEncode)
         {
-            if (null == encoding)
-                encoding = Encoding.ASCII;
-            byte[] toEncodeAsBytes = encoding.GetBytes(toEncode);
+            byte[] toEncodeAsBytes = Encoding.UTF8.GetBytes(toEncode);
             string returnValue = System.Convert.ToBase64String(toEncodeAsBytes);
             return returnValue;
         }
 
         public static string GetMd5Hash(HashAlgorithm md5Hash, string input)
         {
-            // Convert the input string to a byte array and compute the hash.
             byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+            return string.Concat(data.Select(b => string.Format("{0:X2}", b).ToLower()));
+        }
 
-            // Create a new Stringbuilder to collect the bytes
-            // and create a string.
-            var sBuilder = new StringBuilder();
+        public static string Encode(string input, string key)
+        {
+            byte[] byteKey = Encoding.UTF8.GetBytes(key);
+            byte[] byteInput = Encoding.UTF8.GetBytes(input);
 
-            // Loop through each byte of the hashed data
-            // and format each one as a hexadecimal string.
-            foreach (byte t in data)
+            using (var hmacsha1 = new HMACSHA1(byteKey, false))
             {
-                sBuilder.Append(t.ToString("x2"));
-            }
+                hmacsha1.Initialize();
 
-            // Return the hexadecimal string.
-            return sBuilder.ToString();
+                byte[] hashmessage = hmacsha1.ComputeHash(byteInput);
+                return string.Concat(hashmessage.Select(b => string.Format("{0:X2}", b).ToLower()));
+            }
         }
     }
 
@@ -85,23 +84,24 @@ namespace BezyFB.Helpers
             dp.SetValue(IsUpdatingProperty, value);
         }
 
-        private static void OnPasswordPropertyChanged(DependencyObject sender,
-            DependencyPropertyChangedEventArgs e)
+        private static void OnPasswordPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            PasswordBox passwordBox = sender as PasswordBox;
-            passwordBox.PasswordChanged -= PasswordChanged;
-
-            if (!(bool)GetIsUpdating(passwordBox))
+            var passwordBox = sender as PasswordBox;
+            if (passwordBox != null)
             {
-                passwordBox.Password = (string)e.NewValue;
+                passwordBox.PasswordChanged -= PasswordChanged;
+
+                if (!GetIsUpdating(passwordBox))
+                {
+                    passwordBox.Password = (string)e.NewValue;
+                }
+                passwordBox.PasswordChanged += PasswordChanged;
             }
-            passwordBox.PasswordChanged += PasswordChanged;
         }
 
-        private static void Attach(DependencyObject sender,
-            DependencyPropertyChangedEventArgs e)
+        private static void Attach(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            PasswordBox passwordBox = sender as PasswordBox;
+            var passwordBox = sender as PasswordBox;
 
             if (passwordBox == null)
                 return;
@@ -119,10 +119,13 @@ namespace BezyFB.Helpers
 
         private static void PasswordChanged(object sender, RoutedEventArgs e)
         {
-            PasswordBox passwordBox = sender as PasswordBox;
-            SetIsUpdating(passwordBox, true);
-            SetPassword(passwordBox, passwordBox.Password);
-            SetIsUpdating(passwordBox, false);
+            var passwordBox = sender as PasswordBox;
+            if (passwordBox != null)
+            {
+                SetIsUpdating(passwordBox, true);
+                SetPassword(passwordBox, passwordBox.Password);
+                SetIsUpdating(passwordBox, false);
+            }
         }
     }
 }

@@ -14,12 +14,14 @@ namespace BezyFB.Configuration
     public sealed partial class Configuration : Window, INotifyPropertyChanged
     {
         private readonly BetaSerie.BetaSerie _bs;
+        private readonly Freebox.Freebox _freeboxApi;
 
-        public Configuration(BetaSerie.BetaSerie bs)
+        public Configuration(BetaSerie.BetaSerie bs, Freebox.Freebox freeboxApi)
         {
             InitializeComponent();
             DataContext = this;
             _bs = bs;
+            _freeboxApi = freeboxApi;
         }
 
         public String FreeboxIp
@@ -64,8 +66,10 @@ namespace BezyFB.Configuration
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Freebox.Freebox.TestToken(true);
-            FreeboxIp = Settings.Default.IpFreebox;
+            if (_freeboxApi.ConnectNewFreebox())
+                FreeboxIp = Settings.Default.IpFreebox;
+            else
+                Settings.Default.Reload();
         }
 
         private void Ok_Click(object sender, RoutedEventArgs e)
