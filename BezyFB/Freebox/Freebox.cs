@@ -65,7 +65,7 @@ namespace BezyFB.Freebox
                 {
                     var o = new JObject
                     {
-                        {"parent", Helper.EncodeTo64(parent)},
+                        {"parent", Helper.EncodeTo64(parent, Encoding.UTF8)},
                         {"dirname", directory}
                     };
 
@@ -89,27 +89,25 @@ namespace BezyFB.Freebox
             }
         }
 
-        public static void ls()
+        public static string Ls(string directory)
         {
-            if (!TestToken()) return;
+            if (!TestToken()) return null;
             var challenge = (string)ChallengeRequest()["result"]["challenge"];
 
             JObject session = SessionRequest(Settings.Default.AppId, Settings.Default.TokenFreebox, challenge);
 
             if (session != null)
             {
+                string json = null;
                 var sessionRequest = (string)session["result"]["session_token"];
-
                 try
                 {
-                    var t = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/fs/ls/" + Helper.EncodeTo64("/Disque dur"), WebMethod.Get,
-                        "application/x-www-form-urlencoded", null,
-                        null,
+                    json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/fs/ls/" + Helper.EncodeTo64(directory, Encoding.UTF8),
+                        WebMethod.Get, "application/x-www-form-urlencoded", null, null,
                         new List<Tuple<string, string>>
                         {
                             new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest)
                         });
-                    Console.WriteLine(JObject.Parse(t));
                 }
                 catch (Exception e)
                 {
@@ -120,7 +118,10 @@ namespace BezyFB.Freebox
                 ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/logout/", WebMethod.Post, null, null,
                     null,
                     new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
+
+                return JObject.Parse(json).ToString();
             }
+            return null;
         }
 
         public static void Download(String magnetUrl, string directory)
@@ -136,7 +137,7 @@ namespace BezyFB.Freebox
 
                 try
                 {
-                    var dir = directory.Split('\\', '/');
+                    var dir = directory.Split('\\', '/').Where(s => !String.IsNullOrEmpty(s));
 
                     var pathDir = Settings.Default.PathVideo;
                     foreach (var s in dir)
@@ -146,7 +147,7 @@ namespace BezyFB.Freebox
                     }
 
                     var path = System.Web.HttpUtility.UrlEncode(magnetUrl);
-                    string content = "download_url=" + path + "\r\n&download_dir=" + Helper.EncodeTo64(Settings.Default.PathVideo + directory, Encoding.UTF8);
+                    string content = "download_url=" + path + "\r\n&download_dir=" + Helper.EncodeTo64(pathDir, Encoding.UTF8);
                     ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/downloads/add/", WebMethod.Post,
                         "application/x-www-form-urlencoded", content,
                         null,
