@@ -50,6 +50,79 @@ namespace BezyFB.Freebox
             return true;
         }
 
+        public static void CreerDossier(string directory, string parent = "/Disque dur")
+        {
+            if (!TestToken()) return;
+            var challenge = (string)ChallengeRequest()["result"]["challenge"];
+
+            JObject session = SessionRequest(Settings.Default.AppId, Settings.Default.TokenFreebox, challenge);
+
+            if (session != null)
+            {
+                var sessionRequest = (string)session["result"]["session_token"];
+
+                try
+                {
+                    var o = new JObject
+                    {
+                        {"parent", Helper.EncodeTo64(parent)},
+                        {"dirname", directory}
+                    };
+
+                    ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/fs/mkdir/", WebMethod.Post,
+                        "application/x-www-form-urlencoded", o.ToString(),
+                        null,
+                        new List<Tuple<string, string>>
+                        {
+                            new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest)
+                        });
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
+                // Logout
+                ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/logout/", WebMethod.Post, null, null,
+                    null,
+                    new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
+            }
+        }
+
+        public static void ls()
+        {
+            if (!TestToken()) return;
+            var challenge = (string)ChallengeRequest()["result"]["challenge"];
+
+            JObject session = SessionRequest(Settings.Default.AppId, Settings.Default.TokenFreebox, challenge);
+
+            if (session != null)
+            {
+                var sessionRequest = (string)session["result"]["session_token"];
+
+                try
+                {
+                    var t = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/fs/ls/" + Helper.EncodeTo64("/Disque dur"), WebMethod.Get,
+                        "application/x-www-form-urlencoded", null,
+                        null,
+                        new List<Tuple<string, string>>
+                        {
+                            new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest)
+                        });
+                    Console.WriteLine(JObject.Parse(t));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
+                // Logout
+                ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/logout/", WebMethod.Post, null, null,
+                    null,
+                    new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", sessionRequest) });
+            }
+        }
+
         public static void Download(String magnetUrl, string directory)
         {
             if (!TestToken()) return;
@@ -64,8 +137,7 @@ namespace BezyFB.Freebox
                 try
                 {
                     var path = System.Web.HttpUtility.UrlEncode(magnetUrl);
-                    string content = "download_url=" + path + "\r\n&download_dir=" +
-                                     Helper.EncodeTo64(Settings.Default.PathVideo + directory, Encoding.UTF8);
+                    string content = "download_url=" + path /*+ "\r\n&download_dir=" + Helper.EncodeTo64(Settings.Default.PathVideo + directory, Encoding.UTF8)*/;
                     ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/downloads/add/", WebMethod.Post,
                         "application/x-www-form-urlencoded", content,
                         null,

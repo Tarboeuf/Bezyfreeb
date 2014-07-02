@@ -96,7 +96,7 @@ namespace BezyFB.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Disque dur/Vidéos/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Disque dur/Vidéos")]
         public string PathVideo {
             get {
                 return ((string)(this["PathVideo"]));

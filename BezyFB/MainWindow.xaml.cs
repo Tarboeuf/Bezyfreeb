@@ -15,7 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using BezyFB.BetaSerie;
+using BezyFB.Configuration;
 using BezyFB.EzTv;
 using ICSharpCode.SharpZipLib.Zip;
 
@@ -156,6 +156,34 @@ namespace BezyFB
         {
             var c = new Configuration.Configuration(_bs);
             c.ShowDialog();
+        }
+
+        private void Download_All_Click(object sender, RoutedEventArgs e)
+        {
+            var root = _bs.GetListeNouveauxEpisodesTest();
+
+            foreach (var rootShowsShow in root.shows)
+            {
+                foreach (var episode in rootShowsShow.unseen)
+                {
+                    try
+                    {
+                        var magnet = Eztv.GetMagnetSerieEpisode(_user.GetIdEztv(episode.show_id, episode.show_title), episode.code);
+                        Freebox.Freebox.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+
+                        var str = _bs.GetPathSousTitre(episode.id);
+                        if (str.subtitles.Any())
+                        {
+                            var sousTitre = str.subtitles.OrderByDescending(c => c.quality).Select(s => s.url).FirstOrDefault();
+
+                            Freebox.Freebox.Download(sousTitre, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            }
         }
     }
 }

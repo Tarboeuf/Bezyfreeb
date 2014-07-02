@@ -55,7 +55,7 @@ namespace BezyFB.BetaSerie
                 try
                 {
                     string link = ApiAdresse + Members + "/auth.xml" + EnteteArgs;
-                    link += "&login=" + Settings.Default.LoginBetaSerie + "&password=" + Helper.GetMd5Hash(MD5.Create(), Settings.Default.PwdBetaSerie);
+                    link += "&login=" + Settings.Default.LoginBetaSerie + "&password=" + Settings.Default.PwdBetaSerie;
                     Error = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
                     XDocument xdoc = XDocument.Parse(Error);

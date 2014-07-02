@@ -1,7 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Security.Cryptography;
 using System.Windows;
 using BezyFB.Annotations;
+using BezyFB.Helpers;
 using BezyFB.Properties;
 
 namespace BezyFB.Configuration
@@ -88,6 +90,14 @@ namespace BezyFB.Configuration
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void password_Click(object sender, RoutedEventArgs e)
+        {
+            var passForm = new PasswordForm();
+            passForm.ShowDialog();
+            if (null != passForm.Pwd)
+                PwdBetaSerie = Helper.GetMd5Hash(MD5.Create(), passForm.Pwd);
         }
     }
 }

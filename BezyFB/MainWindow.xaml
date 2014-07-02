@@ -9,6 +9,7 @@
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
             <Button Content="Charger la liste des non vus" Click="Button_Click" Margin="5" />
             <Button Content="Configuration" Click="Configuration_Click" Margin="5" />
+            <Button Content="Telecharger tout" Click="Download_All_Click" Margin="5" />
         </StackPanel>
         <TextBlock TextWrapping="WrapWithOverflow" Name="tb" DockPanel.Dock="Top"></TextBlock>
         <TreeView Name="tv" DockPanel.Dock="Bottom">
