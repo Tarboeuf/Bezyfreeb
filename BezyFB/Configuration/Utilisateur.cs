@@ -52,9 +52,10 @@ namespace BezyFB.Configuration
 
             _eztvPath = new Dictionary<string, string>
                 {
-                    /*{"17", "40"},
+                    {"17", "40"},
                     {"1275", "428"},
-                    {"5579", "854"}*/
+                    {"5579", "854"},
+                    {"652", "56546"}
                 };
         }
     }

@@ -169,14 +169,21 @@ namespace BezyFB
             {
                 foreach (var episode in rootShowsShow.unseen)
                 {
-                    var magnet = Eztv.GetMagnetSerieEpisode(_user.GetIdEztv(episode.show_id, episode.show_title), episode.code);
-                    _freeboxApi.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
-
-                    var str = _bs.GetPathSousTitre(episode.id).subtitles;
-                    if (str.Any())
+                    try
                     {
-                        var sousTitre = str.OrderByDescending(c => c.quality).Select(s => s.url).FirstOrDefault();
-                        _freeboxApi.Download(sousTitre, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+                        var magnet = Eztv.GetMagnetSerieEpisode(_user.GetIdEztv(episode.show_id, episode.show_title), episode.code);
+                        _freeboxApi.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+
+                        var str = _bs.GetPathSousTitre(episode.id).subtitles;
+                        if (str.Any())
+                        {
+                            var sousTitre = str.OrderByDescending(c => c.quality).Select(s => s.url).FirstOrDefault();
+                            _freeboxApi.Download(sousTitre, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
                     }
                 }
             }
