@@ -84,7 +84,7 @@ namespace BezyFB.Freebox
 
         public string Deconnexion()
         {
-²            try
+            try
             {
                 if (String.IsNullOrEmpty(SessionToken))
                     GenererSessionToken();
