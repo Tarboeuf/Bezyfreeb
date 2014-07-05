@@ -84,13 +84,20 @@ namespace BezyFB.Freebox
 
         public string Deconnexion()
         {
-            if (String.IsNullOrEmpty(SessionToken))
-                GenererSessionToken();
+²            try
+            {
+                if (String.IsNullOrEmpty(SessionToken))
+                    GenererSessionToken();
 
-            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/logout/", WebMethod.Post, null, null,
-                null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+                var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/logout/", WebMethod.Post, null, null,
+                    null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
-            return JObject.Parse(json).ToString();
+                return JObject.Parse(json).ToString();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public string CreerDossier(string directory, string parent)
