@@ -1,0 +1,48 @@
+﻿<Window x:Class="BezyFB.Configuration.Configuration"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:helpers="clr-namespace:BezyFB.Helpers"
+        xmlns:configuration="clr-namespace:BezyFB.Configuration"
+        mc:Ignorable="d"
+        Title="Configuration" Height="300" Width="300"
+        d:DataContext="{d:DesignInstance configuration:Configuration}">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <GroupBox Header="Freebox">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Freebox Ip : "></Label>
+                        <Label Content="{Binding FreeboxIp}"></Label>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Path Video : "></Label>
+                        <Label Content="{Binding PathVideo}"></Label>
+                    </StackPanel>
+                    <Button Content="Synchroniser" Click="Button_Click"></Button>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="BetaSerie">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Login : "></Label>
+                        <TextBox Text="{Binding LoginBetaSerie, UpdateSourceTrigger=PropertyChanged}" MinWidth="200"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Password : "></Label>
+                        <PasswordBox PasswordChar="*" MinWidth="200"
+                                     helpers:PasswordHelper.Attach="True"
+                                     helpers:PasswordHelper.Password="{Binding PwdBetaSerie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        </PasswordBox>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Ok" Click="Ok_Click"></Button>
+
+                <Button Content="Annuler" Click="Cancel_Click"></Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

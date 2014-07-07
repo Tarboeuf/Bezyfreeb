@@ -14,10 +14,25 @@
     <Setting Name="AppId" Type="System.String" Scope="User">
       <Value Profile="(Default)">fr.freebox.bezyfreeb</Value>
     </Setting>
-    <Setting Name="TokensFreebox" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="TokenFreebox" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="Setting" Type="System.String" Scope="User">
+    <Setting Name="IpFreebox" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://mafreebox.freebox.fr</Value>
+    </Setting>
+    <Setting Name="PathVideo" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Disque dur/Vidéos/</Value>
+    </Setting>
+    <Setting Name="LoginBetaSerie" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PwdBetaSerie" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LoginEzTv" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PwdEzTv" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

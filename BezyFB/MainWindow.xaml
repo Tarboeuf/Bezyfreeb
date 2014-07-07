@@ -1,6 +1,7 @@
 ﻿<Window x:Class="BezyFB.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:bezyFb="clr-namespace:BezyFB"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:bezyFb="clr-namespace:BezyFB"
         Title="MainWindow" Height="350" Width="525">
     <Window.Resources>
     </Window.Resources>
@@ -8,7 +9,6 @@
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
             <Button Content="Charger la liste des non vus" Click="Button_Click" Margin="5" />
             <Button Content="Configuration" Click="Configuration_Click" Margin="5" />
-            <Button Content="Test FB" Click="FB_Click" Margin="5" />
         </StackPanel>
         <TextBlock TextWrapping="WrapWithOverflow" Name="tb" DockPanel.Dock="Top"></TextBlock>
         <TreeView Name="tv" DockPanel.Dock="Bottom">
