@@ -15,7 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using BezyFB.BetaSerie;
+using BezyFB.Configuration;
 using BezyFB.EzTv;
 using ICSharpCode.SharpZipLib.Zip;
 
@@ -29,12 +29,15 @@ namespace BezyFB
         private readonly BetaSerie.BetaSerie _bs;
         private readonly Utilisateur _user;
 
+        private readonly Freebox.Freebox _freeboxApi;
+
         public MainWindow()
         {
             InitializeComponent();
             _bs = new BetaSerie.BetaSerie();
             tb.Text = _bs.Error;
             _user = Utilisateur.Current();
+            _freeboxApi = new Freebox.Freebox();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -149,7 +152,7 @@ namespace BezyFB
 
                 Clipboard.SetText(magnet);
 
-                Freebox.Freebox.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+                _freeboxApi.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
             }
 
             Cursor = Cursors.Arrow;
@@ -157,8 +160,41 @@ namespace BezyFB
 
         private void Configuration_Click(object sender, RoutedEventArgs e)
         {
-            var c = new Configuration.Configuration(_bs);
+            var c = new Configuration.Configuration(_bs, _freeboxApi);
             c.ShowDialog();
+        }
+
+        private void Download_All_Click(object sender, RoutedEventArgs e)
+        {
+            var root = _bs.GetListeNouveauxEpisodesTest();
+
+            foreach (var rootShowsShow in root.shows)
+            {
+                foreach (var episode in rootShowsShow.unseen)
+                {
+                    try
+                    {
+                        var magnet = Eztv.GetMagnetSerieEpisode(_user.GetIdEztv(episode.show_id, episode.show_title), episode.code);
+                        _freeboxApi.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+
+                        var str = _bs.GetPathSousTitre(episode.id).subtitles;
+                        if (str.Any())
+                        {
+                            var sousTitre = str.OrderByDescending(c => c.quality).Select(s => s.url).FirstOrDefault();
+                            _freeboxApi.Download(sousTitre, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+        }
+
+        private void MainWindow_OnClosed(object sender, EventArgs e)
+        {
+            _freeboxApi.Deconnexion();
         }
     }
 }

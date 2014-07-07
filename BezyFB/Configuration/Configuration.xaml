@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:helpers="clr-namespace:BezyFB.Helpers"
         xmlns:configuration="clr-namespace:BezyFB.Configuration"
         mc:Ignorable="d"
         Title="Configuration" Height="300" Width="300"
@@ -31,10 +30,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Password : "></Label>
-                        <PasswordBox PasswordChar="*" MinWidth="200"
-                                     helpers:PasswordHelper.Attach="True"
-                                     helpers:PasswordHelper.Password="{Binding PwdBetaSerie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                        </PasswordBox>
+                        <Button Content="Changer de password" Click="password_Click"></Button>
                     </StackPanel>
                 </StackPanel>
             </GroupBox>

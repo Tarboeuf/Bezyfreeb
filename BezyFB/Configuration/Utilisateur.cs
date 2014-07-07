@@ -1,14 +1,11 @@
 ﻿// Créer par : pepinat
 // Le : 22-06-2014
 
-using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using BezyFB.EzTv;
-using BezyFB.Properties;
 
-namespace BezyFB
+namespace BezyFB.Configuration
 {
     public class Utilisateur
     {
@@ -48,16 +45,17 @@ namespace BezyFB
         {
             _seriePath = new Dictionary<string, string>
             {
-                {"17", "Californication/"},
+                /*{"17", "Californication/"},
                 {"1275", "Walking dead/"},
-                {"5579", "Devious Maid/"}
+                {"5579", "Devious Maid/"}*/
             };
 
             _eztvPath = new Dictionary<string, string>
                 {
                     {"17", "40"},
                     {"1275", "428"},
-                    {"5579", "854"}
+                    {"5579", "854"},
+                    {"652", "56546"}
                 };
         }
     }

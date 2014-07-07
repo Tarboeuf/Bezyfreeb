@@ -48,8 +48,6 @@ namespace BezyFB.Helpers
                 using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                 {
                     streamWriter.Write(content);
-                    streamWriter.Flush();
-                    streamWriter.Close();
                 }
             }
 

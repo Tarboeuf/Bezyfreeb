@@ -21,7 +21,7 @@
       <Value Profile="(Default)">http://mafreebox.freebox.fr</Value>
     </Setting>
     <Setting Name="PathVideo" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Disque dur/Vidéos/</Value>
+      <Value Profile="(Default)">/Disque dur/Vidéos</Value>
     </Setting>
     <Setting Name="LoginBetaSerie" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
