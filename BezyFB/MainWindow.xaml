@@ -41,6 +41,9 @@
                         </HierarchicalDataTemplate>
                     </HierarchicalDataTemplate.ItemTemplate>
                     <StackPanel Orientation="Horizontal">
+                        <Button Click="SettingsClick" CommandParameter="{Binding .}" Margin="5 1">
+                            <Image Source="Image/settings.png" Width="16" Height="16" />
+                        </Button>
                         <TextBlock Text="{Binding title}" ToolTip="{Binding id}"></TextBlock>
                         <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray"></TextBlock>
                         <TextBlock Text="{Binding remaining}" Foreground="Gray"></TextBlock>

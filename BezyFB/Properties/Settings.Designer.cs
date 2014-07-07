@@ -25,9 +25,10 @@ namespace BezyFB.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection ShowConfigurationList {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ShowConfigurationList {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["ShowConfigurationList"]));
+                return ((string)(this["ShowConfigurationList"]));
             }
             set {
                 this["ShowConfigurationList"] = value;

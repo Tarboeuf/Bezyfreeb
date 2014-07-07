@@ -1,0 +1,43 @@
+﻿<Window x:Class="BezyFB.Configuration.WindowShow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:configuration="clr-namespace:BezyFB.Configuration" mc:Ignorable="d"
+        Title="WindowShow" Height="400" Width="400" d:DataContext="{d:DesignInstance configuration:ShowConfiguration}">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <DockPanel Margin="5">
+                <Label DockPanel.Dock="Left" Content="ShowName : "></Label>
+                <Label DockPanel.Dock="Left" Content="{Binding ShowName}"></Label>
+            </DockPanel>
+            <DockPanel Margin="5">
+                <Label DockPanel.Dock="Left" Content="PathFreebox : "></Label>
+                <TextBox DockPanel.Dock="Left" Text="{Binding PathFreebox}"></TextBox>
+            </DockPanel>
+            <DockPanel Margin="5">
+                <Label DockPanel.Dock="Left" Content="PathReseau : "></Label>
+                <TextBox DockPanel.Dock="Left" Text="{Binding PathReseau}"></TextBox>
+            </DockPanel>
+            <DockPanel Margin="5">
+                <Label DockPanel.Dock="Left" Content="IdEztv : "></Label>
+                <TextBox DockPanel.Dock="Left" Text="{Binding IdEztv}" Margin="5"></TextBox>
+                <Button DockPanel.Dock="Right" Click="LoadSerieEZTV" Content="Search" Margin="5"></Button>
+                <ComboBox DockPanel.Dock="Left" Name="comboSeries" DisplayMemberPath="Name" SelectionChanged="ComboSeries_OnSelectionChanged" />
+            </DockPanel>
+            <DockPanel Margin="5">
+                <Label DockPanel.Dock="Left" Content="HasSubtitle : "></Label>
+                <CheckBox IsChecked="{Binding HasSubtitle}"></CheckBox>
+            </DockPanel>
+            <DockPanel Margin="5">
+                <Label DockPanel.Dock="Left" Content="IsDownloadable : "></Label>
+                <CheckBox DockPanel.Dock="Left" IsChecked="{Binding IsDownloadable}"></CheckBox>
+            </DockPanel>
+            <DockPanel Margin="5">
+                <Label DockPanel.Dock="Left" Content="ManageSeasonFolder : "></Label>
+                <CheckBox DockPanel.Dock="Left" IsChecked="{Binding ManageSeasonFolder}"></CheckBox>
+            </DockPanel>
+            <DockPanel Margin="0 5">
+                <Button DockPanel.Dock="Left" Content="Ok" Click="Ok_Click" Margin="5" IsDefault="True"></Button>
+                <Button DockPanel.Dock="Left" Content="Annuler" IsCancel="True" Click="Cancel_Click" Margin="5"></Button>
+            </DockPanel>
+        </StackPanel>
+    </Grid>
+</Window>

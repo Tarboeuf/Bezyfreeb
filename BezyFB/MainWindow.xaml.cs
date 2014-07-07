@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BezyFB.Configuration;
 using BezyFB.EzTv;
+using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace BezyFB
@@ -51,7 +52,7 @@ namespace BezyFB
         private void SetDl(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            var episode = ((Button)sender).CommandParameter as Episode;
+            var episode = ((Button) sender).CommandParameter as Episode;
 
             if (episode != null)
             {
@@ -70,7 +71,7 @@ namespace BezyFB
         private void SetSetSeen(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            var episode = ((Button)sender).CommandParameter as Episode;
+            var episode = ((Button) sender).CommandParameter as Episode;
 
             if (episode != null)
             {
@@ -83,11 +84,12 @@ namespace BezyFB
         private void DlStClick(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            var episode = ((Button)sender).CommandParameter as Episode;
+            var episode = ((Button) sender).CommandParameter as Episode;
 
             if (episode != null)
             {
-                string pathFreebox = _user.GetSeriePath(episode.show_id, episode.show_title);
+                var userShow = _user.GetSerie(episode.show_id);
+                string pathFreebox = userShow.PathReseau;
 
                 var str = _bs.GetPathSousTitre(episode.id);
                 if (str.subtitles.Any())
@@ -98,15 +100,20 @@ namespace BezyFB
                     if (sousTitre != null)
                     {
                         var st = wc.DownloadData(sousTitre);
-                        if (sousTitre.EndsWith("zip"))
+                        try
                         {
                             Stream stream = new MemoryStream(st);
-                            st = UnzipFromStream(stream);
+                            var st2 = UnzipFromStream(stream);
+                            if (st2 != null)
+                                st = st2;
+                        }
+                        catch
+                        {
                         }
 
                         string fileName = episode.show_title + "_" + episode.code + ".srt";
-                        string pathreseau = pathFreebox + (episode.season == "1" ? "" : episode.season + "/");
-                        if (!Directory.Exists(pathreseau))
+                        string pathreseau = pathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : "");
+                        if (!Directory.Exists(pathFreebox))
                             pathreseau = pathFreebox;
 
                         foreach (var file in Directory.GetFiles(pathreseau))
@@ -136,23 +143,39 @@ namespace BezyFB
                 String entryFileName = zipEntry.Name;
 
                 if (entryFileName.Contains(".srt"))
-                    return zipEntry.ExtraData;
+                {
+                    int file_size = (int) zipEntry.Size;
+                    byte[] blob = new byte[(int) zipEntry.Size];
+                    int bytes_read = 0;
+                    int offset = 0;
+
+                    while ((bytes_read = zipInputStream.Read(blob, 0, file_size)) != 0)
+                    {
+                        offset += bytes_read;
+                    }
+
+                    //closing every thing
+                    zipInputStream.Close();
+                    return blob;
+                }
+
+                zipEntry = zipInputStream.GetNextEntry();
             }
         }
 
         private void GetMagnetClick(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            var episode = ((Button)sender).CommandParameter as Episode;
+            var episode = ((Button) sender).CommandParameter as Episode;
 
             if (episode != null)
             {
-                var magnet = Eztv.GetMagnetSerieEpisode(_user.GetIdEztv(episode.show_id, episode.show_title), episode.code);
+                var magnet = Eztv.GetMagnetSerieEpisode(_user.GetSerie(episode.show_id).IdEztv, episode.code);
                 Console.WriteLine(magnet);
 
                 Clipboard.SetText(magnet);
 
-                _freeboxApi.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+                _freeboxApi.Download(magnet, _user.GetSerie(episode.show_id).PathFreebox + "/" + (_user.GetSerie(episode.show_id).ManageSeasonFolder ? episode.season : ""));
             }
 
             Cursor = Cursors.Arrow;
@@ -174,14 +197,14 @@ namespace BezyFB
                 {
                     try
                     {
-                        var magnet = Eztv.GetMagnetSerieEpisode(_user.GetIdEztv(episode.show_id, episode.show_title), episode.code);
-                        _freeboxApi.Download(magnet, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+                        var magnet = Eztv.GetMagnetSerieEpisode(_user.GetSerie(episode.show_id).IdEztv, episode.code);
+                        _freeboxApi.Download(magnet, _user.GetSerie(episode.show_id).PathFreebox + "/" + (_user.GetSerie(episode.show_id).ManageSeasonFolder ? episode.season : ""));
 
                         var str = _bs.GetPathSousTitre(episode.id).subtitles;
                         if (str.Any())
                         {
                             var sousTitre = str.OrderByDescending(c => c.quality).Select(s => s.url).FirstOrDefault();
-                            _freeboxApi.Download(sousTitre, Utilisateur.Current().GetSeriePath(episode.show_id, episode.show_title));
+                            _freeboxApi.Download(sousTitre, _user.GetSerie(episode.show_id).PathFreebox + "/" + (_user.GetSerie(episode.show_id).ManageSeasonFolder ? episode.season : ""));
                         }
                     }
                     catch (Exception ex)
@@ -195,6 +218,19 @@ namespace BezyFB
         private void MainWindow_OnClosed(object sender, EventArgs e)
         {
             _freeboxApi.Deconnexion();
+        }
+
+        private void SettingsClick(object sender, RoutedEventArgs e)
+        {
+            var s = ((Button) sender).CommandParameter as rootShowsShow;
+
+            if (s != null)
+            {
+                if ((new WindowShow() {DataContext = _user.GetSerie(s.id, s)}).ShowDialog() ?? false)
+                {
+                    _user.SerializeElement();
+                }
+            }
         }
     }
 }

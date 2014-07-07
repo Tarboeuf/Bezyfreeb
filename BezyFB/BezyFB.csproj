@@ -84,6 +84,9 @@
     <Compile Include="Configuration\Password.xaml.cs">
       <DependentUpon>Password.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Configuration\WindowShow.xaml.cs">
+      <DependentUpon>WindowShow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\ApiConnector.cs" />
     <Compile Include="EzTv\Eztv.cs" />
     <Compile Include="Freebox\Freebox.cs" />
@@ -101,6 +104,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Configuration\Password.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Configuration\WindowShow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -153,6 +160,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Image\eye.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\settings.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
