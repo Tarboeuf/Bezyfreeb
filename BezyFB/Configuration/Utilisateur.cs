@@ -1,6 +1,7 @@
 ﻿// Créer par : pepinat
 // Le : 22-06-2014
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -23,7 +24,7 @@ namespace BezyFB.Configuration
 
         public void SerializeElement()
         {
-            XmlSerializer ser = new XmlSerializer(typeof (List<ShowConfiguration>));
+            XmlSerializer ser = new XmlSerializer(typeof(List<ShowConfiguration>));
 
             StringWriter writer = new StringWriter();
             ser.Serialize(writer, Shows);
@@ -36,7 +37,7 @@ namespace BezyFB.Configuration
 
         private Utilisateur()
         {
-            XmlSerializer serializer = new XmlSerializer(typeof (List<ShowConfiguration>));
+            XmlSerializer serializer = new XmlSerializer(typeof(List<ShowConfiguration>));
 
             XmlReaderSettings settings = new XmlReaderSettings();
 
@@ -47,7 +48,7 @@ namespace BezyFB.Configuration
                 {
                     using (XmlReader xmlReader = XmlReader.Create(textReader, settings))
                     {
-                        Shows = (List<ShowConfiguration>) serializer.Deserialize(xmlReader);
+                        Shows = (List<ShowConfiguration>)serializer.Deserialize(xmlReader);
                     }
                 }
             }
@@ -55,27 +56,36 @@ namespace BezyFB.Configuration
                 Shows = new List<ShowConfiguration>();
         }
 
-        public ShowConfiguration GetSerie(string showId, rootShowsShow showBS = null)
+        private ShowConfiguration GetSerie(String idBetaSerie, String nomSerie)
         {
-            foreach (var showConfiguration in Shows)
-            {
-                if (showConfiguration.IdBetaSerie == showId)
-                    return showConfiguration;
-            }
-            if (null == showBS)
-                return null;
+            var showConfiguration = Shows.FirstOrDefault(s => s.IdBetaSerie == idBetaSerie);
 
-            ShowConfiguration show = new ShowConfiguration()
-                {
-                    HasSubtitle = true,
-                    IdBetaSerie = showId,
-                    IsDownloadable = true,
-                    ManageSeasonFolder = true,
-                    PathFreebox = showBS.title,
-                    ShowName = showBS.title
-                };
+            if (showConfiguration != null)
+                return showConfiguration;
+
+            var show = new ShowConfiguration
+            {
+                HasSubtitle = true,
+                IdBetaSerie = idBetaSerie,
+                IsDownloadable = true,
+                ManageSeasonFolder = true,
+                PathFreebox = nomSerie,
+                ShowName = nomSerie,
+                IdEztv = new Eztv().GetListShow().Where(c => String.Equals(nomSerie, c.Name)).Select(c => c.Name).FirstOrDefault()
+            };
+
             Shows.Add(show);
             return show;
+        }
+
+        public ShowConfiguration GetSerie(Episode episode)
+        {
+            return GetSerie(episode.show_id, episode.show_title);
+        }
+
+        public object GetSerie(rootShowsShow rootShow)
+        {
+            return GetSerie(rootShow.id, rootShow.title);
         }
     }
 

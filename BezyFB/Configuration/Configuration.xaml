@@ -12,43 +12,44 @@
             <GroupBox Header="Freebox">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Freebox Ip : "></Label>
-                        <Label Content="{Binding FreeboxIp}"></Label>
+                        <Label Content="Freebox Ip : " />
+                        <Label Content="{Binding FreeboxIp}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Path Video : "></Label>
-                        <Label Content="{Binding PathVideo}"></Label>
+                        <Label Content="Path Video : " />
+                        <Label Content="{Binding PathVideo}" />
                     </StackPanel>
-                    <Button Content="Synchroniser" Click="Button_Click"></Button>
+                    <Button Content="Synchroniser" Click="Button_Click" />
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="BetaSerie">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Login : "></Label>
-                        <TextBox Text="{Binding LoginBetaSerie, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" Margin="5"></TextBox>
+                        <Label Content="Login : " />
+                        <TextBox Text="{Binding LoginBetaSerie, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" Margin="5" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Password : "></Label>
-                        <Button Content="Changer de password" Click="password_Click" Margin="5"></Button>
+                        <Label Content="Password : " />
+                        <Button Content="Changer de password" Click="password_Click" Margin="5" />
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Autre">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Path pour copie locale : "></Label>
-                        <TextBox Text="{Binding PathLocal}" MinWidth="200" Margin="5" VerticalAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <Label Content="Path pour copie locale : " />
+                        <TextBox Text="{Binding PathLocal}" MinWidth="200" Margin="5" VerticalAlignment="Center" VerticalContentAlignment="Center" />
                         <Button Click="pathLocalclick" Margin="5">
                             <Image Source="..\Image\dossier.jpg" Width="24" Height="24" />
                         </Button>
                     </StackPanel>
+                    <CheckBox Content="Affichage erreurs dans des MessagesBox" IsChecked="{Binding AffichageErreurMessageBox}" />
                 </StackPanel>
             </GroupBox>
             <StackPanel Orientation="Horizontal">
-                <Button Content="Ok" Click="Ok_Click" Width="50" Margin="5"></Button>
+                <Button Content="Ok" Click="Ok_Click" Width="50" Margin="5" />
 
-                <Button Content="Annuler" Click="Cancel_Click" Width="50" Margin="5"></Button>
+                <Button Content="Annuler" Click="Cancel_Click" Width="50" Margin="5" />
             </StackPanel>
         </StackPanel>
     </Grid>

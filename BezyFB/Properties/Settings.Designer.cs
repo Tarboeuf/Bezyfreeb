@@ -166,5 +166,17 @@ namespace BezyFB.Properties {
                 this["PathNonReseau"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AffichageErreurMessageBox {
+            get {
+                return ((bool)(this["AffichageErreurMessageBox"]));
+            }
+            set {
+                this["AffichageErreurMessageBox"] = value;
+            }
+        }
     }
 }

@@ -17,19 +17,22 @@ namespace BezyFB.EzTv
         {
             string html = ApiConnector.Call(Url + "shows/" + serie + "/", WebMethod.Get, null, null, "text/xml");
 
-            var reg = new Regex(@"magnet:\?xt=urn:[^""]*");
-
-            var collec = reg.Matches(html);
-            foreach (Match match in collec)
+            if (html != null)
             {
-                if (match.Value.Contains(episode) && !match.Value.Contains("720p"))
-                    return match.Value;
-            }
+                var reg = new Regex(@"magnet:\?xt=urn:[^""]*");
 
-            foreach (Match match in collec)
-            {
-                if (match.Value.Contains(episode))
-                    return match.Value;
+                var collec = reg.Matches(html);
+                foreach (Match match in collec)
+                {
+                    if (match.Value.Contains(episode) && !match.Value.Contains("720p"))
+                        return match.Value;
+                }
+
+                foreach (Match match in collec)
+                {
+                    if (match.Value.Contains(episode))
+                        return match.Value;
+                }
             }
 
             return html;

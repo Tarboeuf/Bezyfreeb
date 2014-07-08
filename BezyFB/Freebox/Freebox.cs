@@ -55,7 +55,10 @@ namespace BezyFB.Freebox
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                if (Settings.Default.AffichageErreurMessageBox)
+                    MessageBox.Show(ex.Message);
+                else
+                    Console.WriteLine(ex.Message);
                 return false;
             }
             return true;
@@ -123,7 +126,10 @@ namespace BezyFB.Freebox
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                if (Settings.Default.AffichageErreurMessageBox)
+                    MessageBox.Show(ex.Message);
+                else
+                    Console.WriteLine(ex.Message);
                 return null;
             }
         }
@@ -173,7 +179,10 @@ namespace BezyFB.Freebox
             var jsonObject = JObject.Parse(json);
             if (!(bool)jsonObject["success"])
             {
-                MessageBox.Show((string)jsonObject["msg"]);
+                if (Settings.Default.AffichageErreurMessageBox)
+                    MessageBox.Show((string)jsonObject["msg"]);
+                else
+                    Console.WriteLine((string)jsonObject["msg"]);
                 return null;
             }
 
@@ -185,8 +194,16 @@ namespace BezyFB.Freebox
             if (String.IsNullOrEmpty(SessionToken))
                 GenererSessionToken();
 
+            var pathDir = Settings.Default.PathVideo;
+
+            foreach (var s in outputDir.Split('\\', '/').Where(s => !String.IsNullOrEmpty(s)))
+            {
+                CreerDossier(s, pathDir);
+                pathDir += "/" + s;
+            }
+
             var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v1/upload/", WebMethod.Post, "application/json",
-                new JObject { { "dirname", Helper.EncodeTo64(Settings.Default.PathVideo + "/" + outputDir) }, { "upload_name", outputFileName } }.ToString(), null,
+                new JObject { { "dirname", Helper.EncodeTo64(pathDir) }, { "upload_name", outputFileName } }.ToString(), null,
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
             try
@@ -208,7 +225,10 @@ namespace BezyFB.Freebox
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                if (Settings.Default.AffichageErreurMessageBox)
+                    MessageBox.Show(ex.Message);
+                else
+                    Console.WriteLine(ex.Message);
             }
 
             return JObject.Parse(json).ToString();
@@ -225,7 +245,10 @@ namespace BezyFB.Freebox
             var jsonObject = JObject.Parse(json);
             if (!(bool)jsonObject["success"])
             {
-                MessageBox.Show((string)jsonObject["msg"]);
+                if (Settings.Default.AffichageErreurMessageBox)
+                    MessageBox.Show((string)jsonObject["msg"]);
+                else
+                    Console.WriteLine((string)jsonObject["msg"]);
                 return null;
             }
             return ((string)jsonObject["result"]["name"]);

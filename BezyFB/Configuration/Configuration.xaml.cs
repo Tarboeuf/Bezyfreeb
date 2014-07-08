@@ -66,6 +66,16 @@ namespace BezyFB.Configuration
             }
         }
 
+        public bool AffichageErreurMessageBox
+        {
+            get { return Settings.Default.AffichageErreurMessageBox; }
+            set
+            {
+                Settings.Default.AffichageErreurMessageBox = value;
+                OnPropertyChanged("AffichageErreurMessageBox");
+            }
+        }
+
         public string PwdBetaSerie
         {
             get { return Settings.Default.PwdBetaSerie; }

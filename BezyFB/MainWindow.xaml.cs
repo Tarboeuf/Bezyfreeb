@@ -90,7 +90,7 @@ namespace BezyFB
             Cursor = Cursors.Wait;
             if (episode != null)
             {
-                var userShow = _user.GetSerie(episode.show_id);
+                var userShow = _user.GetSerie(episode);
                 string pathFreebox = userShow.PathReseau;
 
                 var str = _bs.GetPathSousTitre(episode.id);
@@ -111,7 +111,10 @@ namespace BezyFB
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show(ex.Message);
+                            if (Settings.Default.AffichageErreurMessageBox)
+                                MessageBox.Show(ex.Message);
+                            else
+                                Console.WriteLine(ex.Message);
                         }
 
                         string fileName = episode.show_title + "_" + episode.code + ".srt";
@@ -165,7 +168,10 @@ namespace BezyFB
                 }
                 else
                 {
-                    MessageBox.Show("Aucun sous titre disponible");
+                    if (Settings.Default.AffichageErreurMessageBox)
+                        MessageBox.Show("Aucun sous titre disponible");
+                    else
+                        Console.WriteLine("Aucun sous titre disponible");
                 }
             }
             Cursor = Cursors.Arrow;
@@ -213,14 +219,10 @@ namespace BezyFB
             Cursor = Cursors.Wait;
             if (episode != null)
             {
-                var magnet = Eztv.GetMagnetSerieEpisode(_user.GetSerie(episode.show_id).IdEztv, episode.code);
-                Console.WriteLine(magnet);
-
-                Clipboard.SetText(magnet);
-
-                episode.IdDownload = _freeboxApi.Download(magnet,
-                    _user.GetSerie(episode.show_id).PathFreebox + "/" +
-                    (_user.GetSerie(episode.show_id).ManageSeasonFolder ? episode.season : ""));
+                var magnet = Eztv.GetMagnetSerieEpisode(_user.GetSerie(episode).IdEztv, episode.code);
+                if (magnet != null)
+                    episode.IdDownload = _freeboxApi.Download(magnet, _user.GetSerie(episode).PathFreebox + "/" +
+                        (_user.GetSerie(episode).ManageSeasonFolder ? episode.season : ""));
             }
 
             Cursor = Cursors.Arrow;
@@ -247,7 +249,10 @@ namespace BezyFB
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        if (Settings.Default.AffichageErreurMessageBox)
+                            MessageBox.Show(ex.Message);
+                        else
+                            Console.WriteLine(ex.Message);
                     }
                 }
             }
@@ -264,7 +269,7 @@ namespace BezyFB
 
             if (s != null)
             {
-                if ((new WindowShow() { DataContext = _user.GetSerie(s.id, s) }).ShowDialog() ?? false)
+                if ((new WindowShow { DataContext = _user.GetSerie(s) }).ShowDialog() ?? false)
                 {
                     _user.SerializeElement();
                 }

@@ -11,7 +11,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using BezyFB.EzTv;
-using BezyFB.Properties;
 
 namespace BezyFB.Configuration
 {
@@ -23,18 +22,17 @@ namespace BezyFB.Configuration
         public WindowShow()
         {
             InitializeComponent();
-            DataContextChanged += new DependencyPropertyChangedEventHandler(WindowShow_DataContextChanged);
+            DataContextChanged += WindowShow_DataContextChanged;
         }
 
         private void WindowShow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (string.IsNullOrEmpty(Show.IdEztv))
+            if (string.IsNullOrEmpty(ShowConfig.IdEztv))
             {
-                Eztv ez = new Eztv();
+                var ez = new Eztv();
                 var liste = ez.GetListShow().ToList();
                 comboSeries.ItemsSource = liste;
-
-                Show.IdEztv = liste.Where(c => Show.ShowName.ToLower() == c.Name.ToLower()).Select(c => c.Name).FirstOrDefault();
+                ShowConfig.IdEztv = liste.Where(c => ShowConfig.ShowName.ToLower() == c.Name.ToLower()).Select(c => c.Name).FirstOrDefault();
             }
         }
 
@@ -52,7 +50,7 @@ namespace BezyFB.Configuration
 
         private void LoadSerieEZTV(object sender, RoutedEventArgs e)
         {
-            Eztv ez = new Eztv();
+            var ez = new Eztv();
             comboSeries.ItemsSource = ez.GetListShow();
         }
 
@@ -60,11 +58,11 @@ namespace BezyFB.Configuration
         {
             foreach (var addedItem in e.AddedItems.OfType<Eztv.Show>())
             {
-                Show.IdEztv = addedItem.Id;
+                ShowConfig.IdEztv = addedItem.Id;
             }
         }
 
-        private ShowConfiguration Show
+        private ShowConfiguration ShowConfig
         {
             get { return DataContext as ShowConfiguration; }
         }

@@ -13,19 +13,19 @@
             <Button Content="Telecharger tout" Click="Download_All_Click" Margin="5" />
             <CheckBox Content="Réseau Local" Name="cbLocalNetwork" Margin="5" IsChecked="False" />
         </StackPanel>
-        <TextBlock TextWrapping="WrapWithOverflow" Name="tb" DockPanel.Dock="Top"></TextBlock>
+        <TextBlock TextWrapping="WrapWithOverflow" Name="tb" DockPanel.Dock="Top" />
         <TreeView Name="tv" DockPanel.Dock="Bottom">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate DataType="bezyFb:rootShowsShow" ItemsSource="{Binding unseen}">
                     <HierarchicalDataTemplate.ItemTemplate>
                         <HierarchicalDataTemplate DataType="bezyFb:Episode">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding user[0].downloaded}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0"></TextBlock>
-                                <TextBlock Text="{Binding code}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0"></TextBlock>
-                                <TextBlock Text="{Binding title}" ToolTip="{Binding id}" VerticalAlignment="Center"></TextBlock>
-                                <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray" VerticalAlignment="Center"></TextBlock>
-                                <TextBlock Text="{Binding date}" Foreground="Gray" VerticalAlignment="Center"></TextBlock>
-                                <TextBlock Text=")" Foreground="Gray" VerticalAlignment="Center"></TextBlock>
+                                <TextBlock Text="{Binding user[0].downloaded}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0" />
+                                <TextBlock Text="{Binding code}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0" />
+                                <TextBlock Text="{Binding title}" ToolTip="{Binding id}" VerticalAlignment="Center" />
+                                <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding date}" Foreground="Gray" VerticalAlignment="Center" />
+                                <TextBlock Text=")" Foreground="Gray" VerticalAlignment="Center" />
                                 <Button Click="DlStClick" CommandParameter="{Binding .}" Margin="5 1">
                                     <TextBlock Foreground="Gray" FontWeight="Bold" FontSize="10" FontFamily="Britannic Bold">SRT</TextBlock>
                                 </Button>
@@ -45,10 +45,10 @@
                         <Button Click="SettingsClick" CommandParameter="{Binding .}" Margin="5 1">
                             <Image Source="Image/settings.png" Width="16" Height="16" />
                         </Button>
-                        <TextBlock Text="{Binding title}" ToolTip="{Binding id}"></TextBlock>
-                        <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray"></TextBlock>
-                        <TextBlock Text="{Binding remaining}" Foreground="Gray"></TextBlock>
-                        <TextBlock Text=")" Foreground="Gray"></TextBlock>
+                        <TextBlock Text="{Binding title}" ToolTip="{Binding id}" />
+                        <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray" />
+                        <TextBlock Text="{Binding remaining}" Foreground="Gray" />
+                        <TextBlock Text=")" Foreground="Gray" />
                     </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>

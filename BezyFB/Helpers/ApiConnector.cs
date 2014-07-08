@@ -56,11 +56,18 @@ namespace BezyFB.Helpers
                 dataStream.Close();
             }
 
-            Stream httpResponse = httpWebRequest.GetResponse().GetResponseStream();
-            if (null == httpResponse) return null;
-            using (var streamReader = new StreamReader(httpResponse))
+            try
             {
-                return streamReader.ReadToEnd();
+                Stream httpResponse = httpWebRequest.GetResponse().GetResponseStream();
+                if (null == httpResponse) return null;
+                using (var streamReader = new StreamReader(httpResponse))
+                {
+                    return streamReader.ReadToEnd();
+                }
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
     }
