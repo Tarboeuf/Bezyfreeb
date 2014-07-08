@@ -2,9 +2,11 @@
 using System.ComponentModel;
 using System.Security.Cryptography;
 using System.Windows;
+using System.Windows.Forms;
 using BezyFB.Annotations;
 using BezyFB.Helpers;
 using BezyFB.Properties;
+using Microsoft.Win32;
 
 namespace BezyFB.Configuration
 {
@@ -51,6 +53,16 @@ namespace BezyFB.Configuration
             {
                 Settings.Default.LoginBetaSerie = value;
                 OnPropertyChanged("LoginBetaSerie");
+            }
+        }
+
+        public string PathLocal
+        {
+            get { return Settings.Default.PathNonReseau; }
+            set
+            {
+                Settings.Default.PathNonReseau = value;
+                OnPropertyChanged("PathLocal");
             }
         }
 
@@ -102,6 +114,16 @@ namespace BezyFB.Configuration
             passForm.ShowDialog();
             if (null != passForm.Pwd)
                 PwdBetaSerie = Helper.GetMd5Hash(MD5.Create(), passForm.Pwd);
+        }
+
+        private void pathLocalclick(object sender, RoutedEventArgs e)
+        {
+            FolderBrowserDialog diag = new FolderBrowserDialog();
+            diag.SelectedPath = Settings.Default.PathNonReseau;
+            if (diag.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                PathLocal = diag.SelectedPath;
+            }
         }
     }
 }

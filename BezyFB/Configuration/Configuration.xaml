@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:configuration="clr-namespace:BezyFB.Configuration"
         mc:Ignorable="d"
-        Title="Configuration" Height="300" Width="300"
+        Title="Configuration" Height="400" Width="450"
         d:DataContext="{d:DesignInstance configuration:Configuration}">
     <Grid>
         <StackPanel Orientation="Vertical">
@@ -26,18 +26,29 @@
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Login : "></Label>
-                        <TextBox Text="{Binding LoginBetaSerie, UpdateSourceTrigger=PropertyChanged}" MinWidth="200"></TextBox>
+                        <TextBox Text="{Binding LoginBetaSerie, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" Margin="5"></TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Password : "></Label>
-                        <Button Content="Changer de password" Click="password_Click"></Button>
+                        <Button Content="Changer de password" Click="password_Click" Margin="5"></Button>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Autre">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Path pour copie locale : "></Label>
+                        <TextBox Text="{Binding PathLocal}" MinWidth="200" Margin="5" VerticalAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                        <Button Click="pathLocalclick" Margin="5">
+                            <Image Source="..\Image\dossier.jpg" Width="24" Height="24" />
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
             <StackPanel Orientation="Horizontal">
-                <Button Content="Ok" Click="Ok_Click"></Button>
+                <Button Content="Ok" Click="Ok_Click" Width="50" Margin="5"></Button>
 
-                <Button Content="Annuler" Click="Cancel_Click"></Button>
+                <Button Content="Annuler" Click="Cancel_Click" Width="50" Margin="5"></Button>
             </StackPanel>
         </StackPanel>
     </Grid>
