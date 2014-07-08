@@ -160,10 +160,11 @@ namespace BezyFB
                             {
                                 pathreseau = Settings.Default.PathNonReseau + "/";
                             }
-                            Process.Start(pathreseau);
+                            //Process.Start(pathreseau);
                         }
                         File.WriteAllBytes(pathreseau + fileName, st);
                         _freeboxApi.UploadFile(pathreseau + fileName, userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), fileName);
+                        File.Delete(pathreseau + fileName);
                     }
                 }
                 else
