@@ -55,6 +55,7 @@ namespace BezyFB.Freebox
             }
             catch (Exception ex)
             {
+                MessageBox.Show(ex.Message);
                 return false;
             }
             return true;
@@ -120,8 +121,9 @@ namespace BezyFB.Freebox
 
                 return JObject.Parse(json).ToString();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                MessageBox.Show(ex.Message);
                 return null;
             }
         }
@@ -206,6 +208,7 @@ namespace BezyFB.Freebox
             }
             catch (Exception ex)
             {
+                MessageBox.Show(ex.Message);
             }
 
             return JObject.Parse(json).ToString();

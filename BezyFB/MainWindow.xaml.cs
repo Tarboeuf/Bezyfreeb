@@ -85,7 +85,7 @@ namespace BezyFB
             DownloadSsTitre(episode);
         }
 
-        private void DownloadSsTitre(Episode episode, bool showMessage = true)
+        private void DownloadSsTitre(Episode episode)
         {
             Cursor = Cursors.Wait;
             if (episode != null)
@@ -109,8 +109,9 @@ namespace BezyFB
                             if (st2 != null)
                                 st = st2;
                         }
-                        catch
+                        catch (Exception ex)
                         {
+                            MessageBox.Show(ex.Message);
                         }
 
                         string fileName = episode.show_title + "_" + episode.code + ".srt";
@@ -164,8 +165,7 @@ namespace BezyFB
                 }
                 else
                 {
-                    if (showMessage)
-                        MessageBox.Show("Aucun sous titre disponible");
+                    MessageBox.Show("Aucun sous titre disponible");
                 }
             }
             Cursor = Cursors.Arrow;
@@ -243,11 +243,11 @@ namespace BezyFB
                     try
                     {
                         DownloadMagnet(episode);
-                        DownloadSsTitre(episode, false);
+                        DownloadSsTitre(episode);
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        MessageBox.Show(ex.Message);
                     }
                 }
             }
