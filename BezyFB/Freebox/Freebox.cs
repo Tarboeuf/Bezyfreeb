@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using System.Windows;
 using BezyFB.Helpers;
 using BezyFB.Properties;
 using Newtonsoft.Json.Linq;
@@ -167,8 +168,31 @@ namespace BezyFB.Freebox
             var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/downloads/add/", WebMethod.Post,
                                          "application/x-www-form-urlencoded", content,
                                          null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+            var jsonObject = JObject.Parse(json);
+            if (!(bool)jsonObject["success"])
+            {
+                MessageBox.Show((string)jsonObject["msg"]);
+                return null;
+            }
 
-            return JObject.Parse(json).ToString();
+            return ((int)jsonObject["result"]["id"]).ToString();
+        }
+
+        public string GetFileNameDownloaded(string idDownload)
+        {
+            if (String.IsNullOrEmpty(SessionToken))
+                GenererSessionToken();
+
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/downloads/" + idDownload, WebMethod.Get,
+                                         "application/x-www-form-urlencoded", "",
+                                         null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+            var jsonObject = JObject.Parse(json);
+            if (!(bool)jsonObject["success"])
+            {
+                MessageBox.Show((string)jsonObject["msg"]);
+                return null;
+            }
+            return ((string)jsonObject["result"]["name"]);
         }
     }
 }

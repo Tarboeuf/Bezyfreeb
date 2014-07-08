@@ -8,7 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.ComponentModel;
 using System.Xml.Serialization;
+using BezyFB.Annotations;
 
 //
 // Ce code source a été automatiquement généré par xsd, Version=2.0.50727.3038.
@@ -23,7 +25,7 @@ namespace BezyFB
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
-    public partial class Episode
+    public partial class Episode : INotifyPropertyChanged
     {
         private string idField;
 
@@ -54,6 +56,8 @@ namespace BezyFB
         private episodeNotes[] notesField;
 
         private episodeUser[] userField;
+
+        public string IdDownload { get; set; }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -174,6 +178,15 @@ namespace BezyFB
             get { return this.userField; }
             set { this.userField = value; }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     /// <remarks/>
@@ -221,7 +234,7 @@ namespace BezyFB
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class episodeUser
+    public partial class episodeUser : INotifyPropertyChanged
     {
         private string seenField;
 
@@ -240,7 +253,20 @@ namespace BezyFB
         public string downloaded
         {
             get { return this.downloadedField; }
-            set { this.downloadedField = value; }
+            set
+            {
+                this.downloadedField = value;
+                OnPropertyChanged("downloaded");
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 

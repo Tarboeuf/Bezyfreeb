@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BezyFB.Configuration;
 using BezyFB.EzTv;
+using BezyFB.Properties;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 
@@ -58,7 +59,6 @@ namespace BezyFB
             {
                 _bs.SetEpisodeDownnloaded(episode);
             }
-            MajItemsSource();
             Cursor = Cursors.Arrow;
         }
 
@@ -113,20 +113,55 @@ namespace BezyFB
 
                         string fileName = episode.show_title + "_" + episode.code + ".srt";
                         string pathreseau = pathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : "");
-                        if (!Directory.Exists(pathFreebox))
-                            pathreseau = pathFreebox;
 
-                        foreach (var file in Directory.GetFiles(pathreseau))
+                        if (cbLocalNetwork.IsChecked ?? false)
                         {
-                            if (file.Contains(episode.code))
+                            if (!Directory.Exists(pathFreebox))
+                                pathreseau = pathFreebox;
+                        }
+
+                        if (!string.IsNullOrEmpty(episode.IdDownload))
+                        {
+                            string file = _freeboxApi.GetFileNameDownloaded(episode.IdDownload);
+
+                            if (!string.IsNullOrEmpty(file))
                             {
                                 fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
-                                pathreseau = "";
                             }
                         }
 
+                        if ((cbLocalNetwork.IsChecked ?? false) && !Directory.Exists(pathFreebox))
+                        {
+                            if (string.IsNullOrEmpty(episode.IdDownload))
+                            {
+                                foreach (var file in Directory.GetFiles(pathreseau))
+                                {
+                                    if (file.Contains(episode.code))
+                                    {
+                                        fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
+                                        pathreseau = "";
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (string.IsNullOrEmpty(Settings.Default.PathNonReseau))
+                            {
+                                pathreseau = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\";
+                            }
+                            else
+                            {
+                                pathreseau = Settings.Default.PathNonReseau + "\\";
+                            }
+                            Process.Start(pathreseau);
+                        }
                         File.WriteAllBytes(pathreseau + fileName, st);
                     }
+                }
+                else
+                {
+                    MessageBox.Show("Aucun sous titre disponible");
                 }
             }
             Cursor = Cursors.Arrow;
@@ -175,7 +210,7 @@ namespace BezyFB
 
                 Clipboard.SetText(magnet);
 
-                _freeboxApi.Download(magnet, _user.GetSerie(episode.show_id).PathFreebox + "/" + (_user.GetSerie(episode.show_id).ManageSeasonFolder ? episode.season : ""));
+                episode.IdDownload = _freeboxApi.Download(magnet, _user.GetSerie(episode.show_id).PathFreebox + "/" + (_user.GetSerie(episode.show_id).ManageSeasonFolder ? episode.season : ""));
             }
 
             Cursor = Cursors.Arrow;

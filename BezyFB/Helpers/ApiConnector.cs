@@ -9,6 +9,7 @@ namespace BezyFB.Helpers
     {
         Get,
         Post,
+        Put,
     };
 
     internal static class Extensions
@@ -21,6 +22,8 @@ namespace BezyFB.Helpers
                     return "GET";
                 case WebMethod.Post:
                     return "POST";
+                case WebMethod.Put:
+                    return "PUT";
                 default:
                     throw new ArgumentOutOfRangeException("method");
             }
@@ -30,7 +33,7 @@ namespace BezyFB.Helpers
     public static class ApiConnector
     {
         public static string Call(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null,
-            string headerAccept = null, IEnumerable<Tuple<string, string>> headers = null)
+                                  string headerAccept = null, IEnumerable<Tuple<string, string>> headers = null)
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
             httpWebRequest.Method = method.GetLibelle();
@@ -42,7 +45,7 @@ namespace BezyFB.Helpers
                 foreach (var header in headers)
                     httpWebRequest.Headers.Add(header.Item1, header.Item2);
 
-            if (content != null)
+            if (content != null && content.Length != 0)
             {
                 httpWebRequest.ContentLength = content.Length;
                 using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
