@@ -113,7 +113,7 @@ namespace BezyFB.Configuration
             var passForm = new PasswordForm();
             passForm.ShowDialog();
             if (null != passForm.Pwd)
-                PwdBetaSerie = Helper.GetMd5Hash(MD5.Create(), passForm.Pwd);
+                PwdBetaSerie = passForm.Pwd;
         }
 
         private void pathLocalclick(object sender, RoutedEventArgs e)
