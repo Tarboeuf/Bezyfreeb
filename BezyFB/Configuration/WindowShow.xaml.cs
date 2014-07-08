@@ -23,6 +23,19 @@ namespace BezyFB.Configuration
         public WindowShow()
         {
             InitializeComponent();
+            DataContextChanged += new DependencyPropertyChangedEventHandler(WindowShow_DataContextChanged);
+        }
+
+        private void WindowShow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(Show.IdEztv))
+            {
+                Eztv ez = new Eztv();
+                var liste = ez.GetListShow().ToList();
+                comboSeries.ItemsSource = liste;
+
+                Show.IdEztv = liste.Where(c => Show.ShowName.ToLower() == c.Name.ToLower()).Select(c => c.Name).FirstOrDefault();
+            }
         }
 
         private void Ok_Click(object sender, RoutedEventArgs e)
@@ -47,8 +60,13 @@ namespace BezyFB.Configuration
         {
             foreach (var addedItem in e.AddedItems.OfType<Eztv.Show>())
             {
-                (DataContext as ShowConfiguration).IdEztv = addedItem.Id;
+                Show.IdEztv = addedItem.Id;
             }
+        }
+
+        private ShowConfiguration Show
+        {
+            get { return DataContext as ShowConfiguration; }
         }
     }
 }
