@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text;
 
 namespace BezyFB.Helpers
 {
@@ -45,13 +46,14 @@ namespace BezyFB.Helpers
                 foreach (var header in headers)
                     httpWebRequest.Headers.Add(header.Item1, header.Item2);
 
-            if (content != null && content.Length != 0)
+            if (!string.IsNullOrEmpty(content))
             {
-                httpWebRequest.ContentLength = content.Length;
-                using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-                {
-                    streamWriter.Write(content);
-                }
+                byte[] byteArray = Encoding.UTF8.GetBytes(content);
+                httpWebRequest.ContentLength = byteArray.Length;
+
+                Stream dataStream = httpWebRequest.GetRequestStream();
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                dataStream.Close();
             }
 
             Stream httpResponse = httpWebRequest.GetResponse().GetResponseStream();

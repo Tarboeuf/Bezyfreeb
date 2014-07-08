@@ -178,6 +178,39 @@ namespace BezyFB.Freebox
             return ((int)jsonObject["result"]["id"]).ToString();
         }
 
+        public string UploadFile(string inputFile, string outputDir, string outputFileName)
+        {
+            if (String.IsNullOrEmpty(SessionToken))
+                GenererSessionToken();
+
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v1/upload/", WebMethod.Post, "application/json",
+                new JObject { { "dirname", Helper.EncodeTo64(Settings.Default.PathVideo + "/" + outputDir) }, { "upload_name", outputFileName } }.ToString(), null,
+                                         new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+
+            try
+            {
+                var id = (string)JObject.Parse(json)["result"]["id"];
+
+                string text = File.ReadAllText(inputFile);
+
+                const string boundary = "----WebKitFormBoundary0Qvwx7fycAF2CWmh";
+
+                json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v1/upload/" + id + "/send", WebMethod.Post, "multipart/form-data; boundary=" + boundary,
+                    "--" + boundary + Environment.NewLine +
+                    "Content-Disposition: form-data; name=\"" + outputFileName + "\"; filename=\"" + outputFileName + "\"" + Environment.NewLine +
+                    "Content-Type: text/plain" + Environment.NewLine + Environment.NewLine +
+                    text + Environment.NewLine +
+                    "--" + boundary + "--",
+
+                null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return JObject.Parse(json).ToString();
+        }
+
         public string GetFileNameDownloaded(string idDownload)
         {
             if (String.IsNullOrEmpty(SessionToken))
