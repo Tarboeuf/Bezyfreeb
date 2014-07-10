@@ -71,7 +71,7 @@ namespace BezyFB.Configuration
                 ManageSeasonFolder = true,
                 PathFreebox = nomSerie,
                 ShowName = nomSerie,
-                IdEztv = new Eztv().GetListShow().Where(c => String.Equals(nomSerie, c.Name)).Select(c => c.Name).FirstOrDefault()
+                IdEztv = new Eztv().GetListShow().Where(c => String.Equals(nomSerie, c.Name)).Select(c => c.Id).FirstOrDefault()
             };
 
             Shows.Add(show);

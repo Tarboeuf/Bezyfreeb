@@ -246,6 +246,17 @@ namespace BezyFB
                     try
                     {
                         DownloadMagnet(episode);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (Settings.Default.AffichageErreurMessageBox)
+                            MessageBox.Show(ex.Message);
+                        else
+                            Console.WriteLine(ex.Message);
+                    }
+
+                    try
+                    {
                         DownloadSsTitre(episode);
                     }
                     catch (Exception ex)
