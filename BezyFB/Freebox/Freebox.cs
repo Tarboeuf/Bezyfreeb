@@ -146,7 +146,7 @@ namespace BezyFB.Freebox
             return JObject.Parse(json).ToString();
         }
 
-        public string Ls(string directory)
+        public List<string> Ls(string directory)
         {
             if (String.IsNullOrEmpty(SessionToken))
                 GenererSessionToken();
@@ -155,7 +155,19 @@ namespace BezyFB.Freebox
                                          WebMethod.Get, "application/x-www-form-urlencoded", null, null,
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
-            return JObject.Parse(json).ToString();
+            var jsonObject = JObject.Parse(json);
+
+            if (!(bool)jsonObject["success"])
+            {
+                if (Settings.Default.AffichageErreurMessageBox)
+                    MessageBox.Show((string)jsonObject["msg"]);
+                else
+                    Console.WriteLine((string)jsonObject["msg"]);
+                return null;
+            }
+            var result = jsonObject["result"];
+
+            return result.Select(t => t["name"].ToString()).ToList();
         }
 
         public string Download(String magnetUrl, string directory)
@@ -203,7 +215,7 @@ namespace BezyFB.Freebox
             }
 
             var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v1/upload/", WebMethod.Post, "application/json",
-                new JObject { { "dirname", Helper.EncodeTo64(pathDir) }, { "upload_name", outputFileName } }.ToString(), null,
+                                         new JObject { { "dirname", Helper.EncodeTo64(pathDir) }, { "upload_name", outputFileName } }.ToString(), null,
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
             try
@@ -215,13 +227,12 @@ namespace BezyFB.Freebox
                 const string boundary = "----WebKitFormBoundary0Qvwx7fycAF2CWmh";
 
                 json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v1/upload/" + id + "/send", WebMethod.Post, "multipart/form-data; boundary=" + boundary,
-                    "--" + boundary + Environment.NewLine +
-                    "Content-Disposition: form-data; name=\"" + outputFileName + "\"; filename=\"" + outputFileName + "\"" + Environment.NewLine +
-                    "Content-Type: text/plain" + Environment.NewLine + Environment.NewLine +
-                    text + Environment.NewLine +
-                    "--" + boundary + "--",
-
-                null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+                                         "--" + boundary + Environment.NewLine +
+                                         "Content-Disposition: form-data; name=\"" + outputFileName + "\"; filename=\"" + outputFileName + "\"" + Environment.NewLine +
+                                         "Content-Type: text/plain" + Environment.NewLine + Environment.NewLine +
+                                         text + Environment.NewLine +
+                                         "--" + boundary + "--",
+                                         null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
             }
             catch (Exception ex)
             {

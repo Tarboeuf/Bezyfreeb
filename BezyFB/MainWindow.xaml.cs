@@ -51,7 +51,7 @@ namespace BezyFB
         private void SetDl(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            var episode = ((Button)sender).CommandParameter as Episode;
+            var episode = ((Button) sender).CommandParameter as Episode;
 
             if (episode != null)
             {
@@ -69,7 +69,7 @@ namespace BezyFB
         private void SetSetSeen(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            var episode = ((Button)sender).CommandParameter as Episode;
+            var episode = ((Button) sender).CommandParameter as Episode;
 
             if (episode != null)
             {
@@ -81,7 +81,7 @@ namespace BezyFB
 
         private void DlStClick(object sender, RoutedEventArgs e)
         {
-            var episode = ((Button)sender).CommandParameter as Episode;
+            var episode = ((Button) sender).CommandParameter as Episode;
             DownloadSsTitre(episode);
         }
 
@@ -132,7 +132,10 @@ namespace BezyFB
 
                             if (!string.IsNullOrEmpty(file))
                             {
-                                fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
+                                if (file.LastIndexOf('.') >= (file.Length - 5))
+                                    fileName = file + ".srt";
+                                else
+                                    fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
                             }
                         }
 
@@ -144,7 +147,10 @@ namespace BezyFB
                                 {
                                     if (file.Contains(episode.code))
                                     {
-                                        fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
+                                        if (file.LastIndexOf('.') >= (file.Length - 5))
+                                            fileName = file + ".srt";
+                                        else
+                                            fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
                                         pathreseau = "";
                                     }
                                 }
@@ -152,6 +158,15 @@ namespace BezyFB
                         }
                         else
                         {
+                            if (string.IsNullOrEmpty(episode.IdDownload))
+                            {
+                                var lst = _freeboxApi.Ls(Settings.Default.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""));
+                                string f = lst.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
+                                if (null != f)
+                                {
+                                    fileName = f.Replace(f.Substring(f.LastIndexOf('.')), ".srt");
+                                }
+                            }
                             if (string.IsNullOrEmpty(Settings.Default.PathNonReseau))
                             {
                                 pathreseau = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -160,6 +175,7 @@ namespace BezyFB
                             {
                                 pathreseau = Settings.Default.PathNonReseau + "/";
                             }
+
                             //Process.Start(pathreseau);
                         }
                         File.WriteAllBytes(pathreseau + fileName, st);
@@ -190,8 +206,8 @@ namespace BezyFB
 
                 if (entryFileName.Contains(".srt"))
                 {
-                    int file_size = (int)zipEntry.Size;
-                    byte[] blob = new byte[(int)zipEntry.Size];
+                    int file_size = (int) zipEntry.Size;
+                    byte[] blob = new byte[(int) zipEntry.Size];
                     int bytes_read = 0;
                     int offset = 0;
 
@@ -211,7 +227,7 @@ namespace BezyFB
 
         private void GetMagnetClick(object sender, RoutedEventArgs e)
         {
-            var episode = ((Button)sender).CommandParameter as Episode;
+            var episode = ((Button) sender).CommandParameter as Episode;
             DownloadMagnet(episode);
         }
 
@@ -223,7 +239,7 @@ namespace BezyFB
                 var magnet = Eztv.GetMagnetSerieEpisode(_user.GetSerie(episode).IdEztv, episode.code);
                 if (magnet != null)
                     episode.IdDownload = _freeboxApi.Download(magnet, _user.GetSerie(episode).PathFreebox + "/" +
-                        (_user.GetSerie(episode).ManageSeasonFolder ? episode.season : ""));
+                                                                      (_user.GetSerie(episode).ManageSeasonFolder ? episode.season : ""));
             }
 
             Cursor = Cursors.Arrow;
@@ -277,11 +293,11 @@ namespace BezyFB
 
         private void SettingsClick(object sender, RoutedEventArgs e)
         {
-            var s = ((Button)sender).CommandParameter as rootShowsShow;
+            var s = ((Button) sender).CommandParameter as rootShowsShow;
 
             if (s != null)
             {
-                if ((new WindowShow { DataContext = _user.GetSerie(s) }).ShowDialog() ?? false)
+                if ((new WindowShow {DataContext = _user.GetSerie(s)}).ShowDialog() ?? false)
                 {
                     _user.SerializeElement();
                 }
