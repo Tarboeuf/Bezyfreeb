@@ -85,6 +85,15 @@ namespace BezyFB
             DownloadSsTitre(episode);
         }
 
+        private string ExtractEncoding(string movieFilePath)
+        {
+            if (movieFilePath.Contains("LOL"))
+                return "LOL";
+            if (movieFilePath.Contains("2HD"))
+                return "2HD";
+            return "";
+        }
+
         private void DownloadSsTitre(Episode episode)
         {
             Cursor = Cursors.Wait;
@@ -96,16 +105,74 @@ namespace BezyFB
                 var str = _bs.GetPathSousTitre(episode.id);
                 if (str.subtitles.Any())
                 {
+                    string fileName = episode.show_title + "_" + episode.code + ".srt";
+
+                    string encoding = "";
+                    if (!string.IsNullOrEmpty(episode.IdDownload))
+                    {
+                        string file = _freeboxApi.GetFileNameDownloaded(episode.IdDownload);
+
+                        if (!string.IsNullOrEmpty(file))
+                        {
+                            if (file.LastIndexOf('.') <= (file.Length - 5))
+                                fileName = file + ".srt";
+                            else
+                                fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
+                        }
+                    }
+                    string pathreseau = pathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : "");
+
+                    if ((cbLocalNetwork.IsChecked ?? false) && !Directory.Exists(pathFreebox))
+                    {
+                        if (string.IsNullOrEmpty(episode.IdDownload))
+                        {
+                            foreach (var file in Directory.GetFiles(pathreseau))
+                            {
+                                if (file.Contains(episode.code))
+                                {
+                                    if (file.LastIndexOf('.') <= (file.Length - 5))
+                                        fileName = file + ".srt";
+                                    else
+                                        fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
+                                    pathreseau = "";
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(episode.IdDownload))
+                        {
+                            var lst = _freeboxApi.Ls(Settings.Default.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""));
+                            string f = lst.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
+                            if (null != f)
+                            {
+                                fileName = f.Replace(f.Substring(f.LastIndexOf('.')), ".srt");
+                            }
+                        }
+                        if (string.IsNullOrEmpty(Settings.Default.PathNonReseau))
+                        {
+                            pathreseau = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                        }
+                        else
+                        {
+                            pathreseau = Settings.Default.PathNonReseau + "/";
+                        }
+
+                        //Process.Start(pathreseau);
+                    }
+                    encoding = ExtractEncoding(fileName);
                     var sousTitre = str.subtitles.OrderByDescending(c => c.quality).Select(s => s.url).FirstOrDefault();
 
                     var wc = new WebClient();
                     if (sousTitre != null)
                     {
                         var st = wc.DownloadData(sousTitre);
+                        Clipboard.SetText(sousTitre);
                         try
                         {
                             Stream stream = new MemoryStream(st);
-                            var st2 = UnzipFromStream(stream);
+                            var st2 = UnzipFromStream(stream, encoding);
                             if (st2 != null)
                                 st = st2;
                         }
@@ -117,67 +184,12 @@ namespace BezyFB
                                 Console.WriteLine(ex.Message);
                         }
 
-                        string fileName = episode.show_title + "_" + episode.code + ".srt";
-                        string pathreseau = pathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : "");
-
                         if (cbLocalNetwork.IsChecked ?? false)
                         {
                             if (!Directory.Exists(pathFreebox))
                                 pathreseau = pathFreebox;
                         }
 
-                        if (!string.IsNullOrEmpty(episode.IdDownload))
-                        {
-                            string file = _freeboxApi.GetFileNameDownloaded(episode.IdDownload);
-
-                            if (!string.IsNullOrEmpty(file))
-                            {
-                                if (file.LastIndexOf('.') <= (file.Length - 5))
-                                    fileName = file + ".srt";
-                                else
-                                    fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
-                            }
-                        }
-
-                        if ((cbLocalNetwork.IsChecked ?? false) && !Directory.Exists(pathFreebox))
-                        {
-                            if (string.IsNullOrEmpty(episode.IdDownload))
-                            {
-                                foreach (var file in Directory.GetFiles(pathreseau))
-                                {
-                                    if (file.Contains(episode.code))
-                                    {
-                                        if (file.LastIndexOf('.') <= (file.Length - 5))
-                                            fileName = file + ".srt";
-                                        else
-                                            fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
-                                        pathreseau = "";
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (string.IsNullOrEmpty(episode.IdDownload))
-                            {
-                                var lst = _freeboxApi.Ls(Settings.Default.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""));
-                                string f = lst.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
-                                if (null != f)
-                                {
-                                    fileName = f.Replace(f.Substring(f.LastIndexOf('.')), ".srt");
-                                }
-                            }
-                            if (string.IsNullOrEmpty(Settings.Default.PathNonReseau))
-                            {
-                                pathreseau = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                            }
-                            else
-                            {
-                                pathreseau = Settings.Default.PathNonReseau + "/";
-                            }
-
-                            //Process.Start(pathreseau);
-                        }
                         File.WriteAllBytes(pathreseau + fileName, st);
                         _freeboxApi.UploadFile(pathreseau + fileName, userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), fileName);
                         File.Delete(pathreseau + fileName);
@@ -194,10 +206,38 @@ namespace BezyFB
             Cursor = Cursors.Arrow;
         }
 
-        private static byte[] UnzipFromStream(Stream zipStream)
+        private static byte[] UnzipFromStream(Stream zipStream, string encoding)
         {
             var zipInputStream = new ZipInputStream(zipStream);
             ZipEntry zipEntry = zipInputStream.GetNextEntry();
+            if (zipEntry == null)
+                return new byte[0];
+            while (zipEntry != null)
+            {
+                String entryFileName = zipEntry.Name;
+
+                if (entryFileName.Contains(".srt") && entryFileName.Contains(encoding))
+                {
+                    Clipboard.SetText(entryFileName);
+                    int file_size = (int)zipEntry.Size;
+                    byte[] blob = new byte[(int)zipEntry.Size];
+                    int bytes_read = 0;
+                    int offset = 0;
+
+                    while ((bytes_read = zipInputStream.Read(blob, 0, file_size)) != 0)
+                    {
+                        offset += bytes_read;
+                    }
+
+                    //closing every thing
+                    zipInputStream.Close();
+                    return blob;
+                }
+
+                zipEntry = zipInputStream.GetNextEntry();
+            }
+            zipInputStream.Seek(0, SeekOrigin.Begin);
+            zipEntry = zipInputStream.GetNextEntry();
             if (zipEntry == null)
                 return new byte[0];
             while (true)
@@ -206,6 +246,7 @@ namespace BezyFB
 
                 if (entryFileName.Contains(".srt"))
                 {
+                    Clipboard.SetText(entryFileName);
                     int file_size = (int)zipEntry.Size;
                     byte[] blob = new byte[(int)zipEntry.Size];
                     int bytes_read = 0;
