@@ -1,9 +1,12 @@
-﻿using BezyFreebMetro.Common;
+﻿using BezyFB;
+using BezyFB.EzTv;
+using BezyFreebMetro.Common;
 using BezyFreebMetro.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -61,12 +64,15 @@ namespace BezyFreebMetro
         /// <see cref="Frame.Navigate(Type, Object)"/> lors de la requête initiale de cette page et
         /// un dictionnaire d'état conservé par cette page durant une session
         /// antérieure.  L'état n'aura pas la valeur Null lors de la première visite de la page.</param>
-        private async void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        private void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             // TODO: créez un modèle de données approprié pour le domaine posant problème pour remplacer les exemples de données
             //var item = await SampleDataSource.GetItemAsync((String)e.NavigationParameter);
-            //this.DefaultViewModel["Item"] = item;
+            _Episode = e.NavigationParameter as Episode;
+            this.DefaultViewModel["Item"] = e.NavigationParameter;
         }
+
+        private Episode _Episode;
 
         #region Inscription de NavigationHelper
 
@@ -91,5 +97,29 @@ namespace BezyFreebMetro
         }
 
         #endregion
+
+        private async void Vu_Click(object sender, RoutedEventArgs e)
+        {
+            await MainModel.BetaSerie.SetEpisodeSeen(_Episode);
+            NavigationHelper.GoBackCommand.Execute(null);
+        }
+
+        private async void Download_Click(object sender, RoutedEventArgs e)
+        {
+            await DownloadMagnet(_Episode);
+            await MainModel.DownloadSsTitre(_Episode);
+            await MainModel.BetaSerie.SetEpisodeDownnloaded(_Episode);
+        }
+
+        private async Task DownloadMagnet(Episode episode)
+        {
+            if (episode != null)
+            {
+                var show = await MainModel.Utilisateur.GetSerie(episode);
+                var magnet = await Eztv.GetMagnetSerieEpisode(show.IdEztv, episode.code);
+                if (magnet != null)
+                    episode.IdDownload = await MainModel.Freebox.Download(magnet, show.PathFreebox + "/" + (show.ManageSeasonFolder ? episode.season : ""));
+            }
+        }
     }
 }

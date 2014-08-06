@@ -67,7 +67,7 @@ namespace BezyFreebMetro
         private async void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             // TODO: créez un modèle de données approprié pour le domaine posant problème pour remplacer les exemples de données
-            var sampleDataGroups = await SampleDataSource.GetGroupsAsync();
+            var sampleDataGroups = await MainModel.GetGroupsAsync();
             this.DefaultViewModel["Groups"] = sampleDataGroups;
 
             foreach (var item in sampleDataGroups)

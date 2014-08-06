@@ -18,6 +18,8 @@
             IsSourceGrouped ="True"
             ItemsPath="Items"
             Source="{Binding Groups}"/>
+
+        <local:BrushConverter x:Key="BrushConverter" />
     </Page.Resources>
 
     <!--
@@ -52,8 +54,9 @@
             IsItemClickEnabled="True"
             ItemClick="ItemView_ItemClick">
             <GridView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Height="110" Width="480" Margin="10">
+                <DataTemplate >
+                    <Grid Height="110" Width="480" Margin="10" x:Name="gridButton" Background="{Binding user[0].downloaded, Converter={StaticResource BrushConverter}}">
+
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
