@@ -75,7 +75,7 @@ namespace BezyFB
             {
                 _bs.SetEpisodeSeen(episode);
             }
-            MajItemsSource();
+            //MajItemsSource();
             Cursor = Cursors.Arrow;
         }
 

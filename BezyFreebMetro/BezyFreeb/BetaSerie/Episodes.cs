@@ -8,9 +8,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using BezyFreebMetro.BezyFreeb.IMDB;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Xml.Serialization;
-using BezyFB.Annotations;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
+//using BezyFB.Annotations;
 
 //
 // Ce code source a été automatiquement généré par xsd, Version=2.0.50727.3038.
@@ -20,9 +24,9 @@ namespace BezyFB
 {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    [System.SerializableAttribute()]
+    //[System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    //[System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public partial class Episode : INotifyPropertyChanged
@@ -181,7 +185,6 @@ namespace BezyFB
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
@@ -191,9 +194,7 @@ namespace BezyFB
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public partial class episodeNotes
     {
@@ -230,9 +231,7 @@ namespace BezyFB
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public partial class episodeUser : INotifyPropertyChanged
     {
@@ -262,7 +261,6 @@ namespace BezyFB
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
@@ -272,9 +270,7 @@ namespace BezyFB
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public class EpisodeRoot
@@ -291,7 +287,7 @@ namespace BezyFB
             set { this.errorsField = value; }
         }
 
-        /// <remarks/>
+        /// <remarks/>E:\Pimagona\Bezyfreeb\BezyFreebMetro\Assets\
         [System.Xml.Serialization.XmlArrayAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
         [System.Xml.Serialization.XmlArrayItemAttribute("show", typeof(rootShowsShow), Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = false)]
         public rootShowsShow[] shows
@@ -303,9 +299,7 @@ namespace BezyFB
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public partial class rootShowsShow : INotifyPropertyChanged
     {
@@ -318,6 +312,22 @@ namespace BezyFB
         private string remainingField;
 
         private Episode[] unseenField;
+
+        [XmlIgnore]
+        private ImageSource _ImagePath;
+        [XmlIgnore]
+        public ImageSource ImagePath
+        {
+            get
+            {
+                return _ImagePath;
+            }
+            set
+            {
+                _ImagePath = value;
+                OnPropertyChanged("ImagePath");
+            }
+        }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -332,7 +342,10 @@ namespace BezyFB
         public string thetvdb_id
         {
             get { return this.thetvdb_idField; }
-            set { this.thetvdb_idField = value; }
+            set
+            {
+                this.thetvdb_idField = value;
+            }
         }
 
         /// <remarks/>
@@ -357,12 +370,24 @@ namespace BezyFB
         public Episode[] unseen
         {
             get { return this.unseenField; }
-            set 
-            { 
+            set
+            {
                 this.unseenField = value;
                 OnPropertyChanged("unseen");
             }
 
+        }
+        [XmlIgnore]
+        private ObservableCollection<Episode> _Items;
+        [XmlIgnore]
+        public ObservableCollection<Episode> Items
+        {
+            get
+            {
+                if (null == _Items)
+                    _Items = new ObservableCollection<Episode>(unseen);
+                return _Items;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

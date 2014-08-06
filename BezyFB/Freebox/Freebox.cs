@@ -27,7 +27,7 @@ namespace BezyFB.Freebox
 
             if (!TesterConnexionFreebox())
                 return false;
-
+            JsonObject.Parse("");
             if (!GenererAppToken())
                 return false;
 
