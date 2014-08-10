@@ -19,19 +19,81 @@
         <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
 
             <!-- En-tête de la section 1 -->
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Lorem ipsum" />
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="BezyFreeb" />
 
             <!-- Corps de la section 1 -->
             <TextBlock Style="{StaticResource BodyTextBlockStyle}" Margin="0,0,0,25" TextWrapping="Wrap">
                 <TextBlock.Text>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    Vous pouvez configurer votre application depuis cette interface.
                 </TextBlock.Text>
             </TextBlock>
 
         </StackPanel>
 
+        <!-- Section de contenu 1-->
+        <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
+
+            <!-- En-tête de la section 1 -->
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Version" />
+
+            <!-- Corps de la section 1 -->
+            <TextBlock Style="{StaticResource BodyTextBlockStyle}" Margin="0,10,0,25" Text="{Binding AppVersion}"/>
+
+        </StackPanel>
         <!-- Définir d'autres sections de contenu ci-dessous, si nécessaire -->
+
+        <!-- Section de contenu 1-->
+        <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
+
+            <!-- En-tête de la section 1 -->
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Nom de l'application" />
+
+            <!-- Corps de la section 1 -->
+            <TextBox Margin="0,10,0,25" Text="{Binding AppName}" />
+
+        </StackPanel>
+                    
+        <!-- Section de contenu 1-->
+        <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
+
+            <!-- En-tête de la section 1 -->
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Login Betaseries" />
+
+            <!-- Corps de la section 1 -->
+            <TextBox Margin="0,10,0,25" Text="{Binding LoginBetaSerie}" />
+
+        </StackPanel>
+
+        <!-- Section de contenu 1-->
+        <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
+
+            <!-- En-tête de la section 1 -->
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Mot de passe Bétasérie" />
+
+            <!-- Corps de la section 1 -->
+            <TextBox Margin="0,10,0,25" Text="{Binding PwdBetaSerie}" />
+
+        </StackPanel>
+
+        <!-- Section de contenu 1-->
+        <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
+
+            <!-- En-tête de la section 1 -->
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="IP Freebox" />
+
+            <!-- Corps de la section 1 -->
+            <TextBox Margin="0,10,0,25" Text="{Binding IpFreebox}" />
+
+        </StackPanel>
+
+
+        <!-- Section de contenu 1-->
+        <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
+
+            <!-- Corps de la section 1 -->
+            <Button Margin="0,10,0,25" Content="Se connecter" Click="SeConnecterFreebox_Click"/>
+
+        </StackPanel>
 
     </StackPanel>
 </SettingsFlyout>

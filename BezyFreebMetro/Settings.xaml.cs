@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BezyFB.Freebox;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,13 @@ namespace BezyFreebMetro
         public Settings()
         {
             this.InitializeComponent();
+            DataContext = AppSettings.Default;
+        }
+
+        private async void SeConnecterFreebox_Click(object sender, RoutedEventArgs e)
+        {
+            Freebox fb = new Freebox();
+            await fb.ConnectNewFreebox();
         }
     }
 }

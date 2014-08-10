@@ -30,8 +30,9 @@ namespace BezyFB.Freebox
             if (!TesterConnexionFreebox())
                 return false;
 
-            if (! await GenererAppToken())
-                return false;
+            if (string.IsNullOrEmpty(AppSettings.Default.TokenFreebox))
+                if (!await GenererAppToken())
+                    return false;
 
             if (!await GenererSessionToken())
                 return false;
@@ -40,7 +41,7 @@ namespace BezyFB.Freebox
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
             var j = JsonObject.Parse(json).GetObject();
 
-            AppSettings.Default.IpFreebox = j["result"].GetObject()["remote_access_ip"].GetString() + ":" + j["result"].GetObject()["remote_access_port"].GetString();
+            AppSettings.Default.IpFreebox = j["result"].GetObject()["remote_access_ip"].GetString() + ":" + j["result"].GetObject()["remote_access_port"].GetNumber();
 
             return true;
         }
@@ -71,10 +72,10 @@ namespace BezyFB.Freebox
             var json = await ApiConnector.Call("http://" + AppSettings.Default.IpFreebox + "/api/v2/login/", WebMethod.Get);
             var challenge = JsonObject.Parse(json).GetObject()["result"].GetObject()["challenge"].GetString();
 
-            string password = Helper.Encode(challenge, AppSettings.Default.TokenFreebox);
+            string password = Helper.Sha1Encrypt(challenge, AppSettings.Default.TokenFreebox);
 
             json = await ApiConnector.Call("http://" + AppSettings.Default.IpFreebox + "/api/v2/login/session/", WebMethod.Post, "application/json",
-                                     new JsonObject { { "password", JsonValue.CreateStringValue(password) }, { "app_id", JsonValue.CreateStringValue(AppSettings.Default.AppId) } }.ToString());
+                                     new JsonObject { { "password", JsonValue.CreateStringValue(password) }, { "app_id", JsonValue.CreateStringValue(AppSettings.Default.AppId) } }.Stringify());
             var session = JsonObject.Parse(json);
 
             if (session == null)
@@ -92,25 +93,25 @@ namespace BezyFB.Freebox
             var localName = hostNames.FirstOrDefault(name => name.DisplayName.Contains(".local"));
 
             var computerName = localName.DisplayName.Replace(".local", "");
-
-            var json = await ApiConnector.Call("http://" + AppSettings.Default.IpFreebox + "/api/v2/login/authorize/", WebMethod.Post, "application/json",
-                                         new JsonObject
+            var newjson = new JsonObject
                                              {
                                                  {"app_id", JsonValue.CreateStringValue(AppSettings.Default.AppId)}, {"app_name", JsonValue.CreateStringValue(AppSettings.Default.AppName)},
                                                  {"app_version", JsonValue.CreateStringValue(AppSettings.Default.AppVersion)}, {"device_name", JsonValue.CreateStringValue(computerName)}
-                                             }.ToString());
+                                             };
+
+            var json = await ApiConnector.Call("http://" + AppSettings.Default.IpFreebox + "/api/v2/login/authorize/", WebMethod.Post, "application/json", newjson.Stringify());
 
             var apptokenrequest = JsonObject.Parse(json).GetObject();
 
-            var appToken = (string)apptokenrequest["result"].GetObject()["app_token"].GetString();
-            var trackId = (string)apptokenrequest["result"].GetObject()["track_id"].GetString();
+            var appToken = apptokenrequest["result"].GetObject()["app_token"].GetString();
+            var trackId = apptokenrequest["result"].GetObject()["track_id"].GetNumber();
             String result;
             do
             {
                 json = await ApiConnector.Call("http://" + AppSettings.Default.IpFreebox + "/api/v2/login/authorize/" + trackId, WebMethod.Get);
                 var apptokenstatus = JsonObject.Parse(json).GetObject();
                 result = (string)apptokenstatus["result"].GetObject()["status"].GetString();
-                await Task.Delay(TimeSpan.FromSeconds(500));
+                await Task.Delay(TimeSpan.FromMilliseconds(500));
             } while (result == "pending");
 
             if (result != "granted")
@@ -172,6 +173,7 @@ namespace BezyFB.Freebox
             {
                 MessageDialog md = new MessageDialog((string)jsonObject["msg"].GetString());
                 await md.ShowAsync();
+                return new List<string>();
             }
             var result = jsonObject["result"].GetArray();
 
@@ -181,7 +183,7 @@ namespace BezyFB.Freebox
         public async Task<string> Download(String magnetUrl, string directory)
         {
             if (String.IsNullOrEmpty(SessionToken))
-               await GenererSessionToken();
+                await GenererSessionToken();
 
             var pathDir = AppSettings.Default.PathVideo;
 
@@ -210,7 +212,7 @@ namespace BezyFB.Freebox
         public async Task<string> UploadFile(string inputFile, string outputDir, string outputFileName, string fileContent)
         {
             if (String.IsNullOrEmpty(SessionToken))
-               await GenererSessionToken();
+                await GenererSessionToken();
 
             var pathDir = AppSettings.Default.PathVideo;
 
@@ -229,7 +231,7 @@ namespace BezyFB.Freebox
                 var id = (string)JsonObject.Parse(json)["result"].GetObject()["id"].GetString();
 
                 string text = fileContent;
-                
+
                 const string boundary = "----WebKitFormBoundary0Qvwx7fycAF2CWmh";
 
                 json = await ApiConnector.Call("http://" + AppSettings.Default.IpFreebox + "/api/v1/upload/" + id + "/send", WebMethod.Post, "multipart/form-data; boundary=" + boundary,

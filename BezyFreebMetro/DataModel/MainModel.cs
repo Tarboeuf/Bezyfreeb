@@ -216,7 +216,9 @@ namespace BezyFreebMetro.Data
                     int bytes_read = 0;
                     int offset = 0;
 
-                    while ((bytes_read = item.Open().Read(blob, 0, file_size)) != 0)
+                    var open = item.Open();
+
+                    while ((bytes_read = open.Read(blob, 0, file_size)) != 0)
                     {
                         offset += bytes_read;
                     }

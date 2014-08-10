@@ -41,20 +41,32 @@ namespace BezyFB.Helpers
             }
         }
 
-        public static string Encode(string input, string key)
+        //public static string Encode(string input, string key)
+        //{
+        //    byte[] byteKey = Encoding.UTF8.GetBytes(key);
+        //    byte[] byteInput = Encoding.UTF8.GetBytes(input);
+        //    var algo = MacAlgorithmProvider.OpenAlgorithm(MacAlgorithmNames.HmacSha1);
+        //    BinaryStringEncoding encoding = BinaryStringEncoding.Utf8;
+        //    var buffMsg = CryptographicBuffer.ConvertStringToBinary(input, encoding);
+        //    var hmacsha1 = algo.CreateHash(buffMsg);
+            
+        //        hmacsha1.Append(buffMsg);
+        //        return hmacsha1.GetValueAndReset().ToString();
+        //        //byte[] hashmessage = hmacsha1.ComputeHash(byteInput);
+        //        //return string.Concat(hashmessage.Select(b => string.Format("{0:X2}", b).ToLower()));
+            
+        //}
+        public static string Sha1Encrypt(string baseString, string keyString)
         {
-            byte[] byteKey = Encoding.UTF8.GetBytes(key);
-            byte[] byteInput = Encoding.UTF8.GetBytes(input);
-            var algo = MacAlgorithmProvider.OpenAlgorithm(MacAlgorithmNames.HmacSha1);
-            BinaryStringEncoding encoding = BinaryStringEncoding.Utf8;
-            var buffMsg = CryptographicBuffer.ConvertStringToBinary(input, encoding);
-            var hmacsha1 = algo.CreateHash(buffMsg);
-            
-                hmacsha1.Append(buffMsg);
-                return hmacsha1.GetValueAndReset().ToString();
-                //byte[] hashmessage = hmacsha1.ComputeHash(byteInput);
-                //return string.Concat(hashmessage.Select(b => string.Format("{0:X2}", b).ToLower()));
-            
+            var crypt = MacAlgorithmProvider.OpenAlgorithm(MacAlgorithmNames.HmacSha1);
+            var buffer = CryptographicBuffer.ConvertStringToBinary(baseString, BinaryStringEncoding.Utf8);
+            var keyBuffer = CryptographicBuffer.ConvertStringToBinary(keyString, BinaryStringEncoding.Utf8);
+            var key = crypt.CreateKey(keyBuffer);
+
+
+            var sigBuffer = CryptographicEngine.Sign(key, buffer);
+            string signature = CryptographicBuffer.EncodeToHexString(sigBuffer);
+            return signature;
         }
 
         
