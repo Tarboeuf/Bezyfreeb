@@ -22,6 +22,7 @@
             Source="{Binding Groups}"
             IsSourceGrouped="False"/>
         <!--ItemsPath="Items"-->
+
     </Page.Resources>
 
     <!--
@@ -29,91 +30,101 @@
         * La ligne 0 qui contient le bouton Précédent et le titre de la page
         * La ligne 1 qui contient le reste de la page
     -->
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.ChildrenTransitions>
-            <TransitionCollection>
-                <EntranceThemeTransition/>
-            </TransitionCollection>
-        </Grid.ChildrenTransitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="140"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.ChildrenTransitions>
+                <TransitionCollection>
+                    <EntranceThemeTransition/>
+                </TransitionCollection>
+            </Grid.ChildrenTransitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="140"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <!-- Grille de défilement horizontal -->
-        <GridView
-            x:Name="itemGridView"
-            AutomationProperties.AutomationId="ItemGridView"
-            AutomationProperties.Name="Grouped Items"
-            Grid.RowSpan="2"
-            Padding="116,137,40,46"
-            ItemsSource="{Binding Source={StaticResource groupedItemsViewSource}}"
-            SelectionMode="None"
-            IsSwipeEnabled="false"
-            IsItemClickEnabled="True"
-            ItemClick="ItemView_ItemClick">
-            <GridView.ItemTemplate>
-                <DataTemplate>
-                    <Grid HorizontalAlignment="Left" Width="300" Height="300" >
-                        <Border Background="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}">
-                            <Image Source="{Binding ImagePath}" Stretch="Uniform" AutomationProperties.Name="{Binding title}"/>
-                        </Border>
-                        <StackPanel VerticalAlignment="Bottom" Background="{ThemeResource ListViewItemOverlayBackgroundThemeBrush}">
-                            <TextBlock Text="{Binding title}" Foreground="{ThemeResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextBlockStyle}" Height="60" Margin="15,0,15,0"/>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Reste à voir : " Foreground="{ThemeResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap" Margin="15,0,0,10"/>
-                                <TextBlock Text="{Binding remaining}" Foreground="{ThemeResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap" Margin="15,0,15,10"/>
-                        </StackPanel></StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-            <GridView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <ItemsWrapGrid GroupPadding="0,0,70,0"/>
-                </ItemsPanelTemplate>
-            </GridView.ItemsPanel>
-            <GridView.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.HeaderTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,0,0,2">
-                                <StackPanel>
-                                    <Button Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
-                                    AutomationProperties.Name="Group Title"
-                                    Click="Header_Click"
-                                    Style="{StaticResource TextBlockButtonStyle}" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding title}" Margin="0,-11,10,10" Style="{StaticResource SubheaderTextBlockStyle}" TextWrapping="NoWrap" />
-                                            <TextBlock Text="{StaticResource ChevronGlyph}" FontFamily="Segoe UI Symbol" Margin="0,-11,0,10" Style="{StaticResource SubheaderTextBlockStyle}" TextWrapping="NoWrap" />
-                                        </StackPanel>
-                                    </Button>
-
-                                    <Border Background="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}" Margin="10">
-
-                                        <Image Source="{Binding ImagePath}" Stretch="UniformToFill" AutomationProperties.Name="{Binding title}"/>
-                                    </Border>
+            <!-- Grille de défilement horizontal -->
+            <GridView
+                x:Name="itemGridView"
+                AutomationProperties.AutomationId="ItemGridView"
+                AutomationProperties.Name="Grouped Items"
+                Grid.RowSpan="2"
+                Padding="116,137,40,46"
+                ItemsSource="{Binding Source={StaticResource groupedItemsViewSource}}"
+                SelectionMode="None"
+                IsSwipeEnabled="false"
+                IsItemClickEnabled="True"
+                ItemClick="ItemView_ItemClick">
+                <GridView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid HorizontalAlignment="Left" Width="300" Height="300" >
+                            <Border Background="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}">
+                                <Image Source="{Binding ImagePath}" Stretch="Uniform" AutomationProperties.Name="{Binding title}"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Bottom" Background="{ThemeResource ListViewItemOverlayBackgroundThemeBrush}">
+                                <TextBlock Text="{Binding title}" Foreground="{ThemeResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextBlockStyle}" Height="60" Margin="15,0,15,0"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Reste à voir : " Foreground="{ThemeResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap" Margin="15,0,0,10"/>
+                                    <TextBlock Text="{Binding remaining}" Foreground="{ThemeResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap" Margin="15,0,15,10"/>
+                                    <Button Content="Configurer" Command="{Binding ConfigurerCommand}" CommandParameter="{Binding}" />
                                 </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </GroupStyle.HeaderTemplate>
-                </GroupStyle>
-            </GridView.GroupStyle>
-        </GridView>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsWrapGrid GroupPadding="0,0,70,0"/>
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
+                <GridView.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,2">
+                                    <StackPanel>
+                                        <Button Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
+                                            AutomationProperties.Name="Group Title"
+                                            Click="Header_Click"
+                                            Style="{StaticResource TextBlockButtonStyle}" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding title}" Margin="0,-11,10,10" Style="{StaticResource SubheaderTextBlockStyle}" TextWrapping="NoWrap" />
+                                                <TextBlock Text="{StaticResource ChevronGlyph}" FontFamily="Segoe UI Symbol" Margin="0,-11,0,10" Style="{StaticResource SubheaderTextBlockStyle}" TextWrapping="NoWrap" />
+                                            </StackPanel>
+                                        </Button>
 
-        <!-- Bouton Précédent et titre de la page -->
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Button x:Name="backButton" Margin="39,59,39,0" Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
+                                        <Border Background="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}" Margin="10">
+
+                                            <Image Source="{Binding ImagePath}" Stretch="UniformToFill" AutomationProperties.Name="{Binding title}"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </GridView.GroupStyle>
+            </GridView>
+
+            <!-- Bouton Précédent et titre de la page -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="backButton" Margin="39,59,39,0" Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
                         Style="{StaticResource NavigationBackButtonNormalStyle}"
                         VerticalAlignment="Top"
                         AutomationProperties.Name="Back"
                         AutomationProperties.AutomationId="BackButton"
                         AutomationProperties.ItemType="Navigation Button"/>
-            <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+                <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
                         IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
+                <Button Grid.Column="2" Click="SettingsClick" Padding="0">
+                    <Image Source="Assets/Settings.png" Height="48" Width="48" ></Image>
+                </Button>
+            </Grid>
         </Grid>
+        
+        <TextBlock Text="Impossible de récupérérer la liste des épisodes" Style="{StaticResource HeaderTextBlockStyle}" Name="TextBlockErreur" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"></TextBlock>
     </Grid>
 </Page>

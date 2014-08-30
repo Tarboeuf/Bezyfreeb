@@ -8,9 +8,14 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using BezyFB.Configuration;
+using BezyFreebMetro;
 using BezyFreebMetro.BezyFreeb.IMDB;
+using BezyFreebMetro.Common;
+using BezyFreebMetro.Data;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Input;
 using System.Xml.Serialization;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -396,6 +401,33 @@ namespace BezyFB
         {
             if (null != PropertyChanged)
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
+        }
+
+        [XmlIgnore]
+        public ICommand _ConfigurerCommand;
+        [XmlIgnore]
+        public ICommand ConfigurerCommand
+        {
+            get {
+                if (_ConfigurerCommand == null)
+                {
+                    return new MyCommand(AfficherConfigurationSerie);
+                }
+                return _ConfigurerCommand;
+            }
+        }
+
+        private async void AfficherConfigurationSerie(object parameter)
+        {
+            SettingsShow CustomSettingFlyout = new SettingsShow();
+
+
+            var show = parameter as rootShowsShow;
+            if (null != show)
+            {
+                CustomSettingFlyout.DataContext = await MainModel.Utilisateur.GetSerie(show);
+                CustomSettingFlyout.Show();
+            }
         }
     }
 }

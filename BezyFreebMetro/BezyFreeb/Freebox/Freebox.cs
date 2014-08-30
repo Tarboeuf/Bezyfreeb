@@ -146,16 +146,18 @@ namespace BezyFB.Freebox
             return null;
         }
 
-        public async Task<string> CreerDossier(string directory, string parent)
+        public async Task CreerDossier(string directory, string parent)
         {
+            if (string.IsNullOrEmpty(parent))
+                return;
+
             if (String.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
             var json = await ApiConnector.Call("http://" + AppSettings.Default.IpFreebox + "/api/v2/fs/mkdir/", WebMethod.Post,
-                                         "application/x-www-form-urlencoded", new JsonObject { { "parent", JsonValue.CreateStringValue(Helper.EncodeTo64(parent)) }, { "dirname", JsonValue.CreateStringValue(directory) } }.ToString(),
+                                         "application/x-www-form-urlencoded", new JsonObject { { "parent", JsonValue.CreateStringValue(Helper.EncodeTo64(parent)) }, { "dirname", JsonValue.CreateStringValue(directory) } }.Stringify(),
                                          null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
-            return JsonObject.Parse(json).GetObject().GetString();
         }
 
         public async Task<List<string>> Ls(string directory)
@@ -223,7 +225,7 @@ namespace BezyFB.Freebox
             }
 
             var json = await ApiConnector.Call("http://" + AppSettings.Default.IpFreebox + "/api/v1/upload/", WebMethod.Post, "application/json",
-                                         new JsonObject { { "dirname", JsonValue.CreateStringValue(Helper.EncodeTo64(pathDir)) }, { "upload_name", JsonValue.CreateStringValue(outputFileName) } }.ToString(), null,
+                                         new JsonObject { { "dirname", JsonValue.CreateStringValue(Helper.EncodeTo64(pathDir)) }, { "upload_name", JsonValue.CreateStringValue(outputFileName) } }.Stringify(), null,
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
             string message = null;
             try

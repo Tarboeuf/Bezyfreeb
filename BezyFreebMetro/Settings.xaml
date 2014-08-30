@@ -52,7 +52,7 @@
             <TextBox Margin="0,10,0,25" Text="{Binding AppName}" />
 
         </StackPanel>
-                    
+
         <!-- Section de contenu 1-->
         <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
 
@@ -60,7 +60,7 @@
             <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Login Betaseries" />
 
             <!-- Corps de la section 1 -->
-            <TextBox Margin="0,10,0,25" Text="{Binding LoginBetaSerie}" />
+            <TextBox Margin="0,10,0,25" Text="{Binding LoginBetaSerie, Mode=TwoWay}" />
 
         </StackPanel>
 
@@ -71,8 +71,12 @@
             <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Mot de passe Bétasérie" />
 
             <!-- Corps de la section 1 -->
-            <TextBox Margin="0,10,0,25" Text="{Binding PwdBetaSerie}" />
-
+            <Button Margin="0,10,0,25" Content="Changer"  Click="ChangerPassWord"/>
+            <!-- Corps de la section 1 -->
+            <StackPanel Visibility="Collapsed" Name="StackPanelPassword">
+                <PasswordBox Margin="0,10,0,25" Name="PasswordBox" />
+                <Button Content="Valider" Click="ValiderPassword"></Button>
+            </StackPanel>
         </StackPanel>
 
         <!-- Section de contenu 1-->
@@ -82,10 +86,21 @@
             <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="IP Freebox" />
 
             <!-- Corps de la section 1 -->
-            <TextBox Margin="0,10,0,25" Text="{Binding IpFreebox}" />
+            <TextBox Margin="0,10,0,25" Text="{Binding IpFreebox, Mode=TwoWay}" />
 
         </StackPanel>
 
+
+        <!-- Section de contenu 1-->
+        <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
+
+            <!-- En-tête de la section 1 -->
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Path dossier de téléchargement" />
+
+            <!-- Corps de la section 1 -->
+            <TextBox Margin="0,10,0,25" Text="{Binding PathVideo, Mode=TwoWay}" />
+
+        </StackPanel>
 
         <!-- Section de contenu 1-->
         <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">

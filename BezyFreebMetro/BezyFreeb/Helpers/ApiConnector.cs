@@ -66,7 +66,7 @@ namespace BezyFB.Helpers
                     return streamReader.ReadToEnd();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return null;
             }

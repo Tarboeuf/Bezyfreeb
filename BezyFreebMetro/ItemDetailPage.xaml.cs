@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -106,20 +107,37 @@ namespace BezyFreebMetro
 
         private async void Download_Click(object sender, RoutedEventArgs e)
         {
-            await DownloadMagnet(_Episode);
-            await MainModel.DownloadSsTitre(_Episode);
-            await MainModel.BetaSerie.SetEpisodeDownnloaded(_Episode);
+            if (await DownloadMagnet(_Episode))
+            {
+                await MainModel.DownloadSsTitre(_Episode);
+                await MainModel.BetaSerie.SetEpisodeDownnloaded(_Episode);
+            }
         }
 
-        private async Task DownloadMagnet(Episode episode)
+        private async Task<bool> DownloadMagnet(Episode episode)
         {
             if (episode != null)
             {
                 var show = await MainModel.Utilisateur.GetSerie(episode);
+                if(string.IsNullOrEmpty(show.IdEztv))
+                {
+                    SettingsShow CustomSettingFlyout = new SettingsShow();
+                    CustomSettingFlyout.DataContext = show;
+                    CustomSettingFlyout.Show();
+                }
+                if (string.IsNullOrEmpty(show.IdEztv))
+                {
+
+                    MessageDialog md = new MessageDialog("La série n'est pas configurée");
+                    await md.ShowAsync();
+                    return false;
+                }
                 var magnet = await Eztv.GetMagnetSerieEpisode(show.IdEztv, episode.code);
                 if (magnet != null)
                     episode.IdDownload = await MainModel.Freebox.Download(magnet, show.PathFreebox + "/" + (show.ManageSeasonFolder ? episode.season : ""));
+                return true;
             }
+            return false;
         }
     }
 }

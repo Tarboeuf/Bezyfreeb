@@ -2,6 +2,7 @@
 // Le : 23-06-2014
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,8 +10,9 @@ using BezyFB.Helpers;
 
 namespace BezyFB.EzTv
 {
-    public class Eztv
+    public sealed class Eztv
     {
+
         private const string Url = "http://eztv.it/";
 
         public static string GetMagnetSerieEpisode(string serie, string episode)

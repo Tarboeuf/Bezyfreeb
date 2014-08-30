@@ -39,9 +39,15 @@ namespace BezyFB.EzTv
             return html;
         }
 
-        public  async Task<IEnumerable<Show>> GetListShow()
+        private static List<Show> _Shows;
+        public static async Task<IEnumerable<Show>> GetListShow()
         {
+            if (null != _Shows)
+                return _Shows;
             string html = await ApiConnector.Call(Url + "search/", WebMethod.Get, null, null, "text/xml");
+
+            if (html == null)
+                return new List<Show>();
 
             html = html.Split(new[] { "<select name=\"SearchString\">" }, StringSplitOptions.RemoveEmptyEntries)[1];
             html = html.Split(new[] { "</select>" }, StringSplitOptions.RemoveEmptyEntries)[0];
@@ -55,7 +61,7 @@ namespace BezyFB.EzTv
             return shows;
         }
 
-        private Show GetShow(string str)
+        private static Show GetShow(string str)
         {
             if (str.IndexOf('"') == -1 || str.IndexOf('>') == -1)
                 return null;

@@ -92,7 +92,7 @@ namespace BezyFreebMetro.Data
     public sealed class MainModel
     {
         private static BetaSerie _BetaSerie = new BetaSerie();
-        private static Utilisateur _Utilisateur = Utilisateur.Current();
+        private static Utilisateur _Utilisateur = null;
         private static Freebox _Freebox = new Freebox();
 
         public static BetaSerie BetaSerie { get { return _BetaSerie; } }
@@ -250,5 +250,11 @@ namespace BezyFreebMetro.Data
 
             return new byte[0];
         }
+
+        public static async Task InitialisedUser()
+        {
+            _Utilisateur = await Utilisateur.Current();
+        }
+
     }
 }

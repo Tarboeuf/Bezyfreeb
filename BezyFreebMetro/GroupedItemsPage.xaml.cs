@@ -1,9 +1,11 @@
 ﻿using BezyFB;
+using BezyFB.Configuration;
 using BezyFreebMetro.BezyFreeb.IMDB;
 using BezyFreebMetro.Common;
 using BezyFreebMetro.Data;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Windows.Foundation;
@@ -66,11 +68,18 @@ namespace BezyFreebMetro
         /// antérieure.  L'état n'aura pas la valeur Null lors de la première visite de la page.</param>
         private async void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            // TODO: créez un modèle de données approprié pour le domaine posant problème pour remplacer les exemples de données
-            var sampleDataGroups = await MainModel.GetGroupsAsync();
-            this.DefaultViewModel["Groups"] = sampleDataGroups;
+            var episodesBetaSerie = await MainModel.GetGroupsAsync();
 
-            foreach (var item in sampleDataGroups)
+            if (null == episodesBetaSerie)
+            {
+                TextBlockErreur.Visibility = Visibility.Visible;
+                return;
+            }
+
+            TextBlockErreur.Visibility = Visibility.Collapsed;
+
+            DefaultViewModel["Groups"] = episodesBetaSerie;
+            foreach (var item in episodesBetaSerie)
             {
                 var path = await ImdbAPI.GetImagePath(item.thetvdb_id);
                 if (null != path)
@@ -129,5 +138,11 @@ namespace BezyFreebMetro
         }
 
         #endregion
+
+        private void SettingsClick(object sender, RoutedEventArgs e)
+        {
+            Settings CustomSettingFlyout = new Settings();
+            CustomSettingFlyout.Show();
+        }
     }
 }

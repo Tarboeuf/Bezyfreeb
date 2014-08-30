@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.ApplicationSettings;
 using System.ComponentModel;
+using BezyFreebMetro.Data;
 
 // Pour plus d'informations sur le modèle Application grille, consultez la page http://go.microsoft.com/fwlink/?LinkId=234226
 
@@ -97,6 +98,9 @@ namespace BezyFreebMetro
                 // paramètre
                 rootFrame.Navigate(typeof(GroupedItemsPage), e.Arguments);
             }
+
+
+            await MainModel.InitialisedUser();
             // Vérifiez que la fenêtre actuelle est active
             Window.Current.Activate();
         }
@@ -360,7 +364,7 @@ namespace BezyFreebMetro
             get
             {
                 if (localSettings.Values["PathVideo"] == null)
-                    localSettings.Values["PathVideo"] = "";
+                    localSettings.Values["PathVideo"] = "Disque dur\\Vidéos";
 
                 _PathVideo = (string)localSettings.Values["PathVideo"];
                 return _PathVideo;

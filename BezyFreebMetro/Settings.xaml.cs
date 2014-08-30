@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 // Pour en savoir plus sur le modèle d'élément du menu volant des paramètres, consultez la page http://go.microsoft.com/fwlink/?LinkId=273769
+using BezyFB.Helpers;
 
 namespace BezyFreebMetro
 {
@@ -30,6 +31,18 @@ namespace BezyFreebMetro
         {
             Freebox fb = new Freebox();
             await fb.ConnectNewFreebox();
+        }
+
+        private void ChangerPassWord(object sender, RoutedEventArgs e)
+        {
+            PasswordBox.Password = "";
+            StackPanelPassword.Visibility = Visibility.Visible;
+        }
+
+        private void ValiderPassword(object sender, RoutedEventArgs e)
+        {
+            AppSettings.Default.PwdBetaSerie = Helper.GetMd5Hash(PasswordBox.Password);
+            StackPanelPassword.Visibility = Visibility.Collapsed;
         }
     }
 }

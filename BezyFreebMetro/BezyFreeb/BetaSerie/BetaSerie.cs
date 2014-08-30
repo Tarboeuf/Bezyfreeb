@@ -58,7 +58,11 @@ namespace BezyFB.BetaSerie
                     string link = ApiAdresse + Members + "/auth.xml" + EnteteArgs;
                     link += "&login=" + AppSettings.Default.LoginBetaSerie + "&password=" + AppSettings.Default.PwdBetaSerie;
                     Error = await ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
-
+                    if (null == Error)
+                    {
+                        Error = "Impossible de se connecter à " + link;
+                        return false;
+                    }
                     XDocument xdoc = XDocument.Parse(Error);
                     var t = from lv1 in xdoc.Descendants("token")
                             select lv1.Value;

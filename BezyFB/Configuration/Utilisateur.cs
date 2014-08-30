@@ -120,6 +120,7 @@ namespace BezyFB.Configuration
             }
         }
 
+
         public string ShowName
         {
             get { return _ShowName; }
