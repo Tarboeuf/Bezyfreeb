@@ -12,17 +12,22 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <x:String x:Key="ChevronGlyph">&#xE26B;</x:String>
-        <!--
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Common/Generic.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <x:String x:Key="ChevronGlyph">&#xE26B;</x:String>
+            <!--
             Collection d'éléments groupés affichés par cette page, liée à un sous-ensemble
             de la liste d'éléments complète, car les éléments de groupes ne peuvent pas être virtualisés
         -->
-        <CollectionViewSource
+            <CollectionViewSource
             x:Name="groupedItemsViewSource"
             Source="{Binding Groups}"
             IsSourceGrouped="False"/>
-        <!--ItemsPath="Items"-->
+            <!--ItemsPath="Items"-->
 
+        </ResourceDictionary>
     </Page.Resources>
 
     <!--
@@ -117,14 +122,14 @@
                         AutomationProperties.Name="Back"
                         AutomationProperties.AutomationId="BackButton"
                         AutomationProperties.ItemType="Navigation Button"/>
-                <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-                <Button Grid.Column="2" Click="SettingsClick" Padding="0">
+                <Button Grid.Column="1" Click="SettingsClick" Padding="0" VerticalAlignment="Bottom" Margin="0 0 30 40"  >
                     <Image Source="Assets/Settings.png" Height="48" Width="48" ></Image>
                 </Button>
+                <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="2" 
+                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
             </Grid>
         </Grid>
-        
+
         <TextBlock Text="Impossible de récupérérer la liste des épisodes" Style="{StaticResource HeaderTextBlockStyle}" Name="TextBlockErreur" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"></TextBlock>
     </Grid>
 </Page>

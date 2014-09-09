@@ -230,7 +230,7 @@ namespace BezyFB.Freebox
             string message = null;
             try
             {
-                var id = (string)JsonObject.Parse(json)["result"].GetObject()["id"].GetString();
+                var id = JsonObject.Parse(json)["result"].GetObject()["id"].GetNumber();
 
                 string text = fileContent;
 
