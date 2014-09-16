@@ -29,13 +29,13 @@ namespace BezyFB.Helpers
         {
             try
             {
-                var alg = HashAlgorithmProvider.OpenAlgorithm("MD5");
+                var alg = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
                 IBuffer buff = CryptographicBuffer.ConvertStringToBinary(str, BinaryStringEncoding.Utf8);
                 var hashed = alg.HashData(buff);
-                var res = CryptographicBuffer.ConvertBinaryToString(BinaryStringEncoding.Utf8, hashed);
+                var res = CryptographicBuffer.EncodeToHexString(hashed);
                 return res;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return null;
             }
