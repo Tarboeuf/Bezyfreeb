@@ -281,6 +281,10 @@ namespace BezyFB
                 if (magnet != null)
                     episode.IdDownload = _freeboxApi.Download(magnet, _user.GetSerie(episode).PathFreebox + "/" +
                                                                       (_user.GetSerie(episode).ManageSeasonFolder ? episode.season : ""));
+                else if (_user.GetSerie(episode).IdEztv == null)
+                    throw new Exception("Serie non configurée");
+                else
+                    throw new Exception("Serie non trouvée");
             }
 
             Cursor = Cursors.Arrow;
@@ -295,6 +299,7 @@ namespace BezyFB
         private void Download_All_Click(object sender, RoutedEventArgs e)
         {
             var root = _bs.GetListeNouveauxEpisodesTest();
+            var errors = "";
 
             foreach (var rootShowsShow in root.shows)
             {
@@ -310,6 +315,7 @@ namespace BezyFB
                             MessageBox.Show(ex.Message);
                         else
                             Console.WriteLine(ex.Message);
+                        errors += ex.Message + "\r\n";
                     }
 
                     try
@@ -322,9 +328,13 @@ namespace BezyFB
                             MessageBox.Show(ex.Message);
                         else
                             Console.WriteLine(ex.Message);
+                        errors += ex.Message + "\r\n";
                     }
                 }
             }
+
+            if (!String.IsNullOrEmpty(errors))
+                MessageBox.Show(errors);
         }
 
         private void MainWindow_OnClosed(object sender, EventArgs e)
