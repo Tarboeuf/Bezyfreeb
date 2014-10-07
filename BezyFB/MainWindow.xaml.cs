@@ -315,7 +315,7 @@ namespace BezyFB
                             MessageBox.Show(ex.Message);
                         else
                             Console.WriteLine(ex.Message);
-                        errors += ex.Message + "\r\n";
+                        errors += episode.show_title + "(" + episode.code + ") : " +  ex.Message + "\r\n";
                     }
 
                     try
@@ -328,7 +328,7 @@ namespace BezyFB
                             MessageBox.Show(ex.Message);
                         else
                             Console.WriteLine(ex.Message);
-                        errors += ex.Message + "\r\n";
+                        errors += episode.show_title + "(" + episode.code + ") : " + ex.Message + "\r\n";
                     }
                 }
             }
