@@ -19,7 +19,7 @@ using Windows.UI.Popups;
 
 namespace BezyFB.Freebox
 {
-    public class Freebox
+    public sealed class Freebox
     {
         private String SessionToken { get; set; }
 
@@ -275,7 +275,7 @@ namespace BezyFB.Freebox
                 await md.ShowAsync();
                 return null;
             }
-            return ((string)jsonObject["result"].GetObject()["name"].GetString());
+            return jsonObject["result"].GetObject()["name"].GetString();
         }
     }
 }

@@ -68,6 +68,7 @@ namespace BezyFreebMetro
         /// antérieure.  L'état n'aura pas la valeur Null lors de la première visite de la page.</param>
         private async void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            ProgressBar.Visibility = Visibility.Visible;
             var episodesBetaSerie = await MainModel.GetGroupsAsync();
 
             if (null == episodesBetaSerie)
@@ -85,6 +86,7 @@ namespace BezyFreebMetro
                 if (null != path)
                     item.ImagePath = new BitmapImage(new System.Uri(path));
             }
+            ProgressBar.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>
