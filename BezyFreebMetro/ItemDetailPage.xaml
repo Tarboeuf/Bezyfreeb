@@ -16,55 +16,63 @@
         * La ligne 0 qui contient le bouton Précédent et le titre de la page
         * La ligne 1 qui contient le reste de la page
     -->
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-        DataContext="{Binding Item}" >
-        <Grid.ChildrenTransitions>
-            <TransitionCollection>
-                <EntranceThemeTransition/>
-            </TransitionCollection>
-        </Grid.ChildrenTransitions>
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="140"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
+        <ProgressBar Name="ProgressBar" Grid.Row="0" Grid.Column="0" Visibility="Collapsed" IsIndeterminate="True" Background="Transparent"/>
 
-        <!--
+        <Grid Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+        DataContext="{Binding Item}" >
+            <Grid.ChildrenTransitions>
+                <TransitionCollection>
+                    <EntranceThemeTransition/>
+                </TransitionCollection>
+            </Grid.ChildrenTransitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="140"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!--
             TODO: Le contenu doit être placé dans la grille suivante 
                   pour afficher les détails de l'élément actuel
         -->
-        <Grid Grid.Row="1" x:Name="contentRegion">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <TextBlock Text="{Binding description}" Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Stretch"
+            <Grid Grid.Row="1" x:Name="contentRegion">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding description}" Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Stretch"
                         IsHitTestVisible="false" TextWrapping="WrapWholeWords" Margin="30"/>
-            <StackPanel Grid.Row="1" Orientation="Horizontal">
-                <Button Content="Telecharger" Click="Download_Click" />
-                <Button Content="Marquer comme vu" Click="Vu_Click" />
-            </StackPanel>
-        </Grid>
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <Button Content="Telecharger" Click="Download_Click" />
+                    <Button Content="Marquer comme vu" Click="Vu_Click" />
+                </StackPanel>
+            </Grid>
 
-        <!-- Bouton Précédent et titre de la page -->
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Button x:Name="backButton" Margin="39,59,39,0" Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
+            <!-- Bouton Précédent et titre de la page -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="backButton" Margin="39,59,39,0" Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
                         Style="{StaticResource NavigationBackButtonNormalStyle}"
                         VerticalAlignment="Top"
                         AutomationProperties.Name="Back"
                         AutomationProperties.AutomationId="BackButton"
                         AutomationProperties.ItemType="Navigation Button"/>
-            <StackPanel Grid.Column="1" Orientation="Horizontal" >
-                <TextBlock Text="{Binding code}" Style="{StaticResource HeaderTextBlockStyle}"
+                <StackPanel Grid.Column="1" Orientation="Horizontal" >
+                    <TextBlock Text="{Binding code}" Style="{StaticResource HeaderTextBlockStyle}"
                         IsHitTestVisible="false" TextWrapping="NoWrap" FontStyle="Italic" FontWeight="Light" VerticalAlignment="Bottom" Margin="0,0,10,40"/>
-                <TextBlock Text="-" Style="{StaticResource HeaderTextBlockStyle}"
+                    <TextBlock Text="-" Style="{StaticResource HeaderTextBlockStyle}"
                         IsHitTestVisible="false" TextWrapping="NoWrap" FontStyle="Italic" FontWeight="Light" VerticalAlignment="Bottom" Margin="0,0,10,40"/>
-                <TextBlock x:Name="pageTitle" Text="{Binding title}" Style="{StaticResource HeaderTextBlockStyle}"
+                    <TextBlock x:Name="pageTitle" Text="{Binding title}" Style="{StaticResource HeaderTextBlockStyle}"
                         IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-            </StackPanel>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

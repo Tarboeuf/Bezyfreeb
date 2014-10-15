@@ -146,6 +146,10 @@ namespace BezyFreebMetro.Data
                             else
                                 fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
                         }
+                        else if(!string.IsNullOrEmpty(episode.FileNameSansExtension))
+                        {
+                            fileName = episode.FileNameSansExtension + ".srt";
+                        }
                     }
                     string pathreseau = pathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : "");
 

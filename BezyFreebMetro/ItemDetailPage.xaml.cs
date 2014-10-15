@@ -107,11 +107,13 @@ namespace BezyFreebMetro
 
         private async void Download_Click(object sender, RoutedEventArgs e)
         {
+            ProgressBar.Visibility = Visibility.Visible;
             if (await DownloadMagnet(_Episode))
             {
                 await MainModel.DownloadSsTitre(_Episode);
                 await MainModel.BetaSerie.SetEpisodeDownnloaded(_Episode);
             }
+            ProgressBar.Visibility = Visibility.Collapsed;
         }
 
         private async Task<bool> DownloadMagnet(Episode episode)
@@ -123,7 +125,7 @@ namespace BezyFreebMetro
                 {
                     SettingsShow CustomSettingFlyout = new SettingsShow();
                     CustomSettingFlyout.DataContext = show;
-                    CustomSettingFlyout.Show();
+                    CustomSettingFlyout.ShowIndependent();
                 }
                 if (string.IsNullOrEmpty(show.IdEztv))
                 {
@@ -134,8 +136,12 @@ namespace BezyFreebMetro
                 }
                 var magnet = await Eztv.GetMagnetSerieEpisode(show.IdEztv, episode.code);
                 if (magnet != null)
+                {
+                    episode.FileNameSansExtension = magnet.Remove(0, magnet.IndexOf("dn=", System.StringComparison.Ordinal) + 3);
+                    episode.FileNameSansExtension = episode.FileNameSansExtension.Remove(episode.FileNameSansExtension.IndexOf("&tr=", System.StringComparison.Ordinal));
                     episode.IdDownload = await MainModel.Freebox.Download(magnet, show.PathFreebox + "/" + (show.ManageSeasonFolder ? episode.season : ""));
-                return true;
+                    return true;
+                }
             }
             return false;
         }
