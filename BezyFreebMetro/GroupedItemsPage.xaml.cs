@@ -1,5 +1,6 @@
 ﻿using BezyFB;
 using BezyFB.Configuration;
+using BezyFB.Freebox;
 using BezyFreebMetro.BezyFreeb.IMDB;
 using BezyFreebMetro.Common;
 using BezyFreebMetro.Data;
@@ -145,6 +146,34 @@ namespace BezyFreebMetro
         {
             Settings CustomSettingFlyout = new Settings();
             CustomSettingFlyout.Show();
+        }
+
+        private async void Freebox_OnClick(object sender, RoutedEventArgs e)
+        {
+            ProgressBar.Visibility = Visibility.Visible;
+            itemGridView.Visibility = Visibility.Collapsed;
+            itemGridViewFreebox.Visibility = Visibility.Visible;
+
+            Freebox fb = new Freebox();
+            _CurrentPath = AppSettings.Default.PathVideo;
+            DefaultViewModel["FreeboxFolder"] = await fb.Ls(AppSettings.Default.PathVideo);
+            ProgressBar.Visibility = Visibility.Collapsed;
+        }
+
+        private void BezyFreeb_OnClick(object sender, RoutedEventArgs e)
+        {
+            itemGridView.Visibility = Visibility.Visible;
+            itemGridViewFreebox.Visibility = Visibility.Collapsed;
+        }
+
+        private string _CurrentPath = null;
+        private async void UpdateFreebox_OnClick(object sender, RoutedEventArgs e)
+        {
+            ProgressBar.Visibility = Visibility.Visible;
+            Freebox fb = new Freebox();
+            _CurrentPath += "/" + (sender as Button).Content;
+            DefaultViewModel["FreeboxFolder"] = await fb.Ls(_CurrentPath);
+            ProgressBar.Visibility = Visibility.Collapsed;
         }
     }
 }
