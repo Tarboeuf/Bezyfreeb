@@ -282,6 +282,7 @@
                 SelectionMode="None"
                 IsSwipeEnabled="false"
                 IsItemClickEnabled="True"
+                Visibility="Collapsed"
                 ItemClick="ItemView_ItemClick">
                 <GridView.ItemTemplate>
                     <DataTemplate >
@@ -327,7 +328,7 @@
                 </Button>
                 <Button Content="{StaticResource AppName}"  Grid.Column="2" Style="{StaticResource ButtonStyle1}" Click="BezyFreeb_OnClick"
                         VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-                <TextBlock Grid.Column="3" Margin="5">-</TextBlock>
+                <TextBlock Grid.Column="3" Margin="0 0 30 40" Style="{StaticResource HeaderTextBlockStyle}" Text="-" VerticalAlignment="Bottom"></TextBlock>
                 <Button Content="Freebox"  Grid.Column="4" Style="{StaticResource ButtonStyle1}"
                         Click="Freebox_OnClick"
                         VerticalAlignment="Bottom" Margin="0,0,30,40"/>

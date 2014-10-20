@@ -65,10 +65,14 @@
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding title}" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="NoWrap"/>
                                 <TextBlock Text="{Binding code}" FontStyle="Italic" FontWeight="Light" Margin="10 0 0 0" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="NoWrap"/>
+
                             </StackPanel>
                             <!--<TextBlock Text="{Binding Subtitle}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap"/>-->
                             <TextBlock Text="{Binding description}" Style="{StaticResource BodyTextBlockStyle}" MaxHeight="60"/>
                         </StackPanel>
+                        <Button Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" CommandParameter="{Binding}" Click="EpisodeSeenClick">
+                            <Image Source="Assets/eye48.png" Height="24" Width="24"></Image>
+                        </Button>
                     </Grid>
                 </DataTemplate>
             </GridView.ItemTemplate>

@@ -1,4 +1,5 @@
-﻿using BezyFB;
+﻿using System.Collections.ObjectModel;
+using BezyFB;
 using BezyFreebMetro.Common;
 using BezyFreebMetro.Data;
 using System;
@@ -29,6 +30,7 @@ namespace BezyFreebMetro
     {
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
+        private IEnumerable<SaisonVM> _Episodes;
 
         /// <summary>
         /// NavigationHelper est utilisé sur chaque page pour faciliter la navigation et 
@@ -68,11 +70,10 @@ namespace BezyFreebMetro
         /// antérieure.  L'état n'aura pas la valeur Null lors de la première visite de la page.</param>
         private void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            // TODO: créez un modèle de données approprié pour le domaine posant problème pour remplacer les exemples de données
-            //var group = await SampleDataSource.GetGroupAsync();
             var show = (rootShowsShow)e.NavigationParameter;
             this.DefaultViewModel["Group"] = show;
-            this.DefaultViewModel["Groups"] = show.unseen.GroupBy(ep => ep.season).Select(g => new SaisonVM(g));
+            _Episodes = show.unseen.GroupBy(ep => ep.season).Select(g => new SaisonVM(g));
+            this.DefaultViewModel["Groups"] = _Episodes;
         }
 
         /// <summary>
@@ -109,15 +110,30 @@ namespace BezyFreebMetro
         }
 
         #endregion
+
+        private async void EpisodeSeenClick(object sender, RoutedEventArgs e)
+        {
+            var episode = ((Button)sender).CommandParameter as Episode;
+            await MainModel.BetaSerie.SetEpisodeSeen(episode);
+            foreach (var saisonVm in _Episodes)
+            {
+                saisonVm.Items.Remove(episode);
+            }
+            ((Button)sender).Background = new SolidColorBrush(Colors.DeepPink);
+            this.DefaultViewModel["Groups"] = _Episodes;
+        }
     }
 
     public class SaisonVM : INotifyPropertyChanged
     {
-        private readonly IGrouping<string,Episode> _Group;
+        private IGrouping<string, Episode> _Group;
+        private ObservableCollection<Episode> _Items;
 
         public SaisonVM(IGrouping<string, Episode> group)
         {
             _Group = group;
+            _Items = new ObservableCollection<Episode>(group);
+            _Items.CollectionChanged += delegate { OnPropertyChanged("Items"); };
         }
 
         public string Nom
@@ -128,7 +144,21 @@ namespace BezyFreebMetro
             }
         }
 
-        public IEnumerable<Episode> Items { get { return _Group; } }
+        public ObservableCollection<Episode> Items
+        {
+            get { return _Items; }
+            set
+            {
+                _Items = value;
+                OnPropertyChanged("Items");
+            }
+        }
+
+        private void OnPropertyChanged(string value)
+        {
+            if (null != PropertyChanged)
+                PropertyChanged(this, new PropertyChangedEventArgs(value));
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

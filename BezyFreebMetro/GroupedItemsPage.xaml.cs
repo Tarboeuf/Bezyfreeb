@@ -1,4 +1,6 @@
-﻿using BezyFB;
+﻿using Windows.Storage;
+using Windows.Web.Http;
+using BezyFB;
 using BezyFB.Configuration;
 using BezyFB.Freebox;
 using BezyFreebMetro.BezyFreeb.IMDB;
@@ -31,6 +33,9 @@ namespace BezyFreebMetro
     {
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
+        private static bool _IsLoaded = false;
+        private string _CurrentPath = null;
+        private static IEnumerable<rootShowsShow> _EpisodesBetaSerie;
 
         /// <summary>
         /// NavigationHelper est utilisé sur chaque page pour faciliter la navigation et 
@@ -69,10 +74,21 @@ namespace BezyFreebMetro
         /// antérieure.  L'état n'aura pas la valeur Null lors de la première visite de la page.</param>
         private async void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            ProgressBar.Visibility = Visibility.Visible;
-            var episodesBetaSerie = await MainModel.GetGroupsAsync();
+            if (_IsLoaded)
+            {
+                DefaultViewModel["Groups"] = _EpisodesBetaSerie;
+                ProgressBar.Visibility = Visibility.Collapsed;
+                return;
+            }
 
-            if (null == episodesBetaSerie)
+            _IsLoaded = true;
+            ProgressBar.Visibility = Visibility.Visible;
+
+
+            _EpisodesBetaSerie = await MainModel.GetGroupsAsync();
+
+            DefaultViewModel["Groups"] = _EpisodesBetaSerie;
+            if (null == _EpisodesBetaSerie)
             {
                 TextBlockErreur.Visibility = Visibility.Visible;
                 return;
@@ -80,8 +96,7 @@ namespace BezyFreebMetro
 
             TextBlockErreur.Visibility = Visibility.Collapsed;
 
-            DefaultViewModel["Groups"] = episodesBetaSerie;
-            foreach (var item in episodesBetaSerie)
+            foreach (var item in _EpisodesBetaSerie)
             {
                 var path = await ImdbAPI.GetImagePath(item.thetvdb_id);
                 if (null != path)
@@ -166,7 +181,7 @@ namespace BezyFreebMetro
             itemGridViewFreebox.Visibility = Visibility.Collapsed;
         }
 
-        private string _CurrentPath = null;
+
         private async void UpdateFreebox_OnClick(object sender, RoutedEventArgs e)
         {
             ProgressBar.Visibility = Visibility.Visible;
