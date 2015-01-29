@@ -34,7 +34,7 @@ namespace BezyFB.Freebox
             if (!GenererSessionToken())
                 return false;
 
-            var json = ApiConnector.Call("http://mafreebox.freebox.fr/api/v2/connection/config/", WebMethod.Get, "application/json", null, null,
+            var json = ApiConnector.Call("http://mafreebox.freebox.fr/api/v3/connection/config/", WebMethod.Get, "application/json", null, null,
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
             var j = JObject.Parse(json);
 
@@ -66,14 +66,14 @@ namespace BezyFB.Freebox
 
         private bool GenererSessionToken()
         {
-            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/", WebMethod.Get);
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/login/", WebMethod.Get);
             if (json == null)
                 return false;
             var challenge = (string)JObject.Parse(json)["result"]["challenge"];
 
             var password = Helper.Encode(challenge, Settings.Default.TokenFreebox);
 
-            json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/session/", WebMethod.Post, "application/json",
+            json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/login/session/", WebMethod.Post, "application/json",
                                      new JObject { { "password", password }, { "app_id", Settings.Default.AppId } }.ToString());
             var session = JObject.Parse(json);
 
@@ -87,7 +87,7 @@ namespace BezyFB.Freebox
 
         private bool GenererAppToken()
         {
-            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/authorize/", WebMethod.Post, "application/json",
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/login/authorize/", WebMethod.Post, "application/json",
                                          new JObject
                                              {
                                                  {"app_id", Settings.Default.AppId}, {"app_name", Settings.Default.AppName},
@@ -101,7 +101,7 @@ namespace BezyFB.Freebox
             String result;
             do
             {
-                json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/authorize/" + trackId, WebMethod.Get);
+                json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/login/authorize/" + trackId, WebMethod.Get);
                 var apptokenstatus = JObject.Parse(json);
                 result = (string)apptokenstatus["result"]["status"];
                 Thread.Sleep(500);
@@ -121,7 +121,7 @@ namespace BezyFB.Freebox
                 if (String.IsNullOrEmpty(SessionToken))
                     GenererSessionToken();
 
-                var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/logout/", WebMethod.Post, null, null,
+                var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/login/logout/", WebMethod.Post, null, null,
                                              null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
                 return JObject.Parse(json).ToString();
@@ -141,7 +141,7 @@ namespace BezyFB.Freebox
             if (String.IsNullOrEmpty(SessionToken))
                 GenererSessionToken();
 
-            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/fs/mkdir/", WebMethod.Post,
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/fs/mkdir/", WebMethod.Post,
                                          "application/x-www-form-urlencoded", new JObject { { "parent", Helper.EncodeTo64(parent) }, { "dirname", directory } }.ToString(),
                                          null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
@@ -153,7 +153,7 @@ namespace BezyFB.Freebox
             if (String.IsNullOrEmpty(SessionToken))
                 GenererSessionToken();
 
-            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/fs/ls/" + Helper.EncodeTo64(directory) + "?onlyFolder=" + (onlyFolder ? 1 : 0),
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/fs/ls/" + Helper.EncodeTo64(directory) + "?onlyFolder=" + (onlyFolder ? 1 : 0),
                                          WebMethod.Get, "application/x-www-form-urlencoded", null, null,
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
@@ -190,7 +190,7 @@ namespace BezyFB.Freebox
 
             var path = System.Web.HttpUtility.UrlEncode(magnetUrl);
             var content = "download_url=" + path + "\r\n&download_dir=" + Helper.EncodeTo64(pathDir);
-            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/downloads/add/", WebMethod.Post,
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/downloads/add/", WebMethod.Post,
                                          "application/x-www-form-urlencoded", content,
                                          null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
             var jsonObject = JObject.Parse(json);
@@ -250,7 +250,7 @@ namespace BezyFB.Freebox
                 pathDir += "/" + s;
             }
 
-            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v1/upload/", WebMethod.Post, "application/json",
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/upload/", WebMethod.Post, "application/json",
                                          new JObject { { "dirname", Helper.EncodeTo64(pathDir) }, { "upload_name", outputFileName } }.ToString(), null,
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
@@ -262,7 +262,7 @@ namespace BezyFB.Freebox
 
                 const string boundary = "----WebKitFormBoundary0Qvwx7fycAF2CWmh";
 
-                json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v1/upload/" + id + "/send", WebMethod.Post, "multipart/form-data; boundary=" + boundary,
+                json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/upload/" + id + "/send", WebMethod.Post, "multipart/form-data; boundary=" + boundary,
                                          "--" + boundary + Environment.NewLine +
                                          "Content-Disposition: form-data; name=\"" + outputFileName + "\"; filename=\"" + outputFileName + "\"" + Environment.NewLine +
                                          "Content-Type: text/plain" + Environment.NewLine + Environment.NewLine + text + Environment.NewLine +
@@ -285,7 +285,7 @@ namespace BezyFB.Freebox
             if (String.IsNullOrEmpty(SessionToken))
                 GenererSessionToken();
 
-            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/downloads/" + idDownload, WebMethod.Get,
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/downloads/" + idDownload, WebMethod.Get,
                                          "application/x-www-form-urlencoded", "",
                                          null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
             var jsonObject = JObject.Parse(json);
