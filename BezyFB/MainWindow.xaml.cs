@@ -143,7 +143,7 @@ namespace BezyFB
                     {
                         if (string.IsNullOrEmpty(episode.IdDownload))
                         {
-                            var lst = _freeboxApi.Ls(Settings.Default.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""));
+                            var lst = _freeboxApi.Ls(Settings.Default.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), false);
                             string f = lst.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
                             if (null != f)
                             {

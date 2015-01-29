@@ -67,6 +67,8 @@ namespace BezyFB.Freebox
         private bool GenererSessionToken()
         {
             var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/login/", WebMethod.Get);
+            if (json == null)
+                return false;
             var challenge = (string)JObject.Parse(json)["result"]["challenge"];
 
             var password = Helper.Encode(challenge, Settings.Default.TokenFreebox);
@@ -146,14 +148,17 @@ namespace BezyFB.Freebox
             return JObject.Parse(json).ToString();
         }
 
-        public List<string> Ls(string directory)
+        public List<string> Ls(string directory, bool onlyFolder)
         {
             if (String.IsNullOrEmpty(SessionToken))
                 GenererSessionToken();
 
-            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/fs/ls/" + Helper.EncodeTo64(directory),
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v2/fs/ls/" + Helper.EncodeTo64(directory) + "?onlyFolder=" + (onlyFolder ? 1 : 0),
                                          WebMethod.Get, "application/x-www-form-urlencoded", null, null,
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+
+            if (json == null)
+                return new List<string>();
 
             var jsonObject = JObject.Parse(json);
 
@@ -201,6 +206,37 @@ namespace BezyFB.Freebox
             return ((int)jsonObject["result"]["id"]).ToString();
         }
 
+        public string DownloadFile(FileInfo torrentURL, string directory)
+        {
+            if (String.IsNullOrEmpty(SessionToken))
+                GenererSessionToken();
+
+
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("download_dir", Helper.EncodeTo64(directory));
+            parameters.Add("archive_password", "");
+            parameters.Add("download_file", new FormUpload.FileParameter(File.ReadAllBytes(torrentURL.FullName), torrentURL.Name, "application/x-bittorrent"));
+
+            string strReponse = "";
+            var response = FormUpload.MultipartFormDataPost("http://" + Settings.Default.IpFreebox + "/api/v1/downloads/add", "Me", parameters, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) }).GetResponseStream();
+            using (var streamReader = new StreamReader(response))
+            {
+                strReponse = streamReader.ReadToEnd();
+            }
+
+            var jsonObject = JObject.Parse(strReponse);
+            if (!(bool)jsonObject["success"])
+            {
+                if (Settings.Default.AffichageErreurMessageBox)
+                    MessageBox.Show((string)jsonObject["msg"]);
+                else
+                    Console.WriteLine((string)jsonObject["msg"]);
+                return null;
+            }
+
+            return ((int)jsonObject["result"]["id"]).ToString();
+        }
+
         public string UploadFile(string inputFile, string outputDir, string outputFileName)
         {
             if (String.IsNullOrEmpty(SessionToken))
@@ -222,15 +258,14 @@ namespace BezyFB.Freebox
             {
                 var id = (string)JObject.Parse(json)["result"]["id"];
 
-                string text = File.ReadAllText(inputFile);
+                string text = File.ReadAllText(inputFile, Encoding.UTF8);
 
                 const string boundary = "----WebKitFormBoundary0Qvwx7fycAF2CWmh";
 
                 json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v1/upload/" + id + "/send", WebMethod.Post, "multipart/form-data; boundary=" + boundary,
                                          "--" + boundary + Environment.NewLine +
                                          "Content-Disposition: form-data; name=\"" + outputFileName + "\"; filename=\"" + outputFileName + "\"" + Environment.NewLine +
-                                         "Content-Type: text/plain" + Environment.NewLine + Environment.NewLine +
-                                         text + Environment.NewLine +
+                                         "Content-Type: text/plain" + Environment.NewLine + Environment.NewLine + text + Environment.NewLine +
                                          "--" + boundary + "--",
                                          null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
             }

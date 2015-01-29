@@ -9,6 +9,7 @@
     xmlns:common="using:BezyFreebMetro.Common"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:interop="using:Windows.UI.Xaml.Interop"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -28,8 +29,13 @@
             <CollectionViewSource x:Name="FreeboxViewSource"
                 Source="{Binding FreeboxFolder}"
                 IsSourceGrouped="False"/>
-            <!--ItemsPath="Items"-->
+            
+            <CollectionViewSource x:Name="Planning"
+                Source="{Binding Planning}"
+                IsSourceGrouped="True" ItemsPath="Items"/>
 
+            <local:DateConverter x:Key="DateConverter"></local:DateConverter>
+            
             <Style TargetType="Button" x:Key="HeaderButtonStyle">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -289,18 +295,6 @@
                         <Button Content="{Binding}" Click="UpdateFreebox_OnClick" Width="400"></Button>
                     </DataTemplate>
                 </GridView.ItemTemplate>
-                <!--<GridView.GroupStyle>
-                    <GroupStyle>
-                        <GroupStyle.HeaderTemplate>
-                            <DataTemplate>
-                                <StackPanel Width="250" Margin="0,4,14,0" Orientation="Horizontal">
-                                    <TextBlock Text="Saison  " Margin="0,0,5,20" Style="{StaticResource SubheaderTextBlockStyle}" MaxHeight="60"/>
-                                    <TextBlock Text="{Binding Nom}" Margin="0,0,0,20" Style="{StaticResource SubheaderTextBlockStyle}" MaxHeight="60"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </GroupStyle.HeaderTemplate>
-                    </GroupStyle>
-                </GridView.GroupStyle>-->
                 <GridView.ItemContainerStyle>
                     <Style TargetType="FrameworkElement">
                         <Setter Property="Margin" Value="52,0,0,2"/>
@@ -308,10 +302,69 @@
                 </GridView.ItemContainerStyle>
             </GridView>
 
+            <GridView Grid.Row="1"
+                x:Name="itemGridViewPlanning"
+                AutomationProperties.AutomationId="ItemGridView"
+                AutomationProperties.Name="Items In Group"
+                TabIndex="1" 
+                Padding="120,126,120,50"
+                ItemsSource="{Binding Source={StaticResource Planning}}"
+                SelectionMode="None"
+                IsSwipeEnabled="false"
+                IsItemClickEnabled="false"
+                Visibility="Collapsed"
+                ItemClick="ItemView_ItemClick">
+                <GridView.GroupStyle>
+                    <GroupStyle HidesIfEmpty="True">
+                        <GroupStyle.ContainerStyle>
+                            <Style TargetType="GroupItem">
+                                <Setter Property="Margin" Value="0,0,0,5"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="GroupItem">
+                                            <Border Background="DarkSlateGray">
+                                                <ItemsPresenter />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </GroupStyle.ContainerStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Width="250" Margin="0,4,14,0" Orientation="Horizontal">
+                                    <TextBlock Text="Jour  : " Margin="0,0,10,20" Style="{StaticResource SubheaderTextBlockStyle}" MaxHeight="60"/>
+                                    <TextBlock Text="{Binding Jour}" Margin="0,0,0,20" Style="{StaticResource SubheaderTextBlockStyle}" MaxHeight="60"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </GridView.GroupStyle>
+                <GridView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="250" Padding="10" BorderBrush="{StaticResource AppBarBorderThemeBrush}" BorderThickness="1" Background="{StaticResource AppBarBackgroundThemeBrush}" HorizontalAlignment="Stretch">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Path=Date, Converter={StaticResource DateConverter}}" FontWeight="Thin" Foreground="Gray"/>
+                                <TextBlock Text="{Binding show.title}" FontSize="18" />
+                                <TextBlock Text="{Binding code}" />
+                                <TextBlock Text="{Binding title}" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+                <GridView.ItemContainerStyle>
+                    <Style TargetType="FrameworkElement">
+                        <Setter Property="Margin" Value="52,0,0,2"/>
+                    </Style>
+                </GridView.ItemContainerStyle>
+            </GridView>
+            
             <!-- Bouton Précédent et titre de la page -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -331,6 +384,10 @@
                 <TextBlock Grid.Column="3" Margin="0 0 30 40" Style="{StaticResource HeaderTextBlockStyle}" Text="-" VerticalAlignment="Bottom"></TextBlock>
                 <Button Content="Freebox"  Grid.Column="4" Style="{StaticResource ButtonStyle1}"
                         Click="Freebox_OnClick"
+                        VerticalAlignment="Bottom" Margin="0,0,30,40"/>
+                <TextBlock Grid.Column="5" Margin="0 0 30 40" Style="{StaticResource HeaderTextBlockStyle}" Text="-" VerticalAlignment="Bottom"></TextBlock>
+                <Button Content="Planning"  Grid.Column="6" Style="{StaticResource ButtonStyle1}"
+                        Click="Planning_OnClick"
                         VerticalAlignment="Bottom" Margin="0,0,30,40"/>
             </Grid>
         </Grid>

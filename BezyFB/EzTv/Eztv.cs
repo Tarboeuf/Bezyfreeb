@@ -13,7 +13,7 @@ namespace BezyFB.EzTv
     public sealed class Eztv
     {
 
-        private const string Url = "http://eztv.it/";
+        private const string Url = "http://eztv.ch/";
 
         public static string GetMagnetSerieEpisode(string serie, string episode)
         {

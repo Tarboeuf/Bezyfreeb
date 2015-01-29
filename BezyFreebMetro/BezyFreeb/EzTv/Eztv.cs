@@ -12,7 +12,7 @@ namespace BezyFB.EzTv
 {
     public class Eztv
     {
-        private const string Url = "http://eztv.it/";
+        private const string Url = "https://eztv-proxy.net/";
 
         public static async Task<string> GetMagnetSerieEpisode(string serie, string episode)
         {

@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System;
+using System.Globalization;
 using BezyFB.Configuration;
 using BezyFreebMetro;
 using BezyFreebMetro.BezyFreeb.IMDB;
@@ -190,12 +192,90 @@ namespace BezyFB
             set { this.userField = value; }
         }
 
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("show", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public episodeShow show { get; set; }
+
+        private DateTime? _Date;
+        public DateTime Date
+        {
+            get
+            {
+                if (_Date.HasValue)
+                    return _Date.Value;
+
+                DateTime d;
+                if (DateTime.TryParse(date, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal , out d))
+                {
+                    _Date = d;
+                    return _Date.Value;
+                }
+                return DateTime.MinValue;
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class episodeShow
+    {
+
+        private string idField;
+
+        private string thetvdb_idField;
+
+        private string titleField;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string id
+        {
+            get
+            {
+                return this.idField;
+            }
+            set
+            {
+                this.idField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string thetvdb_id
+        {
+            get
+            {
+                return this.thetvdb_idField;
+            }
+            set
+            {
+                this.thetvdb_idField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string title
+        {
+            get
+            {
+                return this.titleField;
+            }
+            set
+            {
+                this.titleField = value;
+            }
         }
     }
 

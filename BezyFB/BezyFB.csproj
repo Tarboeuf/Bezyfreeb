@@ -38,7 +38,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -52,6 +52,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>SmallLogo.scale-100.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
@@ -90,6 +93,9 @@
     <Compile Include="Configuration\WindowShow.xaml.cs">
       <DependentUpon>WindowShow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Freebox\FreeboxExplorer.xaml.cs">
+      <DependentUpon>FreeboxExplorer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\ApiConnector.cs" />
     <Compile Include="EzTv\Eztv.cs" />
     <Compile Include="Freebox\Freebox.cs" />
@@ -111,6 +117,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Configuration\WindowShow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Freebox\FreeboxExplorer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -169,6 +179,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Image\dossier.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="SmallLogo.scale-100.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

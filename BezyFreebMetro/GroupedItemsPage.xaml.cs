@@ -1,4 +1,5 @@
-﻿using Windows.Storage;
+﻿using System.Collections.ObjectModel;
+using Windows.Storage;
 using Windows.Web.Http;
 using BezyFB;
 using BezyFB.Configuration;
@@ -168,6 +169,7 @@ namespace BezyFreebMetro
             ProgressBar.Visibility = Visibility.Visible;
             itemGridView.Visibility = Visibility.Collapsed;
             itemGridViewFreebox.Visibility = Visibility.Visible;
+            itemGridViewPlanning.Visibility = Visibility.Collapsed;
 
             Freebox fb = new Freebox();
             _CurrentPath = AppSettings.Default.PathVideo;
@@ -179,6 +181,7 @@ namespace BezyFreebMetro
         {
             itemGridView.Visibility = Visibility.Visible;
             itemGridViewFreebox.Visibility = Visibility.Collapsed;
+            itemGridViewPlanning.Visibility = Visibility.Collapsed;
         }
 
 
@@ -190,5 +193,97 @@ namespace BezyFreebMetro
             DefaultViewModel["FreeboxFolder"] = await fb.Ls(_CurrentPath);
             ProgressBar.Visibility = Visibility.Collapsed;
         }
+
+        private async void Planning_OnClick(object sender, RoutedEventArgs e)
+        {
+            ProgressBar.Visibility = Visibility.Visible;
+            itemGridView.Visibility = Visibility.Collapsed;
+            itemGridViewFreebox.Visibility = Visibility.Collapsed;
+            itemGridViewPlanning.Visibility = Visibility.Visible;
+
+            DefaultViewModel["Planning"] = (await MainModel.GetPlanning()).episodes.Where(ep => ep.Date >= DateTime.Now.Date && ep.Date < DateTime.Now.AddDays(6)).GroupBy(g => g.Date.DayOfWeek).Select(r => new PlanningJour(r)).OrderBy(p => p.DayOfWeek, new PlanningJour());
+            ProgressBar.Visibility = Visibility.Collapsed;
+        }
     }
+
+    public class PlanningJour : IComparer<DayOfWeek>
+    {
+        public PlanningJour()
+        {
+            
+        }
+
+        public PlanningJour(IGrouping<DayOfWeek, Episode> group)
+        {
+            Items = new ObservableCollection<Episode>(group);
+            Jour = group.Key.ToString();
+            DayOfWeek = group.Key;
+        }
+
+        public DayOfWeek DayOfWeek { get; set; }
+
+        public string Jour { get; set; }
+
+        public ObservableCollection<Episode> Items { get; set; }
+
+        #region Implementation of IComparer<in DayOfWeek>
+        
+        /// <summary>
+        /// Retourne un code de hachage pour l'objet spécifié.
+        /// </summary>
+        /// <returns>
+        /// Code de hachage pour l'objet spécifié.
+        /// </returns>
+        /// <param name="obj"><see cref="T:System.Object"/> pour lequel un code de hachage doit être retourné.</param><exception cref="T:System.ArgumentNullException">Le type de <paramref name="obj"/> est un type référence et <paramref name="obj"/> est null.</exception>
+        public int GetHashCode(DayOfWeek obj)
+        {
+            return obj.GetHashCode();
+        }
+
+
+        /// <summary>
+        /// Compare deux objets et retourne une valeur indiquant si le premier est inférieur, égal ou supérieur au second.
+        /// </summary>
+        /// <returns>
+        /// Entier signé qui indique les valeurs relatives de <paramref name="x"/> et <paramref name="y"/>, comme indiqué dans le tableau suivant. 
+        /// Valeur  	Signification  	
+        /// Inférieur à zéro 	<paramref name="x"/> est inférieur à <paramref name="y"/>. 	
+        /// Zéro 	<paramref name="x"/> est égal à <paramref name="y"/>. 	
+        /// Supérieure à zéro 	<paramref name="x"/> est supérieur à <paramref name="y"/>.
+        /// </returns>
+        /// <param name="x">Premier objet à comparer.</param><param name="y">Second objet à comparer.</param>
+        public int Compare(DayOfWeek x, DayOfWeek y)
+        {
+            if (x == y)
+                return 0;
+
+            if (x == DayOfWeek.Sunday)
+                return 1;
+
+            if (y == DayOfWeek.Sunday)
+                return -1;
+
+            return (int)x - (int)y;
+        }
+
+        #endregion
+    }
+
+    public class DateConverter : IValueConverter
+    {
+        #region Implementation of IValueConverter
+
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return ((DateTime)value).ToString("d MMM yyyy");
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+    }
+
 }

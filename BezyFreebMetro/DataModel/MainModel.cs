@@ -260,5 +260,10 @@ namespace BezyFreebMetro.Data
             _Utilisateur = await Utilisateur.Current();
         }
 
+        public static async Task<Planning> GetPlanning()
+        {
+            return await _BetaSerie.GetPlanning();
+        }
+
     }
 }

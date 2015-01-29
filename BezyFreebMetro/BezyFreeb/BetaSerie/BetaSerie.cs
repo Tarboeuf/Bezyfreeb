@@ -2,6 +2,7 @@
 // Le : 03-06-2014
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Windows.Security.Cryptography;
@@ -30,6 +31,7 @@ namespace BezyFB.BetaSerie
 
         //private const string Comments = "/comments";
         private const string Episodes = "/episodes";
+        private const string PlanningMembers = "/planning/member";
 
         //private const string Friends = "/friends";
         private const string Members = "/members";
@@ -189,5 +191,60 @@ namespace BezyFB.BetaSerie
                 Error = "GetPathSousTitre : " + e.Message;
             }
         }
+
+        public async Task<Planning> GetPlanning()
+        {
+            if (!await GenereToken())
+                return null;
+
+            Error = "";
+            try
+            {
+                string link = ApiAdresse + PlanningMembers + EnteteArgs;
+                link += "&userid=" + AppSettings.Default.LoginBetaSerie + "&token=" + Token;
+                var xml = await ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
+
+                var serializer = new XmlSerializer(typeof(Planning), new XmlRootAttribute("root"));
+                var reader = GenerateStreamFromString(xml);
+                var rt = (Planning)serializer.Deserialize(reader);
+                return rt;
+            }
+            catch (Exception e)
+            {
+                Error = "GetListeNouveauxEpisodesTest : " + e.Message;
+            }
+            Root = null;
+            return null;
+        }
     }
+
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
+    public class Planning
+    {
+
+        private string errorsField;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string errors
+        {
+            get
+            {
+                return this.errorsField;
+            }
+            set
+            {
+                this.errorsField = value;
+            }
+        }
+
+        /// <remarks/>
+        [XmlArray(Form = System.Xml.Schema.XmlSchemaForm.Unqualified), XmlArrayItem("episode", typeof(Episode), IsNullable = false)]
+        public Episode[] episodes { get; set; }
+    }
+
 }

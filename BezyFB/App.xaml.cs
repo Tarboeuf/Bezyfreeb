@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
+using BezyFB.Freebox;
 
 namespace BezyFB
 {
@@ -12,5 +16,36 @@ namespace BezyFB
     /// </summary>
     public sealed partial class App : Application
     {
+        public App()
+        {
+        }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            if (e.Args.Length > 0)
+            {
+                string nomFichier = e.Args[0];
+                FileInfo fi = new FileInfo(nomFichier);
+                if (fi.Exists)
+                {
+                    //File.WriteAllText(@"E:\azeqsd.txt", File.ReadAllText(fi.FullName, Encoding.Default), Encoding.Default);
+                    if (fi.Extension == ".torrent")
+                    {
+                        FreeboxExplorer fb = new FreeboxExplorer();
+                        if (fb.ShowDialog() ?? false)
+                        {
+                            fb.Freebox.DownloadFile(fi, fb.FilePath + "/");
+                        }
+                    }
+                }
+
+                Shutdown();
+            }
+            else
+            {
+                MainWindow mw = new BezyFB.MainWindow();
+                mw.ShowDialog();
+            }
+        }
     }
 }
