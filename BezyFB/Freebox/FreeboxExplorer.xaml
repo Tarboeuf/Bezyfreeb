@@ -1,0 +1,44 @@
+﻿<Window x:Class="BezyFB.Freebox.FreeboxExplorer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BezyFB.Freebox"
+        mc:Ignorable="d"
+        Title="Explorateur de freebox" Height="388" MinWidth="299" Width="400" Background="#FFCFCFCF" >
+    <DockPanel>
+        <Label DockPanel.Dock="Top" Foreground="#FF5F0303" FontSize="16" FontFamily="Sitka Small" FontWeight="Bold">Choisissez le dossier d'enregistrement</Label>
+        <DockPanel DockPanel.Dock="Top">
+            <Label DockPanel.Dock="Right">)</Label>
+            <Label DockPanel.Dock="Right" Name="NbItems">0</Label>
+            <Label DockPanel.Dock="Right">(</Label>
+            <Label Name="labelResume" DockPanel.Dock="Left" />
+        </DockPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom">
+            <Button Content="OK" MinWidth="50" Margin="5" Click="Button_Click"/>
+            <Button Content="Annuler"  MinWidth="50" Margin="5" Click="Button_Click_1"/>
+        </StackPanel>
+        <ListBox Background="Transparent" Name="fichiers" HorizontalContentAlignment="Stretch">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="string">
+                    <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                        <Button CommandParameter="{Binding .}" Content="{Binding .}" Click="Button_Click_2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Label Content="{TemplateBinding Content}" Background="LightBlue" Name="PART_Label" />
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="PART_Label" Property="Background" Value="Blue"/>
+                                            <Setter TargetName="PART_Label" Property="Foreground" Value="White"/>
+                                            <Setter TargetName="PART_Label" Property="Cursor" Value="Hand"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </CheckBox>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</Window>
