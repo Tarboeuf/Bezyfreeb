@@ -11,6 +11,7 @@ namespace BezyFB.Helpers
         Get,
         Post,
         Put,
+        DELETE,
     };
 
     internal static class Extensions
@@ -25,6 +26,8 @@ namespace BezyFB.Helpers
                     return "POST";
                 case WebMethod.Put:
                     return "PUT";
+                case WebMethod.DELETE:
+                    return "DELETE";
                 default:
                     throw new ArgumentOutOfRangeException("method");
             }
