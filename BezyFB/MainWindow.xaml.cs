@@ -174,7 +174,9 @@ namespace BezyFB
                             Stream stream = new MemoryStream(st);
                             var st2 = UnzipFromStream(stream, encoding);
                             if (st2 != null)
-                                st = st2;
+                            {
+                                st = Encoding.Convert(Encoding.Default, Encoding.UTF8, st2);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -192,6 +194,7 @@ namespace BezyFB
 
                         File.WriteAllBytes(pathreseau + fileName, st);
                         _freeboxApi.UploadFile(pathreseau + fileName, userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), fileName);
+                        _freeboxApi.CleanUpload();
                         File.Delete(pathreseau + fileName);
                     }
                 }
@@ -209,6 +212,8 @@ namespace BezyFB
         private static byte[] UnzipFromStream(Stream zipStream, string encoding)
         {
             var zipInputStream = new ZipInputStream(zipStream);
+            if (!zipInputStream.CanRead)
+                return null;
             ZipEntry zipEntry = zipInputStream.GetNextEntry();
             if (zipEntry == null)
                 return new byte[0];
@@ -282,9 +287,9 @@ namespace BezyFB
                     episode.IdDownload = _freeboxApi.Download(magnet, _user.GetSerie(episode).PathFreebox + "/" +
                                                                       (_user.GetSerie(episode).ManageSeasonFolder ? episode.season : ""));
                 else if (_user.GetSerie(episode).IdEztv == null)
-                    throw new Exception("Serie non configurée");
+                    System.Windows.Forms.MessageBox.Show("Serie non configurée");
                 else
-                    throw new Exception("Serie non trouvée");
+                    System.Windows.Forms.MessageBox.Show("Serie non trouvée");
             }
 
             Cursor = Cursors.Arrow;

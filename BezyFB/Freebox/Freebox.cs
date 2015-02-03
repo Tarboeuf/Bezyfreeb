@@ -66,6 +66,9 @@ namespace BezyFB.Freebox
 
         private bool GenererSessionToken()
         {
+            if (Settings.Default.IpFreebox.StartsWith("http:"))
+                return false;
+
             var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/login/", WebMethod.Get);
             if (json == null)
                 return false;
@@ -256,7 +259,16 @@ namespace BezyFB.Freebox
 
             try
             {
-                var id = (string)JObject.Parse(json)["result"]["id"];
+                var jobj = JObject.Parse(json);
+                if (!(bool)jobj["success"] && (string)jobj["error_code"] == "conflict")
+                {
+                    DeleteFile(pathDir + "/" + outputFileName);
+                    json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/upload/", WebMethod.Post, "application/json",
+                                         new JObject { { "dirname", Helper.EncodeTo64(pathDir) }, { "upload_name", outputFileName } }.ToString(), null,
+                                         new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+                    jobj = JObject.Parse(json);
+                }
+                var id = (string)jobj["result"]["id"];
 
                 string text = File.ReadAllText(inputFile, Encoding.UTF8);
 
@@ -277,6 +289,26 @@ namespace BezyFB.Freebox
                     Console.WriteLine(ex.Message);
             }
 
+            return JObject.Parse(json).ToString();
+        }
+
+        public string DeleteFile(string filePath)
+        {
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/fs/rm/", WebMethod.Post,
+                                            "application/json",
+                                             new JObject
+                                                 {
+                                                      {"files", new JArray { Helper.EncodeTo64(filePath) } }
+                                                }.ToString(),
+                                            headers: new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) }
+                                            );
+            return JObject.Parse(json).ToString();
+        }
+
+        public string CleanUpload()
+        {
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/upload/clean", WebMethod.DELETE,
+                                           headers: new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
             return JObject.Parse(json).ToString();
         }
 
