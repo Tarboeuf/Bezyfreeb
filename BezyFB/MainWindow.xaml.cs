@@ -287,9 +287,19 @@ namespace BezyFB
                     episode.IdDownload = _freeboxApi.Download(magnet, _user.GetSerie(episode).PathFreebox + "/" +
                                                                       (_user.GetSerie(episode).ManageSeasonFolder ? episode.season : ""));
                 else if (_user.GetSerie(episode).IdEztv == null)
-                    System.Windows.Forms.MessageBox.Show("Serie non configurée");
+                {
+                    if (Settings.Default.AffichageErreurMessageBox)
+                        MessageBox.Show("Serie non configurée");
+                    else
+                        Console.WriteLine("Serie non configurée");
+                }
                 else
-                    System.Windows.Forms.MessageBox.Show("Serie non trouvée");
+                {
+                    if (Settings.Default.AffichageErreurMessageBox)
+                        MessageBox.Show("Serie non trouvée");
+                    else
+                        Console.WriteLine("Serie non trouvée");
+                }
             }
 
             Cursor = Cursors.Arrow;
