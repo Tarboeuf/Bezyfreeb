@@ -35,9 +35,12 @@ namespace BezyFB
         {
             InitializeComponent();
             _bs = new BetaSerie.BetaSerie();
-            tb.Text = _bs.Error;
+            tb.Items.Clear();
+            tb.Items.Add(_bs.Error);
             _user = Utilisateur.Current();
             _freeboxApi = new Freebox.Freebox();
+
+            Button_Click(this, null);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -45,7 +48,8 @@ namespace BezyFB
             EpisodeRoot shows = _bs.GetListeNouveauxEpisodesTest();
             if (null != shows)
                 tv.ItemsSource = shows.shows;
-            tb.Text = "BetaSeries : " + _bs.Error;
+            tb.Items.Clear();
+            tb.Items.Add("BetaSeries: " + _bs.Error);
         }
 
         private void SetDl(object sender, RoutedEventArgs e)
@@ -76,6 +80,17 @@ namespace BezyFB
                 _bs.SetEpisodeSeen(episode);
             }
             //MajItemsSource();
+            Cursor = Cursors.Arrow;
+        }
+
+        private void DlTout(object sender, RoutedEventArgs e)
+        {
+            Cursor = Cursors.Wait;
+            var episode = ((Button)sender).CommandParameter as Episode;
+
+            DownloadMagnet(episode);
+            DownloadSsTitre(episode);
+            _bs.SetEpisodeDownnloaded(episode);
             Cursor = Cursors.Arrow;
         }
 
@@ -196,6 +211,9 @@ namespace BezyFB
                         _freeboxApi.UploadFile(pathreseau + fileName, userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), fileName);
                         _freeboxApi.CleanUpload();
                         File.Delete(pathreseau + fileName);
+
+                        tb.Items.Clear();
+                        tb.Items.Add("Fichier : " + fileName);
                     }
                 }
                 else
@@ -212,9 +230,18 @@ namespace BezyFB
         private static byte[] UnzipFromStream(Stream zipStream, string encoding)
         {
             var zipInputStream = new ZipInputStream(zipStream);
+            
             if (!zipInputStream.CanRead)
                 return null;
-            ZipEntry zipEntry = zipInputStream.GetNextEntry();
+            ZipEntry zipEntry = null;
+            try
+            {
+                zipEntry = zipInputStream.GetNextEntry();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
             if (zipEntry == null)
                 return new byte[0];
             while (zipEntry != null)

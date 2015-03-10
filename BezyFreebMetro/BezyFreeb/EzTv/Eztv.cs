@@ -25,7 +25,7 @@ namespace BezyFB.EzTv
                 var collec = reg.Matches(html);
                 foreach (Match match in collec)
                 {
-                    if (match.Value.Contains(episode) && !match.Value.Contains("720p"))
+                    if (match.Value.Contains(episode) && !match.Value.Contains("720p") && !match.Value.Contains("1080p"))
                         return match.Value;
                 }
 

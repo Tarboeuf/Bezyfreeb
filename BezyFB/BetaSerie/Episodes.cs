@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 using System.ComponentModel;
+using System.Linq;
 using System.Xml.Serialization;
 using BezyFB.Annotations;
 
@@ -366,6 +367,8 @@ namespace BezyFB
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public int ATelecharger { get { return unseen.Count(e => e.user[0].downloaded == "1"); } }
 
         private void OnPropertyChanged(string propName)
         {

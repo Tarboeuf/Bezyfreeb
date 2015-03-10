@@ -12,8 +12,7 @@ namespace BezyFB.EzTv
 {
     public sealed class Eztv
     {
-
-        private const string Url = "https://eztv.ch/";   //     private const string Url = "http://eztv.it/"; //"http://eztv-proxy.net/"; 
+        private const string Url = "https://eztv-proxy.net/";   //     private const string Url = "http://eztv.it/"; //"http://eztv-proxy.net/"; https://eztv.ch/
 
         public static string GetMagnetSerieEpisode(string serie, string episode)
         {
@@ -26,7 +25,7 @@ namespace BezyFB.EzTv
                 var collec = reg.Matches(html);
                 foreach (Match match in collec)
                 {
-                    if (match.Value.Contains(episode) && !match.Value.Contains("720p"))
+                    if (match.Value.Contains(episode) && !match.Value.Contains("720p") && !match.Value.Contains("1080p"))
                         return match.Value;
                 }
 
@@ -43,6 +42,9 @@ namespace BezyFB.EzTv
         public IEnumerable<Show> GetListShow()
         {
             string html = ApiConnector.Call(Url + "search/", WebMethod.Get, null, null, "text/xml");
+
+            if (string.IsNullOrEmpty(html))
+                return new List<Show>();
 
             html = html.Split(new[] { "<select name=\"SearchString\">" }, StringSplitOptions.RemoveEmptyEntries)[1];
             html = html.Split(new[] { "</select>" }, StringSplitOptions.RemoveEmptyEntries)[0];
