@@ -1,4 +1,8 @@
-﻿using System;
+﻿using BezyFB.Configuration;
+using BezyFB.EzTv;
+using BezyFB.Properties;
+using ICSharpCode.SharpZipLib.Zip;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,10 +19,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using BezyFB.Configuration;
-using BezyFB.EzTv;
-using BezyFB.Properties;
-using ICSharpCode.SharpZipLib.Zip;
 
 namespace BezyFB
 {
@@ -90,7 +90,7 @@ namespace BezyFB
 
             DownloadMagnet(episode);
             DownloadSsTitre(episode);
-            _bs.SetEpisodeDownnloaded(episode);
+            //_bs.SetEpisodeDownnloaded(episode);
             Cursor = Cursors.Arrow;
         }
 
@@ -159,10 +159,13 @@ namespace BezyFB
                         if (string.IsNullOrEmpty(episode.IdDownload))
                         {
                             var lst = _freeboxApi.Ls(Settings.Default.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), false);
-                            string f = lst.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
-                            if (null != f)
+                            if (lst != null)
                             {
-                                fileName = f.Replace(f.Substring(f.LastIndexOf('.')), ".srt");
+                                string f = lst.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
+                                if (null != f)
+                                {
+                                    fileName = f.Replace(f.Substring(f.LastIndexOf('.')), ".srt");
+                                }
                             }
                         }
                         if (string.IsNullOrEmpty(Settings.Default.PathNonReseau))
@@ -230,7 +233,7 @@ namespace BezyFB
         private static byte[] UnzipFromStream(Stream zipStream, string encoding)
         {
             var zipInputStream = new ZipInputStream(zipStream);
-            
+
             if (!zipInputStream.CanRead)
                 return null;
             ZipEntry zipEntry = null;
@@ -309,11 +312,11 @@ namespace BezyFB
             Cursor = Cursors.Wait;
             if (episode != null)
             {
-                var magnet = Eztv.GetMagnetSerieEpisode(_user.GetSerie(episode).IdEztv, episode.code);
+                var serie = _user.GetSerie(episode);
+                var magnet = Eztv.GetMagnetSerieEpisode(serie.IdEztv, episode.code);
                 if (magnet != null)
-                    episode.IdDownload = _freeboxApi.Download(magnet, _user.GetSerie(episode).PathFreebox + "/" +
-                                                                      (_user.GetSerie(episode).ManageSeasonFolder ? episode.season : ""));
-                else if (_user.GetSerie(episode).IdEztv == null)
+                    episode.IdDownload = _freeboxApi.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""));
+                else if (serie.IdEztv == null)
                 {
                     if (Settings.Default.AffichageErreurMessageBox)
                         MessageBox.Show("Serie non configurée");
@@ -357,7 +360,7 @@ namespace BezyFB
                             MessageBox.Show(ex.Message);
                         else
                             Console.WriteLine(ex.Message);
-                        errors += episode.show_title + "(" + episode.code + ") : " +  ex.Message + "\r\n";
+                        errors += episode.show_title + "(" + episode.code + ") : " + ex.Message + "\r\n";
                     }
 
                     try

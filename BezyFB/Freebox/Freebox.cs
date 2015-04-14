@@ -1,6 +1,9 @@
 ﻿// Créer par : tkahn
 // Le : 24-06-2014
 
+using BezyFB.Helpers;
+using BezyFB.Properties;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,9 +14,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Windows;
-using BezyFB.Helpers;
-using BezyFB.Properties;
-using Newtonsoft.Json.Linq;
 
 namespace BezyFB.Freebox
 {
@@ -45,9 +45,7 @@ namespace BezyFB.Freebox
 
         private bool TesterConnexionFreebox()
         {
-            Socket s = new Socket(AddressFamily.InterNetwork,
-                                  SocketType.Stream,
-                                  ProtocolType.Tcp);
+            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             try
             {
@@ -213,7 +211,6 @@ namespace BezyFB.Freebox
         {
             if (String.IsNullOrEmpty(SessionToken))
                 GenererSessionToken();
-
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("download_dir", Helper.EncodeTo64(directory));

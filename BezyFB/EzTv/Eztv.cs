@@ -1,18 +1,18 @@
 ﻿// Créer par : pepinat
 // Le : 23-06-2014
 
+using BezyFB.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using BezyFB.Helpers;
 
 namespace BezyFB.EzTv
 {
     public sealed class Eztv
     {
-        private const string Url = "https://eztv-proxy.net/";   //     private const string Url = "http://eztv.it/"; //"http://eztv-proxy.net/"; https://eztv.ch/
+        private const string Url = "https://eztv.it/";   //     private const string Url = "http://eztv.it/"; //"http://eztv-proxy.net/"; https://eztv.ch/
 
         public static string GetMagnetSerieEpisode(string serie, string episode)
         {
@@ -50,10 +50,11 @@ namespace BezyFB.EzTv
             html = html.Split(new[] { "</select>" }, StringSplitOptions.RemoveEmptyEntries)[0];
 
             html = html.Replace("<option value=\"", "");
+            html = html.Replace("\r\n", "");
 
             var series = html.Split(new[] { "</option>" }, StringSplitOptions.RemoveEmptyEntries);
 
-            IEnumerable<Show> shows = series.Skip(1).Select(GetShow).Where(s => s != null);
+            IEnumerable<Show> shows = series.Skip(1).Select(s => GetShow(s.Trim())).Where(s => s != null);
 
             return shows;
         }
