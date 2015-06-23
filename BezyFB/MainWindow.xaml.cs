@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using T411.Api;
 
 namespace BezyFB
 {
@@ -88,9 +89,8 @@ namespace BezyFB
             Cursor = Cursors.Wait;
             var episode = ((Button)sender).CommandParameter as Episode;
 
-            DownloadMagnet(episode);
-            DownloadSsTitre(episode);
-            //_bs.SetEpisodeDownnloaded(episode);
+            if(DownloadMagnet(episode) && DownloadSsTitre(episode))
+                _bs.SetEpisodeDownnloaded(episode);
             Cursor = Cursors.Arrow;
         }
 
@@ -109,7 +109,7 @@ namespace BezyFB
             return "";
         }
 
-        private void DownloadSsTitre(Episode episode)
+        private bool DownloadSsTitre(Episode episode)
         {
             Cursor = Cursors.Wait;
             if (episode != null)
@@ -202,6 +202,8 @@ namespace BezyFB
                                 MessageBox.Show(ex.Message);
                             else
                                 Console.WriteLine(ex.Message);
+                            Cursor = Cursors.Arrow;
+                            return false;
                         }
 
                         if (cbLocalNetwork.IsChecked ?? false)
@@ -225,9 +227,12 @@ namespace BezyFB
                         MessageBox.Show("Aucun sous titre disponible");
                     else
                         Console.WriteLine("Aucun sous titre disponible");
+                    Cursor = Cursors.Arrow;
+                    return false;
                 }
             }
             Cursor = Cursors.Arrow;
+            return true;
         }
 
         private static byte[] UnzipFromStream(Stream zipStream, string encoding)
@@ -271,7 +276,14 @@ namespace BezyFB
 
                 zipEntry = zipInputStream.GetNextEntry();
             }
-            zipInputStream.Seek(0, SeekOrigin.Begin);
+            if (zipInputStream.CanSeek)
+            {
+                zipInputStream.Seek(0, SeekOrigin.Begin);
+            }
+            else
+            {
+                zipInputStream = new ZipInputStream(zipStream);
+            }
             zipEntry = zipInputStream.GetNextEntry();
             if (zipEntry == null)
                 return new byte[0];
@@ -307,7 +319,7 @@ namespace BezyFB
             DownloadMagnet(episode);
         }
 
-        private void DownloadMagnet(Episode episode)
+        private bool DownloadMagnet(Episode episode)
         {
             Cursor = Cursors.Wait;
             if (episode != null)
@@ -322,17 +334,61 @@ namespace BezyFB
                         MessageBox.Show("Serie non configurée");
                     else
                         Console.WriteLine("Serie non configurée");
+
+                    Cursor = Cursors.Arrow;
+                    return false;
                 }
                 else
                 {
-                    if (Settings.Default.AffichageErreurMessageBox)
-                        MessageBox.Show("Serie non trouvée");
+                    // try to get torrent file.
+                    string nomfichier;
+                    var torrentStream = Eztv.GetTorrentSerieEpisode(serie.IdEztv, episode.code, out nomfichier);
+
+                    if (null != torrentStream)
+                    {
+                        //ByteArrayToFile("E:\\test.torrent", torrentStream);
+                        episode.IdDownload = _freeboxApi.DownloadFile(torrentStream, nomfichier, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), true);
+                    }
                     else
-                        Console.WriteLine("Serie non trouvée");
+                    {
+                        if (Settings.Default.AffichageErreurMessageBox)
+                            MessageBox.Show("Episode " + episode.code + " non trouvé");
+                        else
+                            Console.WriteLine("Episode " + episode.code + " non trouvé");
+                        Cursor = Cursors.Arrow;
+                        return false;
+                    }
                 }
             }
 
             Cursor = Cursors.Arrow;
+            return true;
+        }
+
+        public bool ByteArrayToFile(string _FileName, byte[] _ByteArray)
+        {
+            try
+            {
+                // Open file for reading
+                System.IO.FileStream _FileStream = new System.IO.FileStream(_FileName, System.IO.FileMode.Create, System.IO.FileAccess.Write);
+                // Writes a block of bytes to this stream using data from
+                // a byte array.
+                _FileStream.Write(_ByteArray, 0, _ByteArray.Length);
+
+                // close file stream
+                _FileStream.Close();
+
+                return true;
+            }
+            catch (Exception _Exception)
+            {
+                // Error
+                Console.WriteLine("Exception caught in process: {0}",
+                                  _Exception.ToString());
+            }
+
+            // error occured, return false
+            return false;
         }
 
         private void Configuration_Click(object sender, RoutedEventArgs e)
@@ -397,6 +453,16 @@ namespace BezyFB
                 {
                     _user.SerializeElement();
                 }
+            }
+        }
+
+        private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (tc.SelectedIndex == 1 && lv.ItemsSource == null)
+            {
+                var client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
+
+                lv.ItemsSource = client.GetTopWeek().Where(t => t.CategoryName == "Film").OrderByDescending(t => t.Times_completed);
             }
         }
     }

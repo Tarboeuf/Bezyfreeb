@@ -1,12 +1,17 @@
 ﻿// Créer par : pepinat
 // Le : 23-06-2014
 
+using System.IO;
+using System.Net;
+using System.Runtime.InteropServices;
+using BezyFB.Configuration;
 using BezyFB.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace BezyFB.EzTv
 {
@@ -14,9 +19,19 @@ namespace BezyFB.EzTv
     {
         private const string Url = "https://eztv.it/";   //     private const string Url = "http://eztv.it/"; //"http://eztv-proxy.net/"; https://eztv.ch/
 
+        private static Dictionary<string, string> _PagesSeries = new Dictionary<string, string>();
+
         public static string GetMagnetSerieEpisode(string serie, string episode)
         {
-            string html = ApiConnector.Call(Url + "shows/" + serie + "/", WebMethod.Get, null, null, "text/xml");
+            string html;
+            if (_PagesSeries.ContainsKey(serie))
+            {
+                html = _PagesSeries[serie];
+            }
+            else
+            {
+                html = ApiConnector.Call(Url + "shows/" + serie + "/", WebMethod.Get, null, null, "text/xml");
+            }
 
             if (html != null)
             {
@@ -36,7 +51,59 @@ namespace BezyFB.EzTv
                 }
             }
 
-            return html;
+            return null;
+        }
+
+        public static byte[] GetTorrentSerieEpisode(string serie, string episode, out string nomFichier)
+        {
+            string html;
+            if (_PagesSeries.ContainsKey(serie))
+            {
+                html = _PagesSeries[serie];
+            }
+            else
+            {
+                html = ApiConnector.Call(Url + "shows/" + serie + "/", WebMethod.Get, null, null, "text/xml");
+            }
+
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            var collection = doc.DocumentNode.SelectNodes("//a[@class='download_1']").Where(n => n.Attributes["href"].Value.Contains(episode) && n.Attributes["href"].Value.Contains(".torrent")).Select(link => link.Attributes["href"].Value).ToList();
+            foreach (var link in collection.Where(h => !h.Contains("720p") && !h.Contains("1080p")).Union(collection))
+            {
+                string lien = link;
+                Uri uri = new Uri(lien);
+                nomFichier = uri.Segments[uri.Segments.Length - 1];
+                WebRequest request = HttpWebRequest.Create(lien);
+
+                request.ContentType = "application/x-bittorrent";
+
+                using (WebResponse response = request.GetResponse())
+                {
+
+                    var stream = response.GetResponseStream();
+                    if (null != stream)
+                    {
+                        return ReadFully(stream);
+                    }
+                }
+            }
+            nomFichier = null;
+            return null;
+        }
+
+        public static byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
         }
 
         public IEnumerable<Show> GetListShow()

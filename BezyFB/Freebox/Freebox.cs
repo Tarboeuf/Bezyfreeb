@@ -1,6 +1,7 @@
 ﻿// Créer par : tkahn
 // Le : 24-06-2014
 
+using System.Windows.Forms.VisualStyles;
 using BezyFB.Helpers;
 using BezyFB.Properties;
 using Newtonsoft.Json.Linq;
@@ -207,15 +208,35 @@ namespace BezyFB.Freebox
             return ((int)jsonObject["result"]["id"]).ToString();
         }
 
-        public string DownloadFile(FileInfo torrentURL, string directory)
+        public string DownloadFile(FileInfo torrentURL, string directory, bool isRelativeDir)
+        {
+            return DownloadFile(File.ReadAllBytes(torrentURL.FullName), torrentURL.Name, directory, isRelativeDir);
+        }
+
+        public string DownloadFile(byte[] fichier, string nomFichier, string directory, bool isRelativeDir)
         {
             if (String.IsNullOrEmpty(SessionToken))
                 GenererSessionToken();
 
+            string pathDir;
+            if (isRelativeDir)
+            {
+                pathDir = Settings.Default.PathVideo;
+                foreach (var s in directory.Split('\\', '/').Where(s => !String.IsNullOrEmpty(s)))
+                {
+                    CreerDossier(s, pathDir);
+                    pathDir += "/" + s;
+                }
+            }
+            else
+            {
+                pathDir = directory;
+            }
+
             Dictionary<string, object> parameters = new Dictionary<string, object>();
-            parameters.Add("download_dir", Helper.EncodeTo64(directory));
+            parameters.Add("download_dir", Helper.EncodeTo64(pathDir));
             parameters.Add("archive_password", "");
-            parameters.Add("download_file", new FormUpload.FileParameter(File.ReadAllBytes(torrentURL.FullName), torrentURL.Name, "application/x-bittorrent"));
+            parameters.Add("download_file", new FormUpload.FileParameter(fichier, nomFichier, "application/x-bittorrent"));
 
             string strReponse = "";
             var response = FormUpload.MultipartFormDataPost("http://" + Settings.Default.IpFreebox + "/api/v1/downloads/add", "Me", parameters, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) }).GetResponseStream();
@@ -264,6 +285,12 @@ namespace BezyFB.Freebox
                                          new JObject { { "dirname", Helper.EncodeTo64(pathDir) }, { "upload_name", outputFileName } }.ToString(), null,
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
                     jobj = JObject.Parse(json);
+                }
+
+                if (!(bool)jobj["success"])
+                {
+                    MessageBox.Show(jobj["msg"].ToString());
+                    return null;
                 }
                 var id = (string)jobj["result"]["id"];
 
