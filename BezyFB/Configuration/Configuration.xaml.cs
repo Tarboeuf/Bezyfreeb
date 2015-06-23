@@ -56,6 +56,16 @@ namespace BezyFB.Configuration
             }
         }
 
+
+        public string LoginT411
+        {
+            get { return Settings.Default.LoginT411; }
+            set
+            {
+                Settings.Default.LoginT411 = value;
+                OnPropertyChanged("LoginT411");
+            }
+        }
         public string PathLocal
         {
             get { return Settings.Default.PathNonReseau; }
@@ -83,6 +93,16 @@ namespace BezyFB.Configuration
             {
                 Settings.Default.PwdBetaSerie = Helper.GetMd5Hash(MD5.Create(), value);
                 OnPropertyChanged("PwdBetaSerie");
+            }
+        }
+
+        public string PassT411
+        {
+            get { return Settings.Default.PassT411; }
+            set
+            {
+                Settings.Default.PassT411 = value;
+                OnPropertyChanged("PassT411");
             }
         }
 
@@ -124,6 +144,14 @@ namespace BezyFB.Configuration
             passForm.ShowDialog();
             if (null != passForm.Pwd)
                 PwdBetaSerie = passForm.Pwd;
+        }
+
+        private void passwordT411_Click(object sender, RoutedEventArgs e)
+        {
+            var passForm = new PasswordForm();
+            passForm.ShowDialog();
+            if (null != passForm.Pwd)
+                PassT411 = passForm.Pwd;
         }
 
         private void pathLocalclick(object sender, RoutedEventArgs e)

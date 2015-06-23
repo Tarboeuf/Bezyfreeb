@@ -51,6 +51,18 @@
 
                 <Button Content="Annuler" Click="Cancel_Click" Width="50" Margin="5" />
             </StackPanel>
+            <GroupBox Header="T411">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Login : " />
+                        <TextBox Text="{Binding LoginT411, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" Margin="5" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Password : " />
+                        <Button Content="Changer de password" Click="passwordT411_Click" Margin="5" />
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
         </StackPanel>
     </Grid>
 </Window>
