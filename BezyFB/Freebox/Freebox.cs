@@ -213,6 +213,35 @@ namespace BezyFB.Freebox
             return DownloadFile(File.ReadAllBytes(torrentURL.FullName), torrentURL.Name, directory, isRelativeDir);
         }
 
+        public string DownloadFile(string urlFichier, string directory, bool isRelativeDir)
+        {
+            string lien = urlFichier;
+            Uri uri = new Uri(lien);
+            string nomFichier = uri.Segments[uri.Segments.Length - 1];
+            WebRequest request = HttpWebRequest.Create(lien);
+
+            request.ContentType = "application/x-bittorrent";
+
+            using (WebResponse response = request.GetResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    if (null != stream)
+                    {
+                        return DownloadFile(ReadFully(stream), nomFichier, directory, isRelativeDir);
+                    }
+                }
+            }
+            return null;
+        }
+
+
+
+        public string DownloadFile(Stream filchier, string nomFichier, string directory, bool isRelativeDir)
+        {
+            return DownloadFile(ReadFully(filchier), nomFichier, directory, isRelativeDir);
+        }
+
         public string DownloadFile(byte[] fichier, string nomFichier, string directory, bool isRelativeDir)
         {
             if (String.IsNullOrEmpty(SessionToken))
@@ -256,6 +285,20 @@ namespace BezyFB.Freebox
             }
 
             return ((int)jsonObject["result"]["id"]).ToString();
+        }
+
+        public static byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
         }
 
         public string UploadFile(string inputFile, string outputDir, string outputFileName)

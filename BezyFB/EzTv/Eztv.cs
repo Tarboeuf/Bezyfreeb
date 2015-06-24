@@ -54,7 +54,7 @@ namespace BezyFB.EzTv
             return null;
         }
 
-        public static byte[] GetTorrentSerieEpisode(string serie, string episode, out string nomFichier)
+        public static string GetTorrentSerieEpisode(string serie, string episode)
         {
             string html;
             if (_PagesSeries.ContainsKey(serie))
@@ -71,39 +71,9 @@ namespace BezyFB.EzTv
             var collection = doc.DocumentNode.SelectNodes("//a[@class='download_1']").Where(n => n.Attributes["href"].Value.Contains(episode) && n.Attributes["href"].Value.Contains(".torrent")).Select(link => link.Attributes["href"].Value).ToList();
             foreach (var link in collection.Where(h => !h.Contains("720p") && !h.Contains("1080p")).Union(collection))
             {
-                string lien = link;
-                Uri uri = new Uri(lien);
-                nomFichier = uri.Segments[uri.Segments.Length - 1];
-                WebRequest request = HttpWebRequest.Create(lien);
-
-                request.ContentType = "application/x-bittorrent";
-
-                using (WebResponse response = request.GetResponse())
-                {
-
-                    var stream = response.GetResponseStream();
-                    if (null != stream)
-                    {
-                        return ReadFully(stream);
-                    }
-                }
+                return link;
             }
-            nomFichier = null;
             return null;
-        }
-
-        public static byte[] ReadFully(Stream input)
-        {
-            byte[] buffer = new byte[16 * 1024];
-            using (MemoryStream ms = new MemoryStream())
-            {
-                int read;
-                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    ms.Write(buffer, 0, read);
-                }
-                return ms.ToArray();
-            }
         }
 
         public IEnumerable<Show> GetListShow()

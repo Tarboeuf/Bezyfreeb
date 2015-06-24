@@ -46,11 +46,6 @@
                     <CheckBox Content="Affichage erreurs dans des MessagesBox" IsChecked="{Binding AffichageErreurMessageBox}" />
                 </StackPanel>
             </GroupBox>
-            <StackPanel Orientation="Horizontal">
-                <Button Content="Ok" Click="Ok_Click" Width="50" Margin="5" />
-
-                <Button Content="Annuler" Click="Cancel_Click" Width="50" Margin="5" />
-            </StackPanel>
             <GroupBox Header="T411">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
@@ -63,6 +58,11 @@
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Ok" Click="Ok_Click" Width="50" Margin="5" />
+
+                <Button Content="Annuler" Click="Cancel_Click" Width="50" Margin="5" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

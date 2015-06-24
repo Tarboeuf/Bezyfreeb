@@ -45,7 +45,10 @@
       <Value Profile="(Default)">Tarboeuf</Value>
     </Setting>
     <Setting Name="PassT411" Type="System.String" Scope="User">
-      <Value Profile="(Default)">dlbb3781t4</Value>
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PathFilm" Type="System.String" Scope="User">
+      <Value Profile="(Default)">/Disque dur/Vidéos/__Film</Value>
     </Setting>
   </Settings>
 </SettingsFile>
