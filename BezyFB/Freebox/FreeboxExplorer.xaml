@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BezyFB.Freebox"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Explorateur de freebox" Height="388" MinWidth="299" Width="400" Background="#FFCFCFCF" >
     <DockPanel>
@@ -20,7 +21,7 @@
         </StackPanel>
         <ListBox Background="Transparent" Name="fichiers" HorizontalContentAlignment="Stretch">
             <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="string">
+                <DataTemplate DataType="system:String">
                     <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                         <Button CommandParameter="{Binding .}" Content="{Binding .}" Click="Button_Click_2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                             <Button.Template>

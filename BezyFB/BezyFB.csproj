@@ -139,6 +139,7 @@
     <Compile Include="EzTv\Eztv.cs" />
     <Compile Include="Freebox\Freebox.cs" />
     <Compile Include="Helpers\Helper.cs" />
+    <Compile Include="Helpers\SizeMoConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>

@@ -89,7 +89,7 @@ namespace BezyFB
             Cursor = Cursors.Wait;
             var episode = ((Button)sender).CommandParameter as Episode;
 
-            if(DownloadMagnet(episode) && DownloadSsTitre(episode))
+            if (DownloadMagnet(episode) && DownloadSsTitre(episode))
                 _bs.SetEpisodeDownnloaded(episode);
             Cursor = Cursors.Arrow;
         }
@@ -341,13 +341,12 @@ namespace BezyFB
                 else
                 {
                     // try to get torrent file.
-                    string nomfichier;
-                    var torrentStream = Eztv.GetTorrentSerieEpisode(serie.IdEztv, episode.code, out nomfichier);
+                    var torrentStream = Eztv.GetTorrentSerieEpisode(serie.IdEztv, episode.code);
 
                     if (null != torrentStream)
                     {
                         //ByteArrayToFile("E:\\test.torrent", torrentStream);
-                        episode.IdDownload = _freeboxApi.DownloadFile(torrentStream, nomfichier, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), true);
+                        episode.IdDownload = _freeboxApi.DownloadFile(torrentStream, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), true);
                     }
                     else
                     {
@@ -378,6 +377,29 @@ namespace BezyFB
                 // close file stream
                 _FileStream.Close();
 
+                return true;
+            }
+            catch (Exception _Exception)
+            {
+                // Error
+                Console.WriteLine("Exception caught in process: {0}",
+                                  _Exception.ToString());
+            }
+
+            // error occured, return false
+            return false;
+        }
+
+        public bool StreamToFile(string _FileName, Stream stream)
+        {
+            try
+            {
+                using (var fileStream = File.Create(_FileName))
+                {
+                    stream.Seek(0, SeekOrigin.Begin);
+                    stream.CopyTo(fileStream);
+                }
+             
                 return true;
             }
             catch (Exception _Exception)
@@ -463,6 +485,25 @@ namespace BezyFB
                 var client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
 
                 lv.ItemsSource = client.GetTopWeek().Where(t => t.CategoryName == "Film").OrderByDescending(t => t.Times_completed);
+            }
+        }
+
+        private void ButtonTelechargerTorrent_OnClick(object sender, RoutedEventArgs e)
+        {
+            Button senderButton = sender as Button;
+            if (null != senderButton)
+            {
+                var torrent = senderButton.Tag as Torrent;
+                if (null != torrent)
+                {
+                    var client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
+                    
+                    using (var stream = client.DownloadTorrent(torrent.Id))
+                    {
+                        //StreamToFile("E:\\aze.torrent", stream);
+                        _freeboxApi.DownloadFile(stream, torrent.Name, Settings.Default.PathFilm, false);
+                    }
+                }
             }
         }
     }

@@ -193,13 +193,25 @@ namespace BezyFB.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("dlbb3781t4")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string PassT411 {
             get {
                 return ((string)(this["PassT411"]));
             }
             set {
                 this["PassT411"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("/Disque dur/Vidéos/__Film")]
+        public string PathFilm {
+            get {
+                return ((string)(this["PathFilm"]));
+            }
+            set {
+                this["PathFilm"] = value;
             }
         }
     }
