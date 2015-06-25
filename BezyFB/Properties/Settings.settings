@@ -48,7 +48,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="PathFilm" Type="System.String" Scope="User">
-      <Value Profile="(Default)">/Disque dur/Vidéos/__Film</Value>
+      <Value Profile="(Default)">/Disque dur/Vidéos/__FILM/</Value>
     </Setting>
   </Settings>
 </SettingsFile>
