@@ -235,8 +235,6 @@ namespace BezyFB.Freebox
             return null;
         }
 
-
-
         public string DownloadFile(Stream filchier, string nomFichier, string directory, bool isRelativeDir)
         {
             return DownloadFile(ReadFully(filchier), nomFichier, directory, isRelativeDir);

@@ -68,7 +68,7 @@ namespace BezyFB.EzTv
 
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
-            var collection = doc.DocumentNode.SelectNodes("//a[@class='download_1']").Where(n => n.Attributes["href"].Value.Contains(episode) && n.Attributes["href"].Value.Contains(".torrent")).Select(link => link.Attributes["href"].Value).ToList();
+            var collection = doc.DocumentNode.SelectNodes("//a[@class]").Where(n => n.Attributes["href"].Value.Contains(episode) && n.Attributes["href"].Value.Contains(".torrent") && n.Attributes["class"].Value.StartsWith("download_")).Select(link => link.Attributes["href"].Value).ToList();
             foreach (var link in collection.Where(h => !h.Contains("720p") && !h.Contains("1080p")).Union(collection))
             {
                 return link;
