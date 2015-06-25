@@ -189,8 +189,7 @@ namespace BezyFB
                         Clipboard.SetText(sousTitre);
                         try
                         {
-                            Stream stream = new MemoryStream(st);
-                            var st2 = UnzipFromStream(stream, encoding);
+                            var st2 = UnzipFromStream(st, encoding);
                             if (st2 != null)
                             {
                                 st = Encoding.Convert(Encoding.Default, Encoding.UTF8, st2);
@@ -235,8 +234,9 @@ namespace BezyFB
             return true;
         }
 
-        private static byte[] UnzipFromStream(Stream zipStream, string encoding)
+        private static byte[] UnzipFromStream(byte[] st, string encoding)
         {
+            MemoryStream zipStream = new MemoryStream(st);
             var zipInputStream = new ZipInputStream(zipStream);
 
             if (!zipInputStream.CanRead)
@@ -282,6 +282,7 @@ namespace BezyFB
             }
             else
             {
+                zipStream = new MemoryStream(st);
                 zipInputStream = new ZipInputStream(zipStream);
             }
             zipEntry = zipInputStream.GetNextEntry();
