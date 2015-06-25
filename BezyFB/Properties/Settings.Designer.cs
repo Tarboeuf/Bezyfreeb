@@ -205,7 +205,7 @@ namespace BezyFB.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("/Disque dur/Vidéos/__Film")]
+        [global::System.Configuration.DefaultSettingValueAttribute("/Disque dur/Vidéos/__FILM/")]
         public string PathFilm {
             get {
                 return ((string)(this["PathFilm"]));

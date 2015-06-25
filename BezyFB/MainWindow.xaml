@@ -4,7 +4,7 @@
         xmlns:bezyFb="clr-namespace:BezyFB"
         xmlns:helpers="clr-namespace:BezyFB.Helpers"
         xmlns:api="clr-namespace:T411.Api;assembly=T411Client"
-        Title="MainWindow" Height="450" Width="525"
+        Title="MainWindow" Height="450" Width="925"
         Closed="MainWindow_OnClosed">
     <Window.Resources>
         <helpers:SizeMoConverter x:Key="SizeConverter" />

@@ -501,8 +501,7 @@ namespace BezyFB
                     
                     using (var stream = client.DownloadTorrent(torrent.Id))
                     {
-                        //StreamToFile("E:\\aze.torrent", stream);
-                        _freeboxApi.DownloadFile(stream, torrent.Name, Settings.Default.PathFilm, false);
+                        _freeboxApi.DownloadFile(stream, torrent.Name + ".torrent", Settings.Default.PathFilm, false);
                     }
                 }
             }
