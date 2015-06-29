@@ -4,6 +4,10 @@
         xmlns:bezyFb="clr-namespace:BezyFB"
         xmlns:helpers="clr-namespace:BezyFB.Helpers"
         xmlns:api="clr-namespace:T411.Api;assembly=T411Client"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:freebox="clr-namespace:BezyFB.Freebox"
+        mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="925"
         Closed="MainWindow_OnClosed">
     <Window.Resources>
@@ -66,23 +70,65 @@
                 </TreeView>
             </TabItem>
             <TabItem Header="T411">
-                <ListView Name="lv">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Name}" />
-                            <GridViewColumn Header="Taille"  DisplayMemberBinding="{Binding Size, Converter={StaticResource SizeConverter}}" />
-                            <GridViewColumn Header="Seeders"  DisplayMemberBinding="{Binding Seeders}" />
-                            <GridViewColumn Header="NbDL" DisplayMemberBinding="{Binding Times_completed}"  />
-                            <GridViewColumn Header="DL">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate DataType="api:Torrent">
-                                        <Button Content="x" Tag="{Binding .}" Click="ButtonTelechargerTorrent_OnClick"></Button>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <DockPanel>
+                    <Label Name="labelT411" DockPanel.Dock="Top"></Label>
+                    <ListView Name="lv">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn Header="Taille"  DisplayMemberBinding="{Binding Size, Converter={StaticResource SizeConverter}}" />
+                                <GridViewColumn Header="Seeders"  DisplayMemberBinding="{Binding Seeders}" />
+                                <GridViewColumn Header="NbDL" DisplayMemberBinding="{Binding Times_completed}"  />
+                                <GridViewColumn Header="DL">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate DataType="api:Torrent">
+                                            <Button Content="x" Tag="{Binding .}" Click="ButtonTelechargerTorrent_OnClick"></Button>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Freebox" Name="tabFreebox" d:DataContext="{d:DesignData UserFreebox}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0">Free Space</Label>
+                    <Label Grid.Row="0" Grid.Column="1" Content="{Binding FreeSpace, Converter={StaticResource SizeConverter}}"></Label>
+                    <Label Grid.Row="1" Grid.Column="0">Ratio</Label>
+                    <ProgressBar Grid.Row="1" Grid.Column="1" Maximum="100" Minimum="0" Height="15" Value="{Binding Ratio}"></ProgressBar>
+                    <ListView Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding Downloads}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Name" />
+                                <GridViewColumn DisplayMemberBinding="{Binding Status}" Header="Status" />
+                                <GridViewColumn Header="Pourcentage" Width="200" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate DataType="freebox:DownloadItem">
+                                            <ProgressBar Height="15" Value="{Binding Pourcentage}" Maximum="10000" Width="180"></ProgressBar>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="RxPourcentage" Width="200" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate DataType="freebox:DownloadItem">
+                                            <ProgressBar Height="15" Value="{Binding RxPourcentage}" Maximum="10000" Width="180"></ProgressBar>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
             </TabItem>
         </TabControl>
     </DockPanel>

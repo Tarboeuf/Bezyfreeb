@@ -352,6 +352,7 @@ namespace BezyFB.Freebox
                     MessageBox.Show(ex.Message);
                 else
                     Console.WriteLine(ex.Message);
+                return null;
             }
 
             return JObject.Parse(json).ToString();
@@ -396,5 +397,75 @@ namespace BezyFB.Freebox
             }
             return ((string)jsonObject["result"]["name"]);
         }
+
+        public UserFreebox GetInfosFreebox()
+        {
+            if (String.IsNullOrEmpty(SessionToken))
+                GenererSessionToken();
+
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/storage/disk/", WebMethod.Get,
+                                         "application/x-www-form-urlencoded", null, null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+
+            var jsonObject = JObject.Parse(json);
+
+            if (!(bool)jsonObject["success"])
+            {
+                if (Settings.Default.AffichageErreurMessageBox)
+                    MessageBox.Show((string)jsonObject["msg"]);
+                else
+                    Console.WriteLine((string)jsonObject["msg"]);
+                return null;
+            }
+            var userFreebox = new UserFreebox();
+            userFreebox.FreeSpace = (long)jsonObject["result"][0]["partitions"][0]["free_bytes"];
+            userFreebox.Ratio = 100.0 - (double)userFreebox.FreeSpace / (long)jsonObject["result"][0]["total_bytes"] * 100;
+
+            json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/downloads/", WebMethod.Get,
+                                         "application/x-www-form-urlencoded", null, null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+
+            jsonObject = JObject.Parse(json);
+
+            if (!(bool)jsonObject["success"])
+            {
+                if (Settings.Default.AffichageErreurMessageBox)
+                    MessageBox.Show((string)jsonObject["msg"]);
+                else
+                    Console.WriteLine((string)jsonObject["msg"]);
+                return null;
+            }
+            foreach (var item in jsonObject["result"])
+            {
+                var di = new DownloadItem
+                {
+                    Pourcentage = (double)item["rx_pct"],
+                    Name = (string)item["name"],
+                    Status = (string)item["status"],
+                    RxPourcentage = (double)item["tx_pct"],
+                };
+                userFreebox.Downloads.Add(di);
+            }
+
+            return userFreebox;
+        }
+    }
+
+    public class UserFreebox
+    {
+        public UserFreebox()
+        {
+            Downloads = new List<DownloadItem>();
+        }
+
+        public long FreeSpace { get; set; }
+        public double Ratio { get; set; }
+        public List<DownloadItem> Downloads { get; set; }
+    }
+
+    public class DownloadItem
+    {
+        public string Name { get; set; }
+        public string Status { get; set; }
+        public double Pourcentage { get; set; }
+        public double RxPourcentage { get; set; }
     }
 }

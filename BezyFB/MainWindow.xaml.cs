@@ -486,6 +486,13 @@ namespace BezyFB
                 var client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
 
                 lv.ItemsSource = client.GetTopWeek().Where(t => t.CategoryName == "Film").OrderByDescending(t => t.Times_completed);
+
+                var user = client.GetUserDetails(client.UserId);
+                labelT411.Content = user.Username + " Ratio : " + user.Uploaded / user.Downloaded;
+            }
+            if (tc.SelectedIndex == 2)
+            {
+                tabFreebox.DataContext = _freeboxApi.GetInfosFreebox();
             }
         }
 

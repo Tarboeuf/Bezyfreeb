@@ -39,6 +39,7 @@ namespace BezyFB.BetaSerie
         //private const string Planning = "/planning";
         //private const string Shows = "/shows";
         private const string Subtitles = "/subtitles";
+        private const string Watched = "/watched";
 
         //private const string Timeline = "/timeline";
 
@@ -172,9 +173,31 @@ namespace BezyFB.BetaSerie
             Error = "";
             try
             {
-                string link = ApiAdresse + Episodes + "/watched" + EnteteArgs;
+                string link = ApiAdresse + Episodes + Watched + EnteteArgs;
                 link += "&id=" + episode.id + "&token=" + Token;
                 ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
+                foreach (var rootShowsShow in Root.shows)
+                {
+                    if (rootShowsShow.unseen.Contains(episode))
+                        rootShowsShow.unseen = rootShowsShow.unseen.Where(e => e != episode).ToArray();
+                }
+            }
+            catch (Exception e)
+            {
+                Error = "GetPathSousTitre : " + e.Message;
+            }
+        }
+        public void SetEpisodeUnSeen(Episode episode)
+        {
+            if (!GenereToken())
+                return;
+
+            Error = "";
+            try
+            {
+                string link = ApiAdresse + Episodes + Watched + EnteteArgs;
+                link += "&id=" + episode.id + "&token=" + Token;
+                ApiConnector.Call(link, WebMethod.DELETE, null, null, "text/xml");
                 foreach (var rootShowsShow in Root.shows)
                 {
                     if (rootShowsShow.unseen.Contains(episode))
