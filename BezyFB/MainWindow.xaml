@@ -7,8 +7,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:freebox="clr-namespace:BezyFB.Freebox"
+        xmlns:t411="clr-namespace:BezyFB.T411"
+        xmlns:util="clr-namespace:BezyFB.Helpers.Wpf.Util"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="925"
+        Title="MainWindow" Height="500" Width="925"
         Closed="MainWindow_OnClosed">
     <Window.Resources>
         <helpers:SizeMoConverter x:Key="SizeConverter" />
@@ -72,17 +74,26 @@
             <TabItem Header="T411">
                 <DockPanel>
                     <Label Name="labelT411" DockPanel.Dock="Top"></Label>
-                    <ListView Name="lv">
+                    <ListView Name="lv" 
+                              util:GridViewSort.AutoSort="True" 
+                              util:GridViewSort.ShowSortGlyph="False"
+                              IsSynchronizedWithCurrentItem="True">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Name}" util:GridViewSort.PropertyName="Name"  />
                                 <GridViewColumn Header="Taille"  DisplayMemberBinding="{Binding Size, Converter={StaticResource SizeConverter}}" />
-                                <GridViewColumn Header="Seeders"  DisplayMemberBinding="{Binding Seeders}" />
-                                <GridViewColumn Header="NbDL" DisplayMemberBinding="{Binding Times_completed}"  />
+                                <GridViewColumn Header="Seeders"  DisplayMemberBinding="{Binding Seeders}" util:GridViewSort.PropertyName="Seeders"  />
+                                <GridViewColumn Header="NbDL" DisplayMemberBinding="{Binding Times_completed}"  util:GridViewSort.PropertyName="Times_completed" />
+                                <GridViewColumn Header="NbDLPerHour" DisplayMemberBinding="{Binding TimesCompletedByHours, StringFormat='##0.#'}" util:GridViewSort.PropertyName="NbDLPerHour"  />
+                                <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note}" />
+                                <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Nom}" />
                                 <GridViewColumn Header="DL">
                                     <GridViewColumn.CellTemplate>
-                                        <DataTemplate DataType="api:Torrent">
-                                            <Button Content="x" Tag="{Binding .}" Click="ButtonTelechargerTorrent_OnClick"></Button>
+                                        <DataTemplate DataType="t411:MyTorrent">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Content="XInfo" Tag="{Binding .}" Click="ButtonExtraInfoOnClick"></Button>
+                                                <Button Content="x" Tag="{Binding .}" Click="ButtonTelechargerTorrent_OnClick"></Button>
+                                            </StackPanel>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
