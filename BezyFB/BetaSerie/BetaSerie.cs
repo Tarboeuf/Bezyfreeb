@@ -137,6 +137,17 @@ namespace BezyFB.BetaSerie
                 var rt = (SousTitreRoot) serializer.Deserialize(reader);
                 reader.Close();
 
+                if (!rt.subtitles.Any())
+                {
+                    link = ApiAdresse + Subtitles + "/episode" + EnteteArgs;
+                    link += "&id=" + episode + "&token=" + Token;
+                    xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
+
+                    serializer = new XmlSerializer(typeof(SousTitreRoot), new XmlRootAttribute("root"));
+                    reader = GenerateStreamFromString(xml);
+                    rt = (SousTitreRoot)serializer.Deserialize(reader);
+                    reader.Close();
+                }
                 return rt;
             }
             catch (Exception e)
