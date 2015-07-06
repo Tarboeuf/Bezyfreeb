@@ -123,6 +123,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BetaSerie\GuessIt.cs" />
+    <Compile Include="BetaSerie\OMDb.cs" />
     <Compile Include="Configuration\Configuration.xaml.cs">
       <DependentUpon>Configuration.xaml</DependentUpon>
     </Compile>
@@ -138,6 +140,7 @@
     <Compile Include="Helpers\ApiConnector.cs" />
     <Compile Include="EzTv\Eztv.cs" />
     <Compile Include="Freebox\Freebox.cs" />
+    <Compile Include="Helpers\GridViewSort.cs" />
     <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Helpers\SizeMoConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -148,6 +151,7 @@
     </Compile>
     <Compile Include="BetaSerie\SousTitre.cs" />
     <Compile Include="Configuration\Utilisateur.cs" />
+    <Compile Include="T411\MyTorrent.cs" />
     <Page Include="Configuration\Configuration.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

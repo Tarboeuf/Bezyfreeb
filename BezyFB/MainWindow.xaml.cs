@@ -1,6 +1,8 @@
-﻿using BezyFB.Configuration;
+﻿using System.Threading.Tasks;
+using BezyFB.Configuration;
 using BezyFB.EzTv;
 using BezyFB.Properties;
+using BezyFB.T411;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
@@ -41,7 +43,9 @@ namespace BezyFB
             _user = Utilisateur.Current();
             _freeboxApi = new Freebox.Freebox();
 
-            Button_Click(this, null);
+            var t = new Task<EpisodeRoot>(() => _bs.GetListeNouveauxEpisodesTest());
+            t.ContinueWith(r => Dispatcher.BeginInvoke(new Action(() => tv.ItemsSource = r.Result.shows)));
+            t.Start();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -485,10 +489,10 @@ namespace BezyFB
             {
                 var client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
 
-                lv.ItemsSource = client.GetTopWeek().Where(t => t.CategoryName == "Film").OrderByDescending(t => t.Times_completed);
+                lv.ItemsSource = client.GetTopWeek().Where(t => t.CategoryName == "Film").OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
 
                 var user = client.GetUserDetails(client.UserId);
-                labelT411.Content = user.Username + " Ratio : " + user.Uploaded / user.Downloaded;
+                labelT411.Content = user.Username + " Ratio : " + ((double)((double)user.Uploaded / (double)user.Downloaded)).ToString("##.###");
             }
             if (tc.SelectedIndex == 2)
             {
@@ -501,15 +505,28 @@ namespace BezyFB
             Button senderButton = sender as Button;
             if (null != senderButton)
             {
-                var torrent = senderButton.Tag as Torrent;
+                var torrent = senderButton.Tag as MyTorrent;
                 if (null != torrent)
                 {
                     var client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
                     
-                    using (var stream = client.DownloadTorrent(torrent.Id))
+                    using (var stream = client.DownloadTorrent(torrent.Torrent.Id))
                     {
                         _freeboxApi.DownloadFile(stream, torrent.Name + ".torrent", Settings.Default.PathFilm, false);
                     }
+                }
+            }
+        }
+
+        private void ButtonExtraInfoOnClick(object sender, RoutedEventArgs e)
+        {
+            Button senderButton = sender as Button;
+            if (null != senderButton)
+            {
+                var torrent = senderButton.Tag as MyTorrent;
+                if (null != torrent)
+                {
+                    torrent.Initialiser();
                 }
             }
         }
