@@ -1,7 +1,12 @@
 ﻿// Créer par : tkahn
 // Le : 24-06-2014
 
+using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms.VisualStyles;
+using System.Windows.Threading;
+using BezyFB.BetaSerie;
 using BezyFB.Helpers;
 using BezyFB.Properties;
 using Newtonsoft.Json.Linq;
@@ -416,7 +421,7 @@ namespace BezyFB.Freebox
                     Console.WriteLine((string)jsonObject["msg"]);
                 return null;
             }
-            var userFreebox = new UserFreebox();
+            var userFreebox = new UserFreebox(this);
             userFreebox.FreeSpace = (long)jsonObject["result"][0]["partitions"][0]["free_bytes"];
             userFreebox.Ratio = 100.0 - (double)userFreebox.FreeSpace / (long)jsonObject["result"][0]["total_bytes"] * 100;
 
@@ -451,14 +456,34 @@ namespace BezyFB.Freebox
 
     public class UserFreebox
     {
-        public UserFreebox()
+        private readonly Freebox _fb;
+
+        public UserFreebox(Freebox fb)
         {
+            _fb = fb;
             Downloads = new List<DownloadItem>();
+            Movies = new ObservableCollection<OMDb>();
         }
 
         public long FreeSpace { get; set; }
         public double Ratio { get; set; }
         public List<DownloadItem> Downloads { get; set; }
+
+        public ObservableCollection<OMDb> Movies { get; set; }
+
+        public void LoadMovies(Dispatcher dispatcher)
+        {
+            new Task(() =>
+            {
+                foreach (var item in _fb.Ls(Settings.Default.PathFilm, false))
+                {
+                    var nom = GuessIt.GuessNom(item);
+                    var omdb = OMDb.GetNote(nom, item);
+
+                    dispatcher.BeginInvoke(new Action(() => Movies.Add(omdb)));
+                }
+            }).Start();
+        }
     }
 
     public class DownloadItem

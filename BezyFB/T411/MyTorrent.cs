@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using BezyFB.Annotations;
 using BezyFB.BetaSerie;
 using BezyFB.Helpers;
 using Newtonsoft.Json.Linq;
@@ -15,6 +16,7 @@ namespace BezyFB.T411
         private readonly Torrent _torrent;
         private double _note;
         private string _nom;
+        private OMDb _omDb;
 
         public MyTorrent(Torrent torrent)
         {
@@ -23,18 +25,17 @@ namespace BezyFB.T411
 
         public void Initialiser()
         {
-
             var task = InitialiserDataAsync();
             task.ContinueWith(t =>
             {
                 Nom = t.Result.Item2;
-                Note = t.Result.Item1;
+                Note = t.Result.Item1.Note;
+                OmDb = t.Result.Item1;
             });
             task.Start();
         }
 
-
-        private Tuple<double, string> InitialiserData()
+        private Tuple<OMDb, string> InitialiserData()
         {
             string nom = "";
             try
@@ -45,29 +46,27 @@ namespace BezyFB.T411
             {
                 Console.WriteLine(e.Message);
             }
-            double note = 0;
+            var omDb = new OMDb();
             try
             {
                 if (!string.IsNullOrEmpty(nom))
                 {
-                    note = OMDb.GetNote(nom);
+                    omDb = OMDb.GetNote(nom);
                 }
                 else
-                    note = OMDb.GetNote(Name);
+                    omDb = OMDb.GetNote(Name);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
 
-            return new Tuple<double, string>(note, nom);
+            return new Tuple<OMDb, string>(omDb, nom);
         }
 
-
-
-        private Task<Tuple<double, string>> InitialiserDataAsync()
+        private Task<Tuple<OMDb, string>> InitialiserDataAsync()
         {
-            return new Task<Tuple<double, string>>(InitialiserData);
+            return new Task<Tuple<OMDb, string>>(InitialiserData);
         }
 
         public Torrent Torrent { get { return _torrent; } }
@@ -83,7 +82,7 @@ namespace BezyFB.T411
             get { return _note; }
             set
             {
-                _note = value; 
+                _note = value;
                 OnPropertyChanged();
             }
         }
@@ -94,6 +93,16 @@ namespace BezyFB.T411
             set
             {
                 _nom = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public OMDb OmDb
+        {
+            get { return _omDb; }
+            set
+            {
+                _omDb = value;
                 OnPropertyChanged();
             }
         }

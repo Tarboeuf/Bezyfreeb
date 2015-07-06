@@ -8,7 +8,10 @@ namespace BezyFB.BetaSerie
 
         public static string GuessNom(string name)
         {
-            var jsonGuessit = ApiConnector.Call("http://guessit.io/guess?filename=" + name.Replace(" ", "%20"), WebMethod.Get);
+            var jsonGuessit = ApiConnector.Call("http://guessit.io/guess?filename=" + name.Replace(" ", "%20") + ".avi", WebMethod.Get);
+            if (string.IsNullOrEmpty(jsonGuessit))
+                return name;
+
             var jobj = JObject.Parse(jsonGuessit);
             var obj = jobj["title"];
             string nom = "";

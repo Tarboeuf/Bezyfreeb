@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
+using BezyFB.BetaSerie;
 using BezyFB.Configuration;
 using BezyFB.EzTv;
+using BezyFB.Freebox;
 using BezyFB.Properties;
 using BezyFB.T411;
 using ICSharpCode.SharpZipLib.Zip;
@@ -496,7 +498,13 @@ namespace BezyFB
             }
             if (tc.SelectedIndex == 2)
             {
-                tabFreebox.DataContext = _freeboxApi.GetInfosFreebox();
+                if(!(tabFreebox.DataContext is UserFreebox))
+                {
+                    var uf = _freeboxApi.GetInfosFreebox();
+                    tabFreebox.DataContext = uf;
+
+                    uf.LoadMovies(Dispatcher);
+                }
             }
         }
 
@@ -528,6 +536,15 @@ namespace BezyFB
                 {
                     torrent.Initialiser();
                 }
+            }
+        }
+
+        private void SupprimerFilm_OnClick(object sender, RoutedEventArgs e)
+        {
+            var dc = ((Button)sender).DataContext as OMDb;
+            if(null != dc)
+            {
+                _freeboxApi.DeleteFile(Settings.Default.PathFilm + dc.FileName);
             }
         }
     }

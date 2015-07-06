@@ -9,6 +9,7 @@
         xmlns:freebox="clr-namespace:BezyFB.Freebox"
         xmlns:t411="clr-namespace:BezyFB.T411"
         xmlns:util="clr-namespace:BezyFB.Helpers.Wpf.Util"
+        xmlns:betaSerie="clr-namespace:BezyFB.BetaSerie"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="925"
         Closed="MainWindow_OnClosed">
@@ -74,6 +75,25 @@
             <TabItem Header="T411">
                 <DockPanel>
                     <Label Name="labelT411" DockPanel.Dock="Top"></Label>
+
+                    <StackPanel DockPanel.Dock="Right" DataContext="{Binding ElementName=lv, Path=SelectedItem}" d:DataContext="{d:DesignInstance t411:MyTorrent}">
+                        <StackPanel Orientation="Horizontal">
+                            <Label FontWeight="Bold">Titre</Label>
+                            <Label  Content="{Binding OmDb.Title}"/>
+                        </StackPanel>
+                        <DockPanel MaxWidth="200">
+                            <Label DockPanel.Dock="Left" FontWeight="Bold">Résumé</Label>
+                            <TextBlock Text="{Binding OmDb.Resume}" TextWrapping="WrapWithOverflow" />
+                        </DockPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label FontWeight="Bold">Note</Label>
+                            <Label  Content="{Binding OmDb.Note}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label FontWeight="Bold">Année</Label>
+                            <Label  Content="{Binding OmDb.Year}"/>
+                        </StackPanel>
+                    </StackPanel>
                     <ListView Name="lv" 
                               util:GridViewSort.AutoSort="True" 
                               util:GridViewSort.ShowSortGlyph="False"
@@ -111,13 +131,14 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Label Grid.Row="0" Grid.Column="0">Free Space</Label>
                     <Label Grid.Row="0" Grid.Column="1" Content="{Binding FreeSpace, Converter={StaticResource SizeConverter}}"></Label>
                     <Label Grid.Row="1" Grid.Column="0">Ratio</Label>
                     <ProgressBar Grid.Row="1" Grid.Column="1" Maximum="100" Minimum="0" Height="15" Value="{Binding Ratio}"></ProgressBar>
-                    <ListView Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding Downloads}">
+                    <ListView MaxHeight="200" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding Downloads}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Name" />
@@ -136,6 +157,23 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <ListView Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding Movies}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding FileName}" />
+                                <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
+                                <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note}"/>
+                                <GridViewColumn Header="Del" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate DataType="betaSerie:OMDb">
+                                            <Button Content="Del" Click="SupprimerFilm_OnClick"></Button>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                    
                             </GridView>
                         </ListView.View>
                     </ListView>
