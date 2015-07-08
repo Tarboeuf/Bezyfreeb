@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using BezyFB.BetaSerie;
+﻿using BezyFB.BetaSerie;
 using BezyFB.Configuration;
 using BezyFB.EzTv;
 using BezyFB.Freebox;
@@ -14,6 +13,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -46,7 +46,11 @@ namespace BezyFB
             _freeboxApi = new Freebox.Freebox();
 
             var t = new Task<EpisodeRoot>(() => _bs.GetListeNouveauxEpisodesTest());
-            t.ContinueWith(r => Dispatcher.BeginInvoke(new Action(() => tv.ItemsSource = r.Result.shows)));
+            t.ContinueWith(r => Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (r != null && r.Result != null)
+                    tv.ItemsSource = r.Result.shows;
+            })));
             t.Start();
         }
 
@@ -406,7 +410,7 @@ namespace BezyFB
                     stream.Seek(0, SeekOrigin.Begin);
                     stream.CopyTo(fileStream);
                 }
-             
+
                 return true;
             }
             catch (Exception _Exception)
@@ -498,7 +502,7 @@ namespace BezyFB
             }
             if (tc.SelectedIndex == 2)
             {
-                if(!(tabFreebox.DataContext is UserFreebox))
+                if (!(tabFreebox.DataContext is UserFreebox))
                 {
                     var uf = _freeboxApi.GetInfosFreebox();
                     tabFreebox.DataContext = uf;
@@ -517,7 +521,7 @@ namespace BezyFB
                 if (null != torrent)
                 {
                     var client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
-                    
+
                     using (var stream = client.DownloadTorrent(torrent.Torrent.Id))
                     {
                         _freeboxApi.DownloadFile(stream, torrent.Name + ".torrent", Settings.Default.PathFilm, false);
@@ -542,7 +546,7 @@ namespace BezyFB
         private void SupprimerFilm_OnClick(object sender, RoutedEventArgs e)
         {
             var dc = ((Button)sender).DataContext as OMDb;
-            if(null != dc)
+            if (null != dc)
             {
                 _freeboxApi.DeleteFile(Settings.Default.PathFilm + dc.FileName);
             }

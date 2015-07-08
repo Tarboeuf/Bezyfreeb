@@ -1,12 +1,12 @@
-﻿using System;
+﻿using BezyFB.Annotations;
+using BezyFB.Helpers;
+using BezyFB.Properties;
+using Microsoft.Win32;
+using System;
 using System.ComponentModel;
 using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Forms;
-using BezyFB.Annotations;
-using BezyFB.Helpers;
-using BezyFB.Properties;
-using Microsoft.Win32;
 
 namespace BezyFB.Configuration
 {
@@ -46,6 +46,16 @@ namespace BezyFB.Configuration
             }
         }
 
+        public string PathFilm
+        {
+            get { return Settings.Default.PathFilm; }
+            set
+            {
+                Settings.Default.PathFilm = value;
+                OnPropertyChanged("PathFilm");
+            }
+        }
+
         public string LoginBetaSerie
         {
             get { return Settings.Default.LoginBetaSerie; }
@@ -56,7 +66,6 @@ namespace BezyFB.Configuration
             }
         }
 
-
         public string LoginT411
         {
             get { return Settings.Default.LoginT411; }
@@ -66,6 +75,7 @@ namespace BezyFB.Configuration
                 OnPropertyChanged("LoginT411");
             }
         }
+
         public string PathLocal
         {
             get { return Settings.Default.PathNonReseau; }
