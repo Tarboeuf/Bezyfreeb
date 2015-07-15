@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:bezyFb="clr-namespace:BezyFB"
         xmlns:helpers="clr-namespace:BezyFB.Helpers"
-        xmlns:api="clr-namespace:T411.Api;assembly=T411Client"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:freebox="clr-namespace:BezyFB.Freebox"
@@ -79,7 +78,7 @@
                     <StackPanel DockPanel.Dock="Right" DataContext="{Binding ElementName=lv, Path=SelectedItem}" d:DataContext="{d:DesignInstance t411:MyTorrent}">
                         <StackPanel Orientation="Horizontal">
                             <Label FontWeight="Bold">Titre</Label>
-                            <Label  Content="{Binding OmDb.Title}"/>
+                            <Label  Content="{Binding OmDb.Title}" />
                         </StackPanel>
                         <DockPanel MaxWidth="200">
                             <Label DockPanel.Dock="Left" FontWeight="Bold">Résumé</Label>
@@ -87,24 +86,24 @@
                         </DockPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label FontWeight="Bold">Note</Label>
-                            <Label  Content="{Binding OmDb.Note}"/>
+                            <Label  Content="{Binding OmDb.Note}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label FontWeight="Bold">Année</Label>
-                            <Label  Content="{Binding OmDb.Year}"/>
+                            <Label  Content="{Binding OmDb.Year}" />
                         </StackPanel>
                     </StackPanel>
-                    <ListView Name="lv" 
-                              util:GridViewSort.AutoSort="True" 
+                    <ListView Name="lv"
+                              util:GridViewSort.AutoSort="True"
                               util:GridViewSort.ShowSortGlyph="False"
                               IsSynchronizedWithCurrentItem="True">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Name}" util:GridViewSort.PropertyName="Name"  />
+                                <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Name}" util:GridViewSort.PropertyName="Name" />
                                 <GridViewColumn Header="Taille"  DisplayMemberBinding="{Binding Size, Converter={StaticResource SizeConverter}}" />
-                                <GridViewColumn Header="Seeders"  DisplayMemberBinding="{Binding Seeders}" util:GridViewSort.PropertyName="Seeders"  />
+                                <GridViewColumn Header="Seeders"  DisplayMemberBinding="{Binding Seeders}" util:GridViewSort.PropertyName="Seeders" />
                                 <GridViewColumn Header="NbDL" DisplayMemberBinding="{Binding Times_completed}"  util:GridViewSort.PropertyName="Times_completed" />
-                                <GridViewColumn Header="NbDLPerHour" DisplayMemberBinding="{Binding TimesCompletedByHours, StringFormat='##0.#'}" util:GridViewSort.PropertyName="NbDLPerHour"  />
+                                <GridViewColumn Header="NbDLPerHour" DisplayMemberBinding="{Binding TimesCompletedByHours, StringFormat='##0.#'}" util:GridViewSort.PropertyName="NbDLPerHour" />
                                 <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note}" />
                                 <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Nom}" />
                                 <GridViewColumn Header="DL">
@@ -122,7 +121,7 @@
                     </ListView>
                 </DockPanel>
             </TabItem>
-            <TabItem Header="Freebox" Name="tabFreebox" d:DataContext="{d:DesignData UserFreebox}">
+            <TabItem Header="Freebox" x:Name="TabFreebox" d:DataContext="{d:DesignData UserFreebox}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -138,19 +137,20 @@
                     <Label Grid.Row="0" Grid.Column="1" Content="{Binding FreeSpace, Converter={StaticResource SizeConverter}}"></Label>
                     <Label Grid.Row="1" Grid.Column="0">Ratio</Label>
                     <ProgressBar Grid.Row="1" Grid.Column="1" Maximum="100" Minimum="0" Height="15" Value="{Binding Ratio}"></ProgressBar>
-                    <ListView MaxHeight="200" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding Downloads}">
+                    <ListView MaxHeight="200" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0"
+                              ItemsSource="{Binding Downloads}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Name" />
                                 <GridViewColumn DisplayMemberBinding="{Binding Status}" Header="Status" />
-                                <GridViewColumn Header="Pourcentage" Width="200" >
+                                <GridViewColumn Header="Pourcentage" Width="200">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate DataType="freebox:DownloadItem">
                                             <ProgressBar Height="15" Value="{Binding Pourcentage}" Maximum="10000" Width="180"></ProgressBar>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Header="RxPourcentage" Width="200" >
+                                <GridViewColumn Header="RxPourcentage" Width="200">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate DataType="freebox:DownloadItem">
                                             <ProgressBar Height="15" Value="{Binding RxPourcentage}" Maximum="10000" Width="180"></ProgressBar>
@@ -160,20 +160,19 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <ListView Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding Movies}">
+                    <ListView Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" ItemsSource="{Binding Movies}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Name" DisplayMemberBinding="{Binding FileName}" />
                                 <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
-                                <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note}"/>
-                                <GridViewColumn Header="Del" >
+                                <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note}" />
+                                <GridViewColumn Header="Del">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate DataType="betaSerie:OMDb">
                                             <Button Content="Del" Click="SupprimerFilm_OnClick"></Button>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                    
                             </GridView>
                         </ListView.View>
                     </ListView>

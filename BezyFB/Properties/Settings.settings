@@ -42,7 +42,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="LoginT411" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Tarboeuf</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="PassT411" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

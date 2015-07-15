@@ -17,7 +17,10 @@ namespace BezyFB.EzTv
 {
     public sealed class Eztv
     {
-        private const string Url = "https://eztv.it/";   //     private const string Url = "http://eztv.it/"; //"http://eztv-proxy.net/"; https://eztv.ch/
+        private const string Url = "https://eztv.it/";
+        //"http://eztv.it/"
+        //"http://eztv-proxy.net/"
+        //https://eztv.ch/"
 
         private static Dictionary<string, string> _PagesSeries = new Dictionary<string, string>();
 

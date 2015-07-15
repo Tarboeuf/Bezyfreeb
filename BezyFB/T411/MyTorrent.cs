@@ -1,13 +1,9 @@
-﻿using System;
+﻿using BezyFB.BetaSerie;
+using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using BezyFB.Annotations;
-using BezyFB.BetaSerie;
-using BezyFB.Helpers;
-using Newtonsoft.Json.Linq;
-using T411.Api;
 
 namespace BezyFB.T411
 {
@@ -72,9 +68,13 @@ namespace BezyFB.T411
         public Torrent Torrent { get { return _torrent; } }
 
         public string Name { get { return _torrent.Name; } }
+
         public long Size { get { return _torrent.Size; } }
+
         public int Seeders { get { return _torrent.Seeders; } }
+
         public int Times_completed { get { return _torrent.Times_completed; } }
+
         public double TimesCompletedByHours { get { return _torrent.Times_completed / (DateTime.Now - _torrent.Added).TotalHours; } }
 
         public double Note
@@ -107,7 +107,6 @@ namespace BezyFB.T411
             }
         }
 
-
         //g Name}" />
         //nding Size, Converte
         //inding Seeders}" />
@@ -115,7 +114,7 @@ namespace BezyFB.T411
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged(string propertyName = null)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));

@@ -23,7 +23,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using T411.Api;
 
 namespace BezyFB
 {
@@ -73,12 +72,6 @@ namespace BezyFB
                 _bs.SetEpisodeDownnloaded(episode);
             }
             Cursor = Cursors.Arrow;
-        }
-
-        private void MajItemsSource()
-        {
-            tv.ItemsSource = null;
-            tv.ItemsSource = _bs.Root.shows;
         }
 
         private void SetSetSeen(object sender, RoutedEventArgs e)
@@ -132,7 +125,6 @@ namespace BezyFB
                 {
                     string fileName = episode.show_title + "_" + episode.code + ".srt";
 
-                    string encoding = "";
                     if (!string.IsNullOrEmpty(episode.IdDownload))
                     {
                         string file = _freeboxApi.GetFileNameDownloaded(episode.IdDownload);
@@ -189,7 +181,7 @@ namespace BezyFB
 
                         //Process.Start(pathreseau);
                     }
-                    encoding = ExtractEncoding(fileName);
+                    var encoding = ExtractEncoding(fileName);
                     var sousTitre = str.subtitles.OrderByDescending(c => c.quality).Select(s => s.url).FirstOrDefault();
 
                     var wc = new WebClient();
@@ -251,7 +243,7 @@ namespace BezyFB
 
             if (!zipInputStream.CanRead)
                 return null;
-            ZipEntry zipEntry = null;
+            ZipEntry zipEntry;
             try
             {
                 zipEntry = zipInputStream.GetNextEntry();
@@ -269,14 +261,11 @@ namespace BezyFB
                 if (entryFileName.Contains(".srt") && entryFileName.Contains(encoding))
                 {
                     Clipboard.SetText(entryFileName);
-                    int file_size = (int)zipEntry.Size;
+                    int fileSize = (int)zipEntry.Size;
                     byte[] blob = new byte[(int)zipEntry.Size];
-                    int bytes_read = 0;
-                    int offset = 0;
 
-                    while ((bytes_read = zipInputStream.Read(blob, 0, file_size)) != 0)
+                    while ((zipInputStream.Read(blob, 0, fileSize)) != 0)
                     {
-                        offset += bytes_read;
                     }
 
                     //closing every thing
@@ -305,14 +294,11 @@ namespace BezyFB
                 if (entryFileName.Contains(".srt"))
                 {
                     Clipboard.SetText(entryFileName);
-                    int file_size = (int)zipEntry.Size;
+                    int fileSize = (int)zipEntry.Size;
                     byte[] blob = new byte[(int)zipEntry.Size];
-                    int bytes_read = 0;
-                    int offset = 0;
 
-                    while ((bytes_read = zipInputStream.Read(blob, 0, file_size)) != 0)
+                    while ((zipInputStream.Read(blob, 0, fileSize)) != 0)
                     {
-                        offset += bytes_read;
                     }
 
                     //closing every thing
@@ -373,55 +359,6 @@ namespace BezyFB
 
             Cursor = Cursors.Arrow;
             return true;
-        }
-
-        public bool ByteArrayToFile(string _FileName, byte[] _ByteArray)
-        {
-            try
-            {
-                // Open file for reading
-                System.IO.FileStream _FileStream = new System.IO.FileStream(_FileName, System.IO.FileMode.Create, System.IO.FileAccess.Write);
-                // Writes a block of bytes to this stream using data from
-                // a byte array.
-                _FileStream.Write(_ByteArray, 0, _ByteArray.Length);
-
-                // close file stream
-                _FileStream.Close();
-
-                return true;
-            }
-            catch (Exception _Exception)
-            {
-                // Error
-                Console.WriteLine("Exception caught in process: {0}",
-                                  _Exception.ToString());
-            }
-
-            // error occured, return false
-            return false;
-        }
-
-        public bool StreamToFile(string _FileName, Stream stream)
-        {
-            try
-            {
-                using (var fileStream = File.Create(_FileName))
-                {
-                    stream.Seek(0, SeekOrigin.Begin);
-                    stream.CopyTo(fileStream);
-                }
-
-                return true;
-            }
-            catch (Exception _Exception)
-            {
-                // Error
-                Console.WriteLine("Exception caught in process: {0}",
-                                  _Exception.ToString());
-            }
-
-            // error occured, return false
-            return false;
         }
 
         private void Configuration_Click(object sender, RoutedEventArgs e)
@@ -493,19 +430,20 @@ namespace BezyFB
         {
             if (tc.SelectedIndex == 1 && lv.ItemsSource == null)
             {
+                T411Client.BaseAddress = "https://api.t411.io/";
                 var client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
 
                 lv.ItemsSource = client.GetTopWeek().Where(t => t.CategoryName == "Film").OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
 
                 var user = client.GetUserDetails(client.UserId);
-                labelT411.Content = user.Username + " Ratio : " + ((double)((double)user.Uploaded / (double)user.Downloaded)).ToString("##.###");
+                labelT411.Content = user.Username + " Ratio : " + (user.Uploaded / (double)user.Downloaded).ToString("##.###");
             }
             if (tc.SelectedIndex == 2)
             {
-                if (!(tabFreebox.DataContext is UserFreebox))
+                if (!(TabFreebox.DataContext is UserFreebox))
                 {
                     var uf = _freeboxApi.GetInfosFreebox();
-                    tabFreebox.DataContext = uf;
+                    TabFreebox.DataContext = uf;
 
                     uf.LoadMovies(Dispatcher);
                 }

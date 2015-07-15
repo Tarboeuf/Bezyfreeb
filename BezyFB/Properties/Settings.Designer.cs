@@ -181,7 +181,7 @@ namespace BezyFB.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Tarboeuf")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string LoginT411 {
             get {
                 return ((string)(this["LoginT411"]));
