@@ -161,6 +161,7 @@
     <Compile Include="T411\ErrorCodeException.cs" />
     <Compile Include="T411\Models.cs" />
     <Compile Include="T411\MyTorrent.cs" />
+    <Compile Include="T411\SousCategorie.cs" />
     <Compile Include="T411\T411Client.cs" />
     <Page Include="Configuration\Configuration.xaml">
       <SubType>Designer</SubType>

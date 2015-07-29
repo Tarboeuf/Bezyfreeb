@@ -9,6 +9,8 @@ namespace BezyFB.BetaSerie
         public static OMDb GetNote(string nom, string fileName = null)
         {
             var jsonOmdb = ApiConnector.Call("http://www.omdbapi.com/?t=" + nom, WebMethod.Get);
+            if (null == jsonOmdb)
+                return new OMDb();
             var jobj = JObject.Parse(jsonOmdb);
             if ((bool)jobj["Response"])
                 return new OMDb

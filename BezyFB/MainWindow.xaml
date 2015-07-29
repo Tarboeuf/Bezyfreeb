@@ -10,174 +10,210 @@
         xmlns:util="clr-namespace:BezyFB.Helpers.Wpf.Util"
         xmlns:betaSerie="clr-namespace:BezyFB.BetaSerie"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="925"
+        Title="BezyFreeb" Height="500" Width="925"
         Closed="MainWindow_OnClosed">
     <Window.Resources>
         <helpers:SizeMoConverter x:Key="SizeConverter" />
     </Window.Resources>
     <DockPanel>
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-            <Button Content="Charger la liste des non vus" Click="Button_Click" Margin="5" />
-            <Button Content="Configuration" Click="Configuration_Click" Margin="5" />
-            <Button Content="Telecharger tout" Click="Download_All_Click" Margin="5" />
-            <CheckBox Content="Réseau Local" Name="cbLocalNetwork" Margin="5" IsChecked="False" />
-        </StackPanel>
-        <StatusBar  Name="tb" DockPanel.Dock="Bottom" />
-        <TabControl SelectionChanged="Selector_OnSelectionChanged" Name="tc">
-            <TabItem>
-                <TabItem.Header>Series</TabItem.Header>
-                <TreeView Name="tv" DockPanel.Dock="Bottom">
-                    <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate DataType="bezyFb:rootShowsShow" ItemsSource="{Binding unseen}">
-                            <HierarchicalDataTemplate.ItemTemplate>
-                                <HierarchicalDataTemplate DataType="bezyFb:Episode">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding user[0].downloaded}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0" />
-                                        <Button Click="DlTout" CommandParameter="{Binding .}" Margin="5 1">
-                                            <TextBlock Foreground="Gray" FontWeight="Bold" FontSize="10" FontFamily="Britannic Bold">ALL</TextBlock>
-                                        </Button>
-                                        <TextBlock Text="{Binding code}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0" />
-                                        <TextBlock Text="{Binding title}" ToolTip="{Binding id}" VerticalAlignment="Center" />
-                                        <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray" VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding date}" Foreground="Gray" VerticalAlignment="Center" />
-                                        <TextBlock Text=")" Foreground="Gray" VerticalAlignment="Center" />
-                                        <Button Click="DlStClick" CommandParameter="{Binding .}" Margin="5 1">
-                                            <TextBlock Foreground="Gray" FontWeight="Bold" FontSize="10" FontFamily="Britannic Bold">SRT</TextBlock>
-                                        </Button>
-                                        <Button Click="GetMagnetClick" CommandParameter="{Binding .}" Margin="5 1">
-                                            <Image Source="Image/magnet.png" Width="16" Height="16" />
-                                        </Button>
-                                        <Button Click="SetDl" CommandParameter="{Binding .}" Margin="5 1">
-                                            <TextBlock Foreground="Gray" FontWeight="Bold" FontSize="10" FontFamily="Britannic Bold">DL</TextBlock>
-                                        </Button>
-                                        <Button Click="SetSetSeen" CommandParameter="{Binding .}" Margin="5 1">
-                                            <Image Source="Image/eye.png" Width="16" Height="16" />
-                                        </Button>
-                                    </StackPanel>
-                                </HierarchicalDataTemplate>
-                            </HierarchicalDataTemplate.ItemTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Button Click="SettingsClick" CommandParameter="{Binding .}" Margin="5 1">
-                                    <Image Source="Image/settings.png" Width="16" Height="16" />
-                                </Button>
-                                <TextBlock Text="{Binding title}" ToolTip="{Binding id}" />
-                                <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray" />
-                                <TextBlock Text="{Binding ATelecharger}" Foreground="Gray" />
-                                <TextBlock Text="/" Foreground="Gray" />
-                                <TextBlock Text="{Binding remaining}" Foreground="Gray" />
-                                <TextBlock Text=")" Foreground="Gray" />
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Fichier">
+                <MenuItem Header="Quitter" Click="Quitter_OnClick"/>
+            </MenuItem>
+            <MenuItem Header="Edition">
+                <MenuItem Header="Configuration" Click="Configuration_Click" />
+            </MenuItem>
+        </Menu>
+        <DockPanel  DockPanel.Dock="Bottom">
+            <ProgressBar Name="pb" IsIndeterminate="True" Width="200" DockPanel.Dock="Right" Visibility="Collapsed"></ProgressBar>
+            <StatusBar Height="20" Name="StatusBar" ></StatusBar>
+        </DockPanel>
+        <Grid>
+            <DockPanel>
+                <TabControl SelectionChanged="Selector_OnSelectionChanged" Name="tc">
+                    <TabItem>
+                        <TabItem.Header>Series</TabItem.Header>
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                                <Button Content="Charger la liste des non vus" Click="Button_Click" Margin="5" />
+                                <Button Content="Telecharger tout" Click="Download_All_Click" Margin="5" />
                             </StackPanel>
-                        </HierarchicalDataTemplate>
-                    </TreeView.ItemTemplate>
-                </TreeView>
-            </TabItem>
-            <TabItem Header="T411">
-                <DockPanel>
-                    <Label Name="labelT411" DockPanel.Dock="Top"></Label>
-
-                    <StackPanel DockPanel.Dock="Right" DataContext="{Binding ElementName=lv, Path=SelectedItem}" d:DataContext="{d:DesignInstance t411:MyTorrent}">
-                        <StackPanel Orientation="Horizontal">
-                            <Label FontWeight="Bold">Titre</Label>
-                            <Label  Content="{Binding OmDb.Title}" />
-                        </StackPanel>
-                        <DockPanel MaxWidth="200">
-                            <Label DockPanel.Dock="Left" FontWeight="Bold">Résumé</Label>
-                            <TextBlock Text="{Binding OmDb.Resume}" TextWrapping="WrapWithOverflow" />
+                            <TreeView Name="tv" DockPanel.Dock="Bottom">
+                                <TreeView.ItemTemplate>
+                                    <HierarchicalDataTemplate DataType="bezyFb:rootShowsShow" ItemsSource="{Binding unseen}">
+                                        <HierarchicalDataTemplate.ItemTemplate>
+                                            <HierarchicalDataTemplate DataType="bezyFb:Episode">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding user[0].downloaded}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0" />
+                                                    <Button Click="DlTout" CommandParameter="{Binding .}" Margin="5 1">
+                                                        <TextBlock Foreground="Gray" FontWeight="Bold" FontSize="10" FontFamily="Britannic Bold">ALL</TextBlock>
+                                                    </Button>
+                                                    <TextBlock Text="{Binding code}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0" />
+                                                    <TextBlock Text="{Binding title}" ToolTip="{Binding id}" VerticalAlignment="Center" />
+                                                    <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray" VerticalAlignment="Center" />
+                                                    <TextBlock Text="{Binding date}" Foreground="Gray" VerticalAlignment="Center" />
+                                                    <TextBlock Text=")" Foreground="Gray" VerticalAlignment="Center" />
+                                                    <Button Click="DlStClick" CommandParameter="{Binding .}" Margin="5 1">
+                                                        <TextBlock Foreground="Gray" FontWeight="Bold" FontSize="10" FontFamily="Britannic Bold">SRT</TextBlock>
+                                                    </Button>
+                                                    <Button Click="GetMagnetClick" CommandParameter="{Binding .}" Margin="5 1">
+                                                        <Image Source="Image/magnet.png" Width="16" Height="16" />
+                                                    </Button>
+                                                    <Button Click="SetDl" CommandParameter="{Binding .}" Margin="5 1">
+                                                        <TextBlock Foreground="Gray" FontWeight="Bold" FontSize="10" FontFamily="Britannic Bold">DL</TextBlock>
+                                                    </Button>
+                                                    <Button Click="SetSetSeen" CommandParameter="{Binding .}" Margin="5 1">
+                                                        <Image Source="Image/eye.png" Width="16" Height="16" />
+                                                    </Button>
+                                                </StackPanel>
+                                            </HierarchicalDataTemplate>
+                                        </HierarchicalDataTemplate.ItemTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Click="SettingsClick" CommandParameter="{Binding .}" Margin="5 1">
+                                                <Image Source="Image/settings.png" Width="16" Height="16" />
+                                            </Button>
+                                            <TextBlock Text="{Binding title}" ToolTip="{Binding id}" />
+                                            <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray" />
+                                            <TextBlock Text="{Binding ATelecharger}" Foreground="Gray" />
+                                            <TextBlock Text="/" Foreground="Gray" />
+                                            <TextBlock Text="{Binding remaining}" Foreground="Gray" />
+                                            <TextBlock Text=")" Foreground="Gray" />
+                                        </StackPanel>
+                                    </HierarchicalDataTemplate>
+                                </TreeView.ItemTemplate>
+                            </TreeView>
                         </DockPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Label FontWeight="Bold">Note</Label>
-                            <Label  Content="{Binding OmDb.Note}" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Label FontWeight="Bold">Année</Label>
-                            <Label  Content="{Binding OmDb.Year}" />
-                        </StackPanel>
-                    </StackPanel>
-                    <ListView Name="lv"
+                    </TabItem>
+                    <TabItem Header="T411" Height="23" VerticalAlignment="Bottom">
+                        <DockPanel>
+                            <Label Name="labelT411" DockPanel.Dock="Top"></Label>
+
+                            <StackPanel MinWidth="150" DockPanel.Dock="Right" DataContext="{Binding ElementName=lv, Path=SelectedItem}" d:DataContext="{d:DesignInstance t411:MyTorrent}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label FontWeight="Bold">Titre</Label>
+                                    <Label  Content="{Binding OmDb.Title}" />
+                                </StackPanel>
+                                <DockPanel MaxWidth="200">
+                                    <Label DockPanel.Dock="Left" FontWeight="Bold">Résumé</Label>
+                                    <TextBlock Text="{Binding OmDb.Resume}" TextWrapping="WrapWithOverflow" />
+                                </DockPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label FontWeight="Bold">Note</Label>
+                                    <Label  Content="{Binding OmDb.Note}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label FontWeight="Bold">Année</Label>
+                                    <Label  Content="{Binding OmDb.Year}" />
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
+                                <Label>Category</Label>
+                                <ComboBox Name="comboCategoryT411" Width="120" Margin="10 5" DisplayMemberPath="NameWithParent" />
+                                <Label>Nom</Label>
+                                <TextBox Name="textBoxRechercheT411" Width="150" Margin="10 5"></TextBox>
+                                <Button Name="buttonT411Rechercher" Margin="10 5" Click="buttonT411Rechercher_Click">Rechercher</Button>
+                            </StackPanel>
+                            <ListView Name="lv"
                               util:GridViewSort.AutoSort="True"
                               util:GridViewSort.ShowSortGlyph="False"
                               IsSynchronizedWithCurrentItem="True">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Name}" util:GridViewSort.PropertyName="Name" />
-                                <GridViewColumn Header="Taille"  DisplayMemberBinding="{Binding Size, Converter={StaticResource SizeConverter}}" />
-                                <GridViewColumn Header="Seeders"  DisplayMemberBinding="{Binding Seeders}" util:GridViewSort.PropertyName="Seeders" />
-                                <GridViewColumn Header="NbDL" DisplayMemberBinding="{Binding Times_completed}"  util:GridViewSort.PropertyName="Times_completed" />
-                                <GridViewColumn Header="NbDLPerHour" DisplayMemberBinding="{Binding TimesCompletedByHours, StringFormat='##0.#'}" util:GridViewSort.PropertyName="NbDLPerHour" />
-                                <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note}" />
-                                <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Nom}" />
-                                <GridViewColumn Header="DL">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate DataType="t411:MyTorrent">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Button Content="XInfo" Tag="{Binding .}" Click="ButtonExtraInfoOnClick"></Button>
-                                                <Button Content="x" Tag="{Binding .}" Click="ButtonTelechargerTorrent_OnClick"></Button>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                </DockPanel>
-            </TabItem>
-            <TabItem Header="Freebox" x:Name="TabFreebox" d:DataContext="{d:DesignData UserFreebox}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0">Free Space</Label>
-                    <Label Grid.Row="0" Grid.Column="1" Content="{Binding FreeSpace, Converter={StaticResource SizeConverter}}"></Label>
-                    <Label Grid.Row="1" Grid.Column="0">Ratio</Label>
-                    <ProgressBar Grid.Row="1" Grid.Column="1" Maximum="100" Minimum="0" Height="15" Value="{Binding Ratio}"></ProgressBar>
-                    <ListView MaxHeight="200" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0"
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Name}" util:GridViewSort.PropertyName="Name" />
+                                        <GridViewColumn Header="Taille"  DisplayMemberBinding="{Binding Size, Converter={StaticResource SizeConverter}}" />
+                                        <GridViewColumn Header="Seeders"  DisplayMemberBinding="{Binding Seeders}" util:GridViewSort.PropertyName="Seeders" />
+                                        <GridViewColumn Header="NbDL" DisplayMemberBinding="{Binding Times_completed}"  util:GridViewSort.PropertyName="Times_completed" />
+                                        <GridViewColumn Header="NbDLPerHour" DisplayMemberBinding="{Binding TimesCompletedByHours, StringFormat='##0.#'}" util:GridViewSort.PropertyName="NbDLPerHour" />
+                                        <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note}" />
+                                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Nom}" Width="Auto"/>
+                                        <GridViewColumn Header="DL">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate DataType="t411:MyTorrent">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Button Content="XInfo" Tag="{Binding .}" Click="ButtonExtraInfoOnClick"></Button>
+                                                        <Button Content="x" Tag="{Binding .}" Click="ButtonTelechargerTorrent_OnClick"></Button>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </DockPanel>
+                    </TabItem>
+                    <TabItem Header="Freebox" x:Name="TabFreebox" d:DataContext="{d:DesignData UserFreebox}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0">Free Space</Label>
+                            <Label Grid.Row="0" Grid.Column="1" Content="{Binding FreeSpace, Converter={StaticResource SizeConverter}}"></Label>
+                            <Label Grid.Row="1" Grid.Column="0">Ratio</Label>
+                            <ProgressBar Grid.Row="1" Grid.Column="1" Maximum="100" Minimum="0" Height="15" Value="{Binding Ratio}"></ProgressBar>
+                            <ListView MaxHeight="200" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0"
                               ItemsSource="{Binding Downloads}">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Name" />
-                                <GridViewColumn DisplayMemberBinding="{Binding Status}" Header="Status" />
-                                <GridViewColumn Header="Pourcentage" Width="200">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate DataType="freebox:DownloadItem">
-                                            <ProgressBar Height="15" Value="{Binding Pourcentage}" Maximum="10000" Width="180"></ProgressBar>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="RxPourcentage" Width="200">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate DataType="freebox:DownloadItem">
-                                            <ProgressBar Height="15" Value="{Binding RxPourcentage}" Maximum="10000" Width="180"></ProgressBar>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                    <ListView Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" ItemsSource="{Binding Movies}">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding FileName}" />
-                                <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
-                                <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note}" />
-                                <GridViewColumn Header="Del">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate DataType="betaSerie:OMDb">
-                                            <Button Content="Del" Click="SupprimerFilm_OnClick"></Button>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                </Grid>
-            </TabItem>
-        </TabControl>
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Name" />
+                                        <GridViewColumn DisplayMemberBinding="{Binding Status}" Header="Status" />
+                                        <GridViewColumn Header="Pourcentage" Width="200">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate DataType="freebox:DownloadItem">
+                                                    <ProgressBar Height="15" Value="{Binding Pourcentage}" Maximum="10000" Width="180"></ProgressBar>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="RxPourcentage" Width="200">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate DataType="freebox:DownloadItem">
+                                                    <ProgressBar Height="15" Value="{Binding RxPourcentage}" Maximum="10000" Width="180"></ProgressBar>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <ListView Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" ItemsSource="{Binding Movies}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding FileName}" />
+                                        <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
+                                        <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note}" />
+                                        <GridViewColumn Header="Del">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate DataType="betaSerie:OMDb">
+                                                    <Button Content="Del" Click="SupprimerFilm_OnClick"></Button>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </DockPanel>
+            <Grid Background="Beige" Name="gridButton">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Height" Value="80" />
+                            <Setter Property="Width" Value="120" />
+                            <Setter Property="Margin" Value="10" />
+                        </Style>
+                    </StackPanel.Resources>
+                    <Button Click="Betaseries_OnClick">BetaSerie</Button>
+                    <Button Click="T411_OnClick">T411</Button>
+                    <Button Click="Freebox_OnClick">Freebox</Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
     </DockPanel>
 </Window>
