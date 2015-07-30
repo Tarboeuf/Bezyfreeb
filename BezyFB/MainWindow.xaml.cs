@@ -483,8 +483,15 @@ namespace BezyFB
             }
             else
             {
-                lv.ItemsSource = _client.GetQuery(string.Format("{0}", textBoxRechercheT411.Text)).Torrents
-                    .Where(t => t.CategoryName == ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Name)
+                lv.ItemsSource = _client.GetQuery(string.Format("{0}", HttpUtility.UrlEncode(textBoxRechercheT411.Text)), 
+                    new QueryOptions
+                    {
+                        CategoryIds = new List<int>
+                        {
+                            ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Id
+                        },
+                        Limit = 1000
+                    }).Torrents
                     .OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
             }
             StatusBar.Items.Add("torrents récupéré");
