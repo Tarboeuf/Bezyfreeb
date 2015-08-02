@@ -17,6 +17,7 @@ namespace BezyFB.BetaSerie
                     Title = (string)jobj["Title"],
                     Year = (string)jobj["Year"],
                     Resume = (string)jobj["Plot"],
+                    Poster = (string)jobj["Poster"],
                     FileName = fileName ?? nom,
                 };
             return new OMDb { FileName = fileName ?? nom, };
@@ -39,5 +40,6 @@ namespace BezyFB.BetaSerie
         public double Note { get; set; }
         public string Resume { get; set; }
         public string FileName { get; set; }
+        public string Poster { get; set; }
     }
 }

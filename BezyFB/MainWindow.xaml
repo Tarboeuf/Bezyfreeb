@@ -93,6 +93,7 @@
                             <Label FontWeight="Bold">Année</Label>
                             <Label  Content="{Binding OmDb.Year}"/>
                         </StackPanel>
+                        <Image Source="{Binding OmDb.Poster}" MaxWidth="200"></Image>
                     </StackPanel>
                     <ListView Name="lv" 
                               util:GridViewSort.AutoSort="True" 
@@ -104,7 +105,7 @@
                                 <GridViewColumn Header="Taille"  DisplayMemberBinding="{Binding Size, Converter={StaticResource SizeConverter}}" />
                                 <GridViewColumn Header="Seeders"  DisplayMemberBinding="{Binding Seeders}" util:GridViewSort.PropertyName="Seeders"  />
                                 <GridViewColumn Header="NbDL" DisplayMemberBinding="{Binding Times_completed}"  util:GridViewSort.PropertyName="Times_completed" />
-                                <GridViewColumn Header="NbDLPerHour" DisplayMemberBinding="{Binding TimesCompletedByHours, StringFormat='##0.#'}" util:GridViewSort.PropertyName="NbDLPerHour"  />
+                                <GridViewColumn Header="NbDLPerHour" DisplayMemberBinding="{Binding TimesCompletedByHours, StringFormat='##0.#'}" util:GridViewSort.PropertyName="TimesCompletedByHours"  />
                                 <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note}" />
                                 <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Nom}" />
                                 <GridViewColumn Header="DL">
