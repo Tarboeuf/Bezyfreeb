@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.Web;
 using BezyFB.BetaSerie;
 using BezyFB.Configuration;
 using BezyFB.EzTv;
@@ -14,6 +15,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -23,7 +25,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using T411.Api;
+using Microsoft.Win32;
 
 namespace BezyFB
 {
@@ -32,31 +34,20 @@ namespace BezyFB
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly BetaSerie.BetaSerie _bs;
-        private readonly Utilisateur _user;
-        private readonly Freebox.Freebox _freeboxApi;
+        private BetaSerie.BetaSerie _bs;
+        private Utilisateur _user;
+        private Lazy<Freebox.Freebox> _freeboxApi = new Lazy<Freebox.Freebox>(() => new Freebox.Freebox());
+        private T411Client _client;
 
         public MainWindow()
         {
             InitializeComponent();
-            _bs = new BetaSerie.BetaSerie();
-            tb.Items.Clear();
-            tb.Items.Add(_bs.Error);
-            _user = Utilisateur.Current();
-            _freeboxApi = new Freebox.Freebox();
-
-            var t = new Task<EpisodeRoot>(() => _bs.GetListeNouveauxEpisodesTest());
-            t.ContinueWith(r => Dispatcher.BeginInvoke(new Action(() => tv.ItemsSource = r.Result.shows)));
-            t.Start();
+            SetStatusText("Veuillez choisir votre catégorie");
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            EpisodeRoot shows = _bs.GetListeNouveauxEpisodesTest();
-            if (null != shows)
-                tv.ItemsSource = shows.shows;
-            tb.Items.Clear();
-            tb.Items.Add("BetaSeries: " + _bs.Error);
+            LoadBetaseries();
         }
 
         private void SetDl(object sender, RoutedEventArgs e)
@@ -69,12 +60,6 @@ namespace BezyFB
                 _bs.SetEpisodeDownnloaded(episode);
             }
             Cursor = Cursors.Arrow;
-        }
-
-        private void MajItemsSource()
-        {
-            tv.ItemsSource = null;
-            tv.ItemsSource = _bs.Root.shows;
         }
 
         private void SetSetSeen(object sender, RoutedEventArgs e)
@@ -128,10 +113,9 @@ namespace BezyFB
                 {
                     string fileName = episode.show_title + "_" + episode.code + ".srt";
 
-                    string encoding = "";
                     if (!string.IsNullOrEmpty(episode.IdDownload))
                     {
-                        string file = _freeboxApi.GetFileNameDownloaded(episode.IdDownload);
+                        string file = _freeboxApi.Value.GetFileNameDownloaded(episode.IdDownload);
 
                         if (!string.IsNullOrEmpty(file))
                         {
@@ -143,49 +127,30 @@ namespace BezyFB
                     }
                     string pathreseau = pathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : "");
 
-                    if ((cbLocalNetwork.IsChecked ?? false) && !Directory.Exists(pathFreebox))
+                    if (string.IsNullOrEmpty(episode.IdDownload))
                     {
-                        if (string.IsNullOrEmpty(episode.IdDownload))
+                        var lst = _freeboxApi.Value.Ls(Settings.Default.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), false);
+                        if (lst != null)
                         {
-                            foreach (var file in Directory.GetFiles(pathreseau))
+                            string f = lst.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
+                            if (null != f)
                             {
-                                if (file.Contains(episode.code))
-                                {
-                                    if (file.LastIndexOf('.') <= (file.Length - 5))
-                                        fileName = file + ".srt";
-                                    else
-                                        fileName = file.Replace(file.Substring(file.LastIndexOf('.')), ".srt");
-                                    pathreseau = "";
-                                }
+                                fileName = f.Replace(f.Substring(f.LastIndexOf('.')), ".srt");
                             }
                         }
+                    }
+                    if (string.IsNullOrEmpty(Settings.Default.PathNonReseau))
+                    {
+                        pathreseau = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                     }
                     else
                     {
-                        if (string.IsNullOrEmpty(episode.IdDownload))
-                        {
-                            var lst = _freeboxApi.Ls(Settings.Default.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), false);
-                            if (lst != null)
-                            {
-                                string f = lst.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
-                                if (null != f)
-                                {
-                                    fileName = f.Replace(f.Substring(f.LastIndexOf('.')), ".srt");
-                                }
-                            }
-                        }
-                        if (string.IsNullOrEmpty(Settings.Default.PathNonReseau))
-                        {
-                            pathreseau = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                        }
-                        else
-                        {
-                            pathreseau = Settings.Default.PathNonReseau + "/";
-                        }
-
-                        //Process.Start(pathreseau);
+                        pathreseau = Settings.Default.PathNonReseau + "/";
                     }
-                    encoding = ExtractEncoding(fileName);
+
+                    //Process.Start(pathreseau);
+
+                    var encoding = ExtractEncoding(fileName);
                     var sousTitre = str.subtitles.OrderByDescending(c => c.quality).Select(s => s.url).FirstOrDefault();
 
                     var wc = new WebClient();
@@ -211,19 +176,12 @@ namespace BezyFB
                             return false;
                         }
 
-                        if (cbLocalNetwork.IsChecked ?? false)
-                        {
-                            if (!Directory.Exists(pathFreebox))
-                                pathreseau = pathFreebox;
-                        }
-
                         File.WriteAllBytes(pathreseau + fileName, st);
-                        _freeboxApi.UploadFile(pathreseau + fileName, userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), fileName);
-                        _freeboxApi.CleanUpload();
+                        _freeboxApi.Value.UploadFile(pathreseau + fileName, userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), fileName);
+                        _freeboxApi.Value.CleanUpload();
                         File.Delete(pathreseau + fileName);
 
-                        tb.Items.Clear();
-                        tb.Items.Add("Fichier : " + fileName);
+                        SetStatusText("Fichier : " + fileName);
                     }
                 }
                 else
@@ -240,6 +198,12 @@ namespace BezyFB
             return true;
         }
 
+        private void SetStatusText(string text)
+        {
+            StatusBar.Items.Clear();
+            StatusBar.Items.Add(text);
+        }
+
         private static byte[] UnzipFromStream(byte[] st, string encoding)
         {
             MemoryStream zipStream = new MemoryStream(st);
@@ -247,7 +211,7 @@ namespace BezyFB
 
             if (!zipInputStream.CanRead)
                 return null;
-            ZipEntry zipEntry = null;
+            ZipEntry zipEntry;
             try
             {
                 zipEntry = zipInputStream.GetNextEntry();
@@ -265,14 +229,11 @@ namespace BezyFB
                 if (entryFileName.Contains(".srt") && entryFileName.Contains(encoding))
                 {
                     Clipboard.SetText(entryFileName);
-                    int file_size = (int)zipEntry.Size;
+                    int fileSize = (int)zipEntry.Size;
                     byte[] blob = new byte[(int)zipEntry.Size];
-                    int bytes_read = 0;
-                    int offset = 0;
 
-                    while ((bytes_read = zipInputStream.Read(blob, 0, file_size)) != 0)
+                    while ((zipInputStream.Read(blob, 0, fileSize)) != 0)
                     {
-                        offset += bytes_read;
                     }
 
                     //closing every thing
@@ -301,14 +262,11 @@ namespace BezyFB
                 if (entryFileName.Contains(".srt"))
                 {
                     Clipboard.SetText(entryFileName);
-                    int file_size = (int)zipEntry.Size;
+                    int fileSize = (int)zipEntry.Size;
                     byte[] blob = new byte[(int)zipEntry.Size];
-                    int bytes_read = 0;
-                    int offset = 0;
 
-                    while ((bytes_read = zipInputStream.Read(blob, 0, file_size)) != 0)
+                    while ((zipInputStream.Read(blob, 0, fileSize)) != 0)
                     {
-                        offset += bytes_read;
                     }
 
                     //closing every thing
@@ -334,7 +292,7 @@ namespace BezyFB
                 var serie = _user.GetSerie(episode);
                 var magnet = Eztv.GetMagnetSerieEpisode(serie.IdEztv, episode.code);
                 if (magnet != null)
-                    episode.IdDownload = _freeboxApi.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""));
+                    episode.IdDownload = _freeboxApi.Value.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""));
                 else if (serie.IdEztv == null)
                 {
                     if (Settings.Default.AffichageErreurMessageBox)
@@ -353,7 +311,7 @@ namespace BezyFB
                     if (null != torrentStream)
                     {
                         //ByteArrayToFile("E:\\test.torrent", torrentStream);
-                        episode.IdDownload = _freeboxApi.DownloadFile(torrentStream, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), true);
+                        episode.IdDownload = _freeboxApi.Value.DownloadFile(torrentStream, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), true);
                     }
                     else
                     {
@@ -371,58 +329,9 @@ namespace BezyFB
             return true;
         }
 
-        public bool ByteArrayToFile(string _FileName, byte[] _ByteArray)
-        {
-            try
-            {
-                // Open file for reading
-                System.IO.FileStream _FileStream = new System.IO.FileStream(_FileName, System.IO.FileMode.Create, System.IO.FileAccess.Write);
-                // Writes a block of bytes to this stream using data from
-                // a byte array.
-                _FileStream.Write(_ByteArray, 0, _ByteArray.Length);
-
-                // close file stream
-                _FileStream.Close();
-
-                return true;
-            }
-            catch (Exception _Exception)
-            {
-                // Error
-                Console.WriteLine("Exception caught in process: {0}",
-                                  _Exception.ToString());
-            }
-
-            // error occured, return false
-            return false;
-        }
-
-        public bool StreamToFile(string _FileName, Stream stream)
-        {
-            try
-            {
-                using (var fileStream = File.Create(_FileName))
-                {
-                    stream.Seek(0, SeekOrigin.Begin);
-                    stream.CopyTo(fileStream);
-                }
-             
-                return true;
-            }
-            catch (Exception _Exception)
-            {
-                // Error
-                Console.WriteLine("Exception caught in process: {0}",
-                                  _Exception.ToString());
-            }
-
-            // error occured, return false
-            return false;
-        }
-
         private void Configuration_Click(object sender, RoutedEventArgs e)
         {
-            var c = new Configuration.Configuration(_bs, _freeboxApi);
+            var c = new Configuration.Configuration(_bs, _freeboxApi.Value);
             c.ShowDialog();
         }
 
@@ -469,7 +378,7 @@ namespace BezyFB
 
         private void MainWindow_OnClosed(object sender, EventArgs e)
         {
-            _freeboxApi.Deconnexion();
+            _freeboxApi.Value.Deconnexion();
         }
 
         private void SettingsClick(object sender, RoutedEventArgs e)
@@ -489,19 +398,14 @@ namespace BezyFB
         {
             if (tc.SelectedIndex == 1 && lv.ItemsSource == null)
             {
-                var client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
-
-                lv.ItemsSource = client.GetTopWeek().Where(t => t.CategoryName == "Film").OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
-
-                var user = client.GetUserDetails(client.UserId);
-                labelT411.Content = user.Username + " Ratio : " + ((double)((double)user.Uploaded / (double)user.Downloaded)).ToString("##.###");
+                LoadT411();
             }
             if (tc.SelectedIndex == 2)
             {
-                if(!(tabFreebox.DataContext is UserFreebox))
+                if (!(TabFreebox.DataContext is UserFreebox))
                 {
-                    var uf = _freeboxApi.GetInfosFreebox();
-                    tabFreebox.DataContext = uf;
+                    var uf = _freeboxApi.Value.GetInfosFreebox();
+                    TabFreebox.DataContext = uf;
 
                     uf.LoadMovies(Dispatcher);
                 }
@@ -516,11 +420,27 @@ namespace BezyFB
                 var torrent = senderButton.Tag as MyTorrent;
                 if (null != torrent)
                 {
-                    var client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
-                    
-                    using (var stream = client.DownloadTorrent(torrent.Torrent.Id))
+                    if (_client == null)
+                        _client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
+
+                    using (var stream = _client.DownloadTorrent(torrent.Torrent.Id))
                     {
-                        _freeboxApi.DownloadFile(stream, torrent.Name + ".torrent", Settings.Default.PathFilm, false);
+                        if (string.IsNullOrEmpty(Settings.Default.TokenFreebox))
+                        {
+                            var sfd = new SaveFileDialog();
+                            sfd.FileName = torrent.Name + ".torrent";
+                            if (sfd.ShowDialog() ?? false)
+                            {
+                                using (var s = File.Create(sfd.FileName))
+                                {
+                                    stream.CopyTo(s);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            _freeboxApi.Value.DownloadFile(stream, torrent.Name + ".torrent", Settings.Default.PathFilm, false);
+                        }
                     }
                 }
             }
@@ -542,10 +462,126 @@ namespace BezyFB
         private void SupprimerFilm_OnClick(object sender, RoutedEventArgs e)
         {
             var dc = ((Button)sender).DataContext as OMDb;
-            if(null != dc)
+            if (null != dc)
             {
-                _freeboxApi.DeleteFile(Settings.Default.PathFilm + dc.FileName);
+                _freeboxApi.Value.DeleteFile(Settings.Default.PathFilm + dc.FileName);
             }
+        }
+
+        private void buttonT411Rechercher_Click(object sender, RoutedEventArgs e)
+        {
+            T411Client.BaseAddress = "https://api.t411.io/";
+            if (_client == null)
+                _client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
+            StatusBar.Items.Clear();
+            StatusBar.Items.Add("Connecté t411");
+            if (string.IsNullOrEmpty(textBoxRechercheT411.Text))
+            {
+                lv.ItemsSource = _client.GetTopWeek().Where(t => t.CategoryName == ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Name).OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
+            }
+            else
+            {
+                lv.ItemsSource = _client.GetQuery(string.Format("{0}", HttpUtility.UrlEncode(textBoxRechercheT411.Text)), 
+                    new QueryOptions
+                    {
+                        CategoryIds = new List<int>
+                        {
+                            ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Id
+                        },
+                        Limit = 1000
+                    }).Torrents
+                    .OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
+            }
+            StatusBar.Items.Add("torrents récupéré");
+        }
+
+        private void Quitter_OnClick(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void LoadBetaseries()
+        {
+            pb.Visibility = Visibility.Visible;
+            if (_bs == null)
+                _bs = new BetaSerie.BetaSerie();
+            SetStatusText(_bs.Error);
+            if (_user == null)
+                _user = Utilisateur.Current();
+
+            var t = new Task<EpisodeRoot>(() => _bs.GetListeNouveauxEpisodesTest());
+            t.ContinueWith(r => Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (r != null && r.Result != null)
+                    tv.ItemsSource = r.Result.shows;
+                gridButton.Visibility = Visibility.Collapsed;
+                pb.Visibility = Visibility.Collapsed;
+            })));
+            t.Start();
+        }
+
+        private void LoadT411()
+        {
+            SetStatusText("Chargement des données T411");
+            var worker = new BackgroundWorker();
+            pb.Visibility = Visibility.Visible;
+            worker.DoWork += delegate(object sender, DoWorkEventArgs args)
+            {
+                T411Client.BaseAddress = "https://api.t411.io/";
+                if (_client == null)
+                    _client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
+
+                Dispatcher.BeginInvoke((Action)(() => lv.ItemsSource =
+                    _client.GetTopWeek()
+                        .Where(t => t.CategoryName == "Film")
+                        .OrderByDescending(t => t.Times_completed)
+                        .Select(t => new MyTorrent(t))));
+
+
+                var categories = new List<SousCategorie>();
+                foreach (var category1 in _client.GetCategory())
+                {
+                    foreach (var cat in category1.Value.Cats)
+                    {
+                        categories.Add(new SousCategorie(cat.Value, category1.Value.Name));
+                    }
+                }
+                Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    comboCategoryT411.ItemsSource = categories;
+                    comboCategoryT411.SelectedIndex = categories.IndexOf(categories.FirstOrDefault(c => c.Cat.Name == "Film"));
+                }));
+
+                var user = _client.GetUserDetails(_client.UserId);
+
+                Dispatcher.BeginInvoke((Action) (() =>
+                    labelT411.Content =
+                        user.Username + " Ratio : " + (user.Uploaded/(double) user.Downloaded).ToString("##.###")));
+            };
+            worker.RunWorkerCompleted+=delegate(object sender, RunWorkerCompletedEventArgs args)
+            {
+                gridButton.Visibility = Visibility.Collapsed;
+                pb.Visibility = Visibility.Collapsed;
+            };
+
+            worker.RunWorkerAsync();
+        }
+
+        private void Betaseries_OnClick(object sender, RoutedEventArgs e)
+        {
+            tc.SelectedIndex = 0;
+            LoadBetaseries();
+        }
+
+        private void T411_OnClick(object sender, RoutedEventArgs e)
+        {
+            tc.SelectedIndex = 1;
+        }
+
+        private void Freebox_OnClick(object sender, RoutedEventArgs e)
+        {
+            gridButton.Visibility = Visibility.Collapsed;
+            tc.SelectedIndex = 2;
         }
     }
 }

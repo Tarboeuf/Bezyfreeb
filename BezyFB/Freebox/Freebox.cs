@@ -320,6 +320,11 @@ namespace BezyFB.Freebox
             var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/upload/", WebMethod.Post, "application/json",
                                          new JObject { { "dirname", Helper.EncodeTo64(pathDir) }, { "upload_name", outputFileName } }.ToString(), null,
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+            if (json == null)
+            {
+                AfficherMessage("Erreur lors de l'appel à la freebox");
+                return null;
+            }
 
             try
             {
@@ -353,10 +358,7 @@ namespace BezyFB.Freebox
             }
             catch (Exception ex)
             {
-                if (Settings.Default.AffichageErreurMessageBox)
-                    MessageBox.Show(ex.Message);
-                else
-                    Console.WriteLine(ex.Message);
+                AfficherMessage(ex.Message);
                 return null;
             }
 
@@ -451,6 +453,14 @@ namespace BezyFB.Freebox
             }
 
             return userFreebox;
+        }
+
+        private void AfficherMessage(string message)
+        {
+            if (Settings.Default.AffichageErreurMessageBox)
+                MessageBox.Show(message);
+            else
+                Console.WriteLine(message);
         }
     }
 

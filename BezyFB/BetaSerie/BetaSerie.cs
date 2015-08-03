@@ -97,6 +97,11 @@ namespace BezyFB.BetaSerie
 
                 var serializer = new XmlSerializer(typeof (EpisodeRoot), new XmlRootAttribute("root"));
                 var reader = GenerateStreamFromString(xml);
+                if (null == xml)
+                {
+                    Error = "Erreur lors de la récupération des nouveaux épisodes.";
+                    return null;
+                }
                 var rt = (EpisodeRoot) serializer.Deserialize(reader);
                 reader.Close();
                 Root = rt;

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:configuration="clr-namespace:BezyFB.Configuration"
         mc:Ignorable="d"
-        Title="Configuration" Height="400" Width="450"
+        Title="Configuration" Height="500" Width="600"
         d:DataContext="{d:DesignInstance configuration:Configuration}">
     <Grid>
         <StackPanel Orientation="Vertical">
@@ -15,9 +15,13 @@
                         <Label Content="Freebox Ip : " />
                         <Label Content="{Binding FreeboxIp}" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                         <Label Content="Path Video : " />
-                        <Label Content="{Binding PathVideo}" />
+                        <TextBox Text="{Binding PathVideo, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Path Film : " />
+                        <TextBox Text="{Binding PathFilm, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" />
                     </StackPanel>
                     <Button Content="Synchroniser" Click="Button_Click" />
                 </StackPanel>
