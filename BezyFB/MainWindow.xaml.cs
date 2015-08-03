@@ -43,6 +43,23 @@ namespace BezyFB
         {
             InitializeComponent();
             SetStatusText("Veuillez choisir votre catégorie");
+
+            T411Client.BaseAddress = "https://api.t411.io/";
+        }
+
+        public void InitialiseElements(bool forceFreebox, bool forceBetaSerie, bool forceT411, bool forceUser)
+        {
+            if(forceFreebox || _freeboxApi == null)
+                _freeboxApi = new Freebox.Freebox();
+
+            if (forceBetaSerie || _bs == null)
+                _bs = new BetaSerie.BetaSerie();
+
+            if (forceT411 || _client == null)
+                _client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
+
+            if (forceUser || _user == null)
+                _user = Utilisateur.Current();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -54,11 +71,9 @@ namespace BezyFB
         {
             Cursor = Cursors.Wait;
             var episode = ((Button)sender).CommandParameter as Episode;
-
+            
             if (episode != null)
-            {
                 _bs.SetEpisodeDownnloaded(episode);
-            }
             Cursor = Cursors.Arrow;
         }
 
@@ -68,10 +83,7 @@ namespace BezyFB
             var episode = ((Button)sender).CommandParameter as Episode;
 
             if (episode != null)
-            {
                 _bs.SetEpisodeSeen(episode);
-            }
-            //MajItemsSource();
             Cursor = Cursors.Arrow;
         }
 
@@ -331,8 +343,10 @@ namespace BezyFB
 
         private void Configuration_Click(object sender, RoutedEventArgs e)
         {
+            InitialiseElements(false, false, false, false);
             var c = new Configuration.Configuration(_bs, _freeboxApi.Value);
             c.ShowDialog();
+            InitialiseElements(true, true, true, true);
         }
 
         private void Download_All_Click(object sender, RoutedEventArgs e)
@@ -396,6 +410,7 @@ namespace BezyFB
 
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            InitialiseElements(false, false, false, false);
             if (tc.SelectedIndex == 1 && lv.ItemsSource == null)
             {
                 LoadT411();
@@ -420,9 +435,6 @@ namespace BezyFB
                 var torrent = senderButton.Tag as MyTorrent;
                 if (null != torrent)
                 {
-                    if (_client == null)
-                        _client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
-
                     using (var stream = _client.DownloadTorrent(torrent.Torrent.Id))
                     {
                         if (string.IsNullOrEmpty(Settings.Default.TokenFreebox))
@@ -470,9 +482,6 @@ namespace BezyFB
 
         private void buttonT411Rechercher_Click(object sender, RoutedEventArgs e)
         {
-            T411Client.BaseAddress = "https://api.t411.io/";
-            if (_client == null)
-                _client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
             StatusBar.Items.Clear();
             StatusBar.Items.Add("Connecté t411");
             if (string.IsNullOrEmpty(textBoxRechercheT411.Text))
@@ -503,8 +512,6 @@ namespace BezyFB
         private void LoadBetaseries()
         {
             pb.Visibility = Visibility.Visible;
-            if (_bs == null)
-                _bs = new BetaSerie.BetaSerie();
             SetStatusText(_bs.Error);
             if (_user == null)
                 _user = Utilisateur.Current();

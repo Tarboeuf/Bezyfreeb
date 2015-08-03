@@ -440,16 +440,24 @@ namespace BezyFB.Freebox
                     Console.WriteLine((string)jsonObject["msg"]);
                 return null;
             }
-            foreach (var item in jsonObject["result"])
+
+            try
             {
-                var di = new DownloadItem
+                foreach (var item in jsonObject["result"])
                 {
-                    Pourcentage = (double)item["rx_pct"],
-                    Name = (string)item["name"],
-                    Status = (string)item["status"],
-                    RxPourcentage = (double)item["tx_pct"],
-                };
-                userFreebox.Downloads.Add(di);
+                    var di = new DownloadItem
+                    {
+                        Pourcentage = (double)item["rx_pct"],
+                        Name = (string)item["name"],
+                        Status = (string)item["status"],
+                        RxPourcentage = (double)item["tx_pct"],
+                    };
+                    userFreebox.Downloads.Add(di);
+                }
+            }
+            catch(Exception ex)
+            {
+
             }
 
             return userFreebox;
