@@ -10,7 +10,7 @@
         xmlns:util="clr-namespace:BezyFB.Helpers.Wpf.Util"
         xmlns:betaSerie="clr-namespace:BezyFB.BetaSerie"
         mc:Ignorable="d"
-        Title="BezyFreeb" Height="500" Width="925"
+        Title="BezyFreeb" Height="500" Width="1225"
         Closed="MainWindow_OnClosed">
     <Window.Resources>
         <helpers:SizeMoConverter x:Key="SizeConverter" />
@@ -85,7 +85,7 @@
                             </TreeView>
                         </DockPanel>
                     </TabItem>
-                    <TabItem Header="T411" Height="23" VerticalAlignment="Bottom">
+                    <TabItem Header="T411" Height="23" VerticalAlignment="Top" Margin="-2,1,-2,-1">
                         <DockPanel>
                             <Label Name="labelT411" DockPanel.Dock="Top"></Label>
 
@@ -109,11 +109,11 @@
                                 <Image Source="{Binding OmDb.Poster}" MaxWidth="250"></Image>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
-                                <Label>Category</Label>
-                                <ComboBox Name="comboCategoryT411" Width="120" Margin="10 5" DisplayMemberPath="NameWithParent" />
-                                <Label>Nom</Label>
-                                <TextBox Name="textBoxRechercheT411" Width="150" Margin="10 5"></TextBox>
-                                <Button Name="buttonT411Rechercher" Margin="10 5" Click="buttonT411Rechercher_Click">Rechercher</Button>
+                                <Label VerticalAlignment="Center">Category</Label>
+                                <ComboBox Name="comboCategoryT411" VerticalAlignment="Center" Width="180" Margin="10 5" DisplayMemberPath="NameWithParent" />
+                                <Label VerticalAlignment="Center">Nom</Label>
+                                <TextBox Name="textBoxRechercheT411" Width="150" Margin="10 5"  VerticalAlignment="Center"></TextBox>
+                                <Button Name="buttonT411Rechercher" Margin="10 5" Click="buttonT411Rechercher_Click" VerticalAlignment="Center">Rechercher</Button>
                             </StackPanel>
                             <ListView Name="lv"
                               util:GridViewSort.AutoSort="True"
@@ -125,7 +125,7 @@
                                         <GridViewColumn Header="Taille"  DisplayMemberBinding="{Binding Size, Converter={StaticResource SizeConverter}}" />
                                         <GridViewColumn Header="Seeders"  DisplayMemberBinding="{Binding Seeders}" util:GridViewSort.PropertyName="Seeders" />
                                         <GridViewColumn Header="NbDL" DisplayMemberBinding="{Binding Times_completed}"  util:GridViewSort.PropertyName="Times_completed" />
-                                        <GridViewColumn Header="NbDLPerHour" DisplayMemberBinding="{Binding TimesCompletedByHours, StringFormat='##0.#'}" util:GridViewSort.PropertyName="NbDLPerHour" />
+                                        <GridViewColumn Header="NbDLPerHour" DisplayMemberBinding="{Binding TimesCompletedByHours, StringFormat='##0.#'}" util:GridViewSort.PropertyName="TimesCompletedByHours" />
                                         <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note}" />
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Nom}" Width="80"/>
                                         <GridViewColumn Header="Infos">
@@ -214,7 +214,7 @@
                     </TabItem>
                 </TabControl>
             </DockPanel>
-            <Grid Background="Beige" Name="gridButton">
+            <Grid Background="Beige" Name="gridButton" Visibility="Collapsed">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">

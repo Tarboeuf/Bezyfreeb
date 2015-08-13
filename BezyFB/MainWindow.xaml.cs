@@ -43,15 +43,12 @@ namespace BezyFB
         {
             InitializeComponent();
             SetStatusText("Veuillez choisir votre catégorie");
-
+            gridButton.Visibility = Visibility.Visible;
             T411Client.BaseAddress = "https://api.t411.io/";
         }
 
         public void InitialiseElements(bool forceFreebox, bool forceBetaSerie, bool forceT411, bool forceUser)
         {
-            if(forceFreebox || _freeboxApi == null)
-                _freeboxApi = new Freebox.Freebox();
-
             if (forceBetaSerie || _bs == null)
                 _bs = new BetaSerie.BetaSerie();
 
@@ -71,7 +68,7 @@ namespace BezyFB
         {
             Cursor = Cursors.Wait;
             var episode = ((Button)sender).CommandParameter as Episode;
-            
+
             if (episode != null)
                 _bs.SetEpisodeDownnloaded(episode);
             Cursor = Cursors.Arrow;
@@ -408,12 +405,16 @@ namespace BezyFB
             }
         }
 
-        private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             InitialiseElements(false, false, false, false);
             if (tc.SelectedIndex == 1 && lv.ItemsSource == null)
             {
-                LoadT411();
+                pb.Visibility = Visibility.Visible;
+                SetStatusText("Chargement depuis T411");
+                await LoadT411();
+                SetStatusText("T411 chargé");
+                pb.Visibility = Visibility.Collapsed;
             }
             if (tc.SelectedIndex == 2)
             {
@@ -458,17 +459,20 @@ namespace BezyFB
             }
         }
 
-        private void ButtonExtraInfoOnClick(object sender, RoutedEventArgs e)
+        private async void ButtonExtraInfoOnClick(object sender, RoutedEventArgs e)
         {
+            pb.Visibility = Visibility.Visible;
             Button senderButton = sender as Button;
             if (null != senderButton)
             {
                 var torrent = senderButton.Tag as MyTorrent;
                 if (null != torrent)
                 {
-                    torrent.Initialiser();
+                    await torrent.Initialiser();
                 }
             }
+            SetStatusText("Extra infos récupérées");
+            pb.Visibility = Visibility.Collapsed;
         }
 
         private void SupprimerFilm_OnClick(object sender, RoutedEventArgs e)
@@ -480,17 +484,18 @@ namespace BezyFB
             }
         }
 
-        private void buttonT411Rechercher_Click(object sender, RoutedEventArgs e)
+        private async void buttonT411Rechercher_Click(object sender, RoutedEventArgs e)
         {
-            StatusBar.Items.Clear();
-            StatusBar.Items.Add("Connecté t411");
+            pb.Visibility = Visibility.Visible;
             if (string.IsNullOrEmpty(textBoxRechercheT411.Text))
             {
-                lv.ItemsSource = _client.GetTopWeek().Where(t => t.CategoryName == ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Name).OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
+                SetStatusText("Connecté t411 recherche topWeek");
+                lv.ItemsSource = (await _client.GetTopWeek()).Where(t => t.CategoryName == ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Name).OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
             }
             else
             {
-                lv.ItemsSource = _client.GetQuery(string.Format("{0}", HttpUtility.UrlEncode(textBoxRechercheT411.Text)), 
+                SetStatusText("Connecté t411 recherche par nom");
+                lv.ItemsSource = (await _client.GetQuery(string.Format("{0}", HttpUtility.UrlEncode(textBoxRechercheT411.Text)),
                     new QueryOptions
                     {
                         CategoryIds = new List<int>
@@ -498,10 +503,11 @@ namespace BezyFB
                             ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Id
                         },
                         Limit = 1000
-                    }).Torrents
+                    })).Torrents
                     .OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
             }
             StatusBar.Items.Add("torrents récupéré");
+            pb.Visibility = Visibility.Collapsed;
         }
 
         private void Quitter_OnClick(object sender, RoutedEventArgs e)
@@ -527,49 +533,46 @@ namespace BezyFB
             t.Start();
         }
 
-        private void LoadT411()
+        private async Task LoadT411()
         {
             SetStatusText("Chargement des données T411");
             var worker = new BackgroundWorker();
             pb.Visibility = Visibility.Visible;
-            worker.DoWork += delegate(object sender, DoWorkEventArgs args)
+
+            T411Client.BaseAddress = "https://api.t411.io/";
+            if (_client == null)
+                _client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
+
+            var topWeek = await _client.GetTopWeek();
+            Dispatcher.BeginInvoke((Action)(() => lv.ItemsSource =
+                   topWeek
+                    .Where(t => t.CategoryName == "Film")
+                    .OrderByDescending(t => t.Times_completed)
+                    .Select(t => new MyTorrent(t))));
+
+
+            var categories = new List<SousCategorie>();
+            foreach (var category1 in (await _client.GetCategory()))
             {
-                T411Client.BaseAddress = "https://api.t411.io/";
-                if (_client == null)
-                    _client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
-
-                Dispatcher.BeginInvoke((Action)(() => lv.ItemsSource =
-                    _client.GetTopWeek()
-                        .Where(t => t.CategoryName == "Film")
-                        .OrderByDescending(t => t.Times_completed)
-                        .Select(t => new MyTorrent(t))));
-
-
-                var categories = new List<SousCategorie>();
-                foreach (var category1 in _client.GetCategory())
+                foreach (var cat in category1.Value.Cats)
                 {
-                    foreach (var cat in category1.Value.Cats)
-                    {
-                        categories.Add(new SousCategorie(cat.Value, category1.Value.Name));
-                    }
+                    categories.Add(new SousCategorie(cat.Value, category1.Value.Name));
                 }
-                Dispatcher.BeginInvoke((Action)(() =>
-                {
-                    comboCategoryT411.ItemsSource = categories;
-                    comboCategoryT411.SelectedIndex = categories.IndexOf(categories.FirstOrDefault(c => c.Cat.Name == "Film"));
-                }));
-
-                var user = _client.GetUserDetails(_client.UserId);
-
-                Dispatcher.BeginInvoke((Action) (() =>
-                    labelT411.Content =
-                        user.Username + " Ratio : " + (user.Uploaded/(double) user.Downloaded).ToString("##.###")));
-            };
-            worker.RunWorkerCompleted+=delegate(object sender, RunWorkerCompletedEventArgs args)
+            }
+            Dispatcher.BeginInvoke((Action)(() =>
             {
-                gridButton.Visibility = Visibility.Collapsed;
-                pb.Visibility = Visibility.Collapsed;
-            };
+                comboCategoryT411.ItemsSource = categories;
+                comboCategoryT411.SelectedIndex = categories.IndexOf(categories.FirstOrDefault(c => c.Cat.Name == "Film"));
+            }));
+
+            var user = await _client.GetUserDetails(_client.UserId);
+
+            Dispatcher.BeginInvoke((Action)(() =>
+                labelT411.Content =
+                    user.Username + " Ratio : " + (user.Uploaded / (double)user.Downloaded).ToString("##.###")));
+
+            gridButton.Visibility = Visibility.Collapsed;
+            pb.Visibility = Visibility.Collapsed;
 
             worker.RunWorkerAsync();
         }

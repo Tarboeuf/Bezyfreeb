@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Threading.Tasks;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -59,7 +60,7 @@ namespace BezyFB.T411
                 }
                 using (var client = new HttpClient(handler) { BaseAddress = new Uri(BaseAddress) })
                 {
-                    Dictionary<string, string> dico = new Dictionary<string, string>();
+                    var dico = new Dictionary<string, string>();
                     dico.Add("username", _username);
                     dico.Add("password", _password);
 
@@ -72,35 +73,35 @@ namespace BezyFB.T411
             }
         }
 
-        public List<Torrent> GetTop100()
+        public async Task<List<Torrent>> GetTop100()
         {
-            return GetTorrents("/torrents/top/100");
+            return await GetTorrents("/torrents/top/100");
         }
 
-        public List<Torrent> GetTopToday()
+        public async Task<List<Torrent>> GetTopToday()
         {
-            return GetTorrents("/torrents/top/today");
+            return await GetTorrents("/torrents/top/today");
         }
 
-        public List<Torrent> GetTopWeek()
+        public async Task<List<Torrent>> GetTopWeek()
         {
-            return GetTorrents("/torrents/top/week");
+            return await GetTorrents("/torrents/top/week");
         }
 
-        public List<Torrent> GetTopMonth()
+        public async Task<List<Torrent>> GetTopMonth()
         {
-            return GetTorrents("/torrents/top/month");
+            return await GetTorrents("/torrents/top/month");
         }
 
-        private List<Torrent> GetTorrents(string uri)
+        private async Task<List<Torrent>> GetTorrents(string uri)
         {
-            return GetResponse<List<Torrent>>(new Uri(uri, UriKind.Relative));
+            return await GetResponse<List<Torrent>>(new Uri(uri, UriKind.Relative));
         }
 
-        public TorrentDetails GetTorrentDetails(int id)
+        public async Task<TorrentDetails> GetTorrentDetails(int id)
         {
             string uri = string.Format(System.Globalization.CultureInfo.InvariantCulture, "/torrents/details/{0}", id);
-            return GetResponse<TorrentDetails>(new Uri(uri, UriKind.Relative));
+            return await GetResponse<TorrentDetails>(new Uri(uri, UriKind.Relative));
         }
 
         public Stream DownloadTorrent(int id)
@@ -157,21 +158,21 @@ namespace BezyFB.T411
             }
         }
 
-        public UserDetails GetUserDetails(int id)
+        public async Task<UserDetails> GetUserDetails(int id)
         {
             string uri = string.Format(System.Globalization.CultureInfo.InvariantCulture, "/users/profile/{0}", id);
-            return GetResponse<UserDetails>(new Uri(uri, UriKind.Relative));
+            return await GetResponse<UserDetails>(new Uri(uri, UriKind.Relative));
         }
 
-        public QueryResult GetQuery(string query)
+        public async Task<QueryResult> GetQuery(string query)
         {
             if (query == null)
                 throw new ArgumentNullException("query");
             string uri = string.Format(System.Globalization.CultureInfo.InvariantCulture, "/torrents/search/{0}", query);
-            return GetResponse<QueryResult>(new Uri(uri, UriKind.Relative));
+            return await GetResponse<QueryResult>(new Uri(uri, UriKind.Relative));
         }
 
-        public QueryResult GetQuery(string query, QueryOptions options)
+        public async Task<QueryResult> GetQuery(string query, QueryOptions options)
         {
             if (query == null)
                 throw new ArgumentNullException("query");
@@ -179,19 +180,19 @@ namespace BezyFB.T411
                 throw new ArgumentNullException("options");
 
             string uri = string.Format(System.Globalization.CultureInfo.InvariantCulture, "/torrents/search/{0}?{1}", query.Replace(" ", "%20"), options.QueryString);
-            return GetResponse<QueryResult>(new Uri(uri, UriKind.Relative));
+            return await GetResponse<QueryResult>(new Uri(uri, UriKind.Relative));
         }
 
-        public Dictionary<int, Category> GetCategory()
+        public async Task<Dictionary<int, Category>> GetCategory()
         {
             string uri = "/categories/tree";
-            return GetResponse<Dictionary<int, Category>>(new Uri(uri, UriKind.Relative));
+            return await GetResponse<Dictionary<int, Category>>(new Uri(uri, UriKind.Relative));
         }
 
-        public List<TermCategory> GetTerms()
+        public async Task<List<TermCategory>> GetTerms()
         {
             string uri = "/terms/tree";
-            var result = GetResponse<Dictionary<int, Dictionary<int, TermType>>>(new Uri(uri, UriKind.Relative));
+            var result = await GetResponse<Dictionary<int, Dictionary<int, TermType>>>(new Uri(uri, UriKind.Relative));
 
             List<TermCategory> list = new List<TermCategory>();
             foreach (var categoryItem in result)
@@ -211,13 +212,13 @@ namespace BezyFB.T411
             return list;
         }
 
-        private T GetResponse<T>(Uri uri)
+        private async Task<T> GetResponse<T>(Uri uri)
         {
-            string data = GetRawResponse(uri);
+            string data = await GetRawResponse(uri);
 
             if (data.StartsWith("{\"error\":"))
             {
-                ErrorResult error = JsonConvert.DeserializeObject<ErrorResult>(data);
+                var error = JsonConvert.DeserializeObject<ErrorResult>(data);
                 throw ErrorCodeException.CreateFromErrorCode(error);
             }
 
@@ -225,7 +226,13 @@ namespace BezyFB.T411
             return torrents;
         }
 
-        private string GetRawResponse(Uri uri)
+
+        private async Task<string> GetRawResponse(Uri uri)
+        {
+            return await Task.Run(() => GetRawResponseAsync(uri, _token));
+        }
+
+        private static string GetRawResponseAsync(Uri uri, string token)
         {
             using (var handler = new HttpClientHandler())
             {
@@ -234,9 +241,9 @@ namespace BezyFB.T411
                     handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 }
                 using (var client = new HttpClient(handler) { BaseAddress = new Uri(BaseAddress) })
-                using (HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, uri))
+                using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, uri))
                 {
-                    requestMessage.Headers.TryAddWithoutValidation("Authorization", _token);
+                    requestMessage.Headers.TryAddWithoutValidation("Authorization", token);
 
                     using (var response = client.SendAsync(requestMessage).Result)
                     {
@@ -247,22 +254,22 @@ namespace BezyFB.T411
             }
         }
 
-        public List<Torrent> GetBookmarks()
+        public async Task<List<Torrent>> GetBookmarks()
         {
-            return GetResponse<List<Torrent>>(new Uri("/bookmarks", UriKind.Relative));
+            return await GetResponse<List<Torrent>>(new Uri("/bookmarks", UriKind.Relative));
         }
 
-        public int CreateBookmark(int id)
+        public async Task<int> CreateBookmark(int id)
         {
             string uri = string.Format(System.Globalization.CultureInfo.InvariantCulture, "/bookmarks/save/{0}", id);
-            return GetResponse<int>(new Uri(uri, UriKind.Relative));
+            return await GetResponse<int>(new Uri(uri, UriKind.Relative));
         }
 
-        public int DeleteBookmark(IEnumerable<int> bookmarkIds)
+        public async Task<int> DeleteBookmark(IEnumerable<int> bookmarkIds)
         {
             string ids = string.Join(",", bookmarkIds);
             string uri = string.Format(System.Globalization.CultureInfo.InvariantCulture, "/bookmarks/delete/{0}", ids);
-            return GetResponse<int>(new Uri(uri, UriKind.Relative));
+            return await GetResponse<int>(new Uri(uri, UriKind.Relative));
         }
     }
 }

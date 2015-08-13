@@ -43,7 +43,7 @@ namespace BezyFB
             }
             else
             {
-                MainWindow mw = new BezyFB.MainWindow();
+                var mw = new BezyFB.MainWindow();
                 mw.ShowDialog();
             }
         }

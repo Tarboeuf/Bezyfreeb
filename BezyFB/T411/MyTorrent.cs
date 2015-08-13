@@ -1,9 +1,9 @@
-﻿using BezyFB.BetaSerie;
+﻿using System.Threading.Tasks;
+using System.Windows;
+using BezyFB.BetaSerie;
 using System;
 using System.ComponentModel;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+using Essy.Tools.InputBox;
 
 namespace BezyFB.T411
 {
@@ -19,28 +19,33 @@ namespace BezyFB.T411
             _torrent = torrent;
         }
 
-        public void Initialiser()
+        public async Task Initialiser()
         {
-            var task = InitialiserDataAsync();
-            task.ContinueWith(t =>
+            if (!string.IsNullOrEmpty(Nom))
             {
-                Nom = t.Result.Item2;
-                Note = t.Result.Item1.Note;
-                OmDb = t.Result.Item1;
-            });
-            task.Start();
+                Nom = InputBox.ShowInputBox("Quel est le nom du film ?", Nom, false);
+            }
+
+            var value = await InitialiserDataAsync(Nom);
+
+            Nom = value.Nom;
+            Note = value.OMDB.Note;
+            OmDb = value.OMDB;
         }
 
-        private Tuple<OMDb, string> InitialiserData()
+        private RetourOMDB InitialiserData(string nom)
         {
-            string nom = "";
-            try
+            if (string.IsNullOrEmpty(nom))
             {
-                nom = GuessIt.GuessNom(_torrent.Name.Trim());
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
+                nom = "";
+                try
+                {
+                    nom = GuessIt.GuessNom(_torrent.Name.Trim());
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             }
             var omDb = new OMDb();
             try
@@ -57,12 +62,12 @@ namespace BezyFB.T411
                 Console.WriteLine(e.Message);
             }
 
-            return new Tuple<OMDb, string>(omDb, nom);
+            return new RetourOMDB { OMDB = omDb, Nom = nom };
         }
 
-        private Task<Tuple<OMDb, string>> InitialiserDataAsync()
+        private async Task<RetourOMDB> InitialiserDataAsync(string nom)
         {
-            return new Task<Tuple<OMDb, string>>(InitialiserData);
+            return await Task.Run(() => InitialiserData(nom));
         }
 
         public Torrent Torrent { get { return _torrent; } }
@@ -118,6 +123,12 @@ namespace BezyFB.T411
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private class RetourOMDB
+        {
+            public string Nom { get; set; }
+            public OMDb OMDB { get; set; }
         }
     }
 }
