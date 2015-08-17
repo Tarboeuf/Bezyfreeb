@@ -155,6 +155,7 @@
     <Compile Include="Helpers\ApiConnector.cs" />
     <Compile Include="EzTv\Eztv.cs" />
     <Compile Include="Freebox\Freebox.cs" />
+    <Compile Include="Helpers\AsyncLazy.cs" />
     <Compile Include="Helpers\GridViewSort.cs" />
     <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Helpers\SizeMoConverter.cs" />

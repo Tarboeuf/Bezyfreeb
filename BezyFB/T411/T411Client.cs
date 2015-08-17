@@ -15,7 +15,7 @@ namespace BezyFB.T411
         private readonly string _username;
         private readonly string _password;
 
-        private readonly string _token;
+        private string _token;
 
         private int _userId = -1;
 
@@ -43,11 +43,25 @@ namespace BezyFB.T411
             BaseAddress = "https://api.t411.me/";
         }
 
-        public T411Client(string username, string password)
+        public async static Task<T411Client> New(string username, string password)
+        {
+            var t4 = new T411Client(username, password);
+            await t4.Initialiser();
+            return t4;
+        }
+
+        private T411Client(string username, string password)
         {
             _username = username;
             _password = password;
-            _token = GetToken();
+        }
+
+        private Task Initialiser()
+        {
+            return Task.Run(() =>
+            {
+                _token = GetToken();
+            });
         }
 
         private string GetToken()

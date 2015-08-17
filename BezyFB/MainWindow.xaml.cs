@@ -4,6 +4,7 @@ using BezyFB.BetaSerie;
 using BezyFB.Configuration;
 using BezyFB.EzTv;
 using BezyFB.Freebox;
+using BezyFB.Helpers;
 using BezyFB.Properties;
 using BezyFB.T411;
 using ICSharpCode.SharpZipLib.Zip;
@@ -34,10 +35,10 @@ namespace BezyFB
     /// </summary>
     public partial class MainWindow : Window
     {
-        private BetaSerie.BetaSerie _bs;
-        private Utilisateur _user;
+        private Lazy<BetaSerie.BetaSerie> _bs = new Lazy<BetaSerie.BetaSerie>(() => new BetaSerie.BetaSerie());
+        private Lazy<Utilisateur> _user = new Lazy<Utilisateur>(Utilisateur.Current);
         private Lazy<Freebox.Freebox> _freeboxApi = new Lazy<Freebox.Freebox>(() => new Freebox.Freebox());
-        private T411Client _client;
+        private AsyncLazy<T411Client> _client = new AsyncLazy<T411Client>(() => T411Client.New(Settings.Default.LoginT411, Settings.Default.PassT411));
 
         public MainWindow()
         {
@@ -47,16 +48,11 @@ namespace BezyFB
             T411Client.BaseAddress = "https://api.t411.io/";
         }
 
-        public void InitialiseElements(bool forceFreebox, bool forceBetaSerie, bool forceT411, bool forceUser)
+        public void InitialiseElements()
         {
-            if (forceBetaSerie || _bs == null)
-                _bs = new BetaSerie.BetaSerie();
-
-            if (forceT411 || _client == null)
-                _client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
-
-            if (forceUser || _user == null)
-                _user = Utilisateur.Current();
+            _bs = new Lazy<BetaSerie.BetaSerie>(() => new BetaSerie.BetaSerie());
+            _client = new AsyncLazy<T411Client>(() => T411Client.New(Settings.Default.LoginT411, Settings.Default.PassT411));
+            _user = new Lazy<Utilisateur>(Utilisateur.Current);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -70,7 +66,7 @@ namespace BezyFB
             var episode = ((Button)sender).CommandParameter as Episode;
 
             if (episode != null)
-                _bs.SetEpisodeDownnloaded(episode);
+                _bs.Value.SetEpisodeDownnloaded(episode);
             Cursor = Cursors.Arrow;
         }
 
@@ -80,7 +76,7 @@ namespace BezyFB
             var episode = ((Button)sender).CommandParameter as Episode;
 
             if (episode != null)
-                _bs.SetEpisodeSeen(episode);
+                _bs.Value.SetEpisodeSeen(episode);
             Cursor = Cursors.Arrow;
         }
 
@@ -90,7 +86,7 @@ namespace BezyFB
             var episode = ((Button)sender).CommandParameter as Episode;
 
             if (DownloadMagnet(episode) && DownloadSsTitre(episode))
-                _bs.SetEpisodeDownnloaded(episode);
+                _bs.Value.SetEpisodeDownnloaded(episode);
             Cursor = Cursors.Arrow;
         }
 
@@ -114,10 +110,10 @@ namespace BezyFB
             Cursor = Cursors.Wait;
             if (episode != null)
             {
-                var userShow = _user.GetSerie(episode);
+                var userShow = _user.Value.GetSerie(episode);
                 string pathFreebox = userShow.PathReseau;
 
-                var str = _bs.GetPathSousTitre(episode.id);
+                var str = _bs.Value.GetPathSousTitre(episode.id);
                 if (str.subtitles.Any())
                 {
                     string fileName = episode.show_title + "_" + episode.code + ".srt";
@@ -298,7 +294,7 @@ namespace BezyFB
             Cursor = Cursors.Wait;
             if (episode != null)
             {
-                var serie = _user.GetSerie(episode);
+                var serie = _user.Value.GetSerie(episode);
                 var magnet = Eztv.GetMagnetSerieEpisode(serie.IdEztv, episode.code);
                 if (magnet != null)
                     episode.IdDownload = _freeboxApi.Value.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""));
@@ -340,15 +336,14 @@ namespace BezyFB
 
         private void Configuration_Click(object sender, RoutedEventArgs e)
         {
-            InitialiseElements(false, false, false, false);
-            var c = new Configuration.Configuration(_bs, _freeboxApi.Value);
+            var c = new Configuration.Configuration(_bs.Value, _freeboxApi.Value);
             c.ShowDialog();
-            InitialiseElements(true, true, true, true);
+            InitialiseElements();
         }
 
         private void Download_All_Click(object sender, RoutedEventArgs e)
         {
-            var root = _bs.GetListeNouveauxEpisodesTest();
+            var root = _bs.Value.GetListeNouveauxEpisodesTest();
             var errors = "";
 
             foreach (var rootShowsShow in root.shows)
@@ -398,16 +393,15 @@ namespace BezyFB
 
             if (s != null)
             {
-                if ((new WindowShow { DataContext = _user.GetSerie(s) }).ShowDialog() ?? false)
+                if ((new WindowShow { DataContext = _user.Value.GetSerie(s) }).ShowDialog() ?? false)
                 {
-                    _user.SerializeElement();
+                    _user.Value.SerializeElement();
                 }
             }
         }
 
         private async void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            InitialiseElements(false, false, false, false);
             if (tc.SelectedIndex == 1 && lv.ItemsSource == null)
             {
                 pb.Visibility = Visibility.Visible;
@@ -436,7 +430,7 @@ namespace BezyFB
                 var torrent = senderButton.Tag as MyTorrent;
                 if (null != torrent)
                 {
-                    using (var stream = _client.DownloadTorrent(torrent.Torrent.Id))
+                    using (var stream = _client.GetAwaiter().GetResult().DownloadTorrent(torrent.Torrent.Id))
                     {
                         if (string.IsNullOrEmpty(Settings.Default.TokenFreebox))
                         {
@@ -490,12 +484,12 @@ namespace BezyFB
             if (string.IsNullOrEmpty(textBoxRechercheT411.Text))
             {
                 SetStatusText("Connecté t411 recherche topWeek");
-                lv.ItemsSource = (await _client.GetTopWeek()).Where(t => t.CategoryName == ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Name).OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
+                lv.ItemsSource = (await _client.GetAwaiter().GetResult().GetTopWeek()).Where(t => t.CategoryName == ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Name).OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
             }
             else
             {
                 SetStatusText("Connecté t411 recherche par nom");
-                lv.ItemsSource = (await _client.GetQuery(string.Format("{0}", HttpUtility.UrlEncode(textBoxRechercheT411.Text)),
+                lv.ItemsSource = (await _client.GetAwaiter().GetResult().GetQuery(string.Format("{0}", HttpUtility.UrlEncode(textBoxRechercheT411.Text)),
                     new QueryOptions
                     {
                         CategoryIds = new List<int>
@@ -518,11 +512,9 @@ namespace BezyFB
         private void LoadBetaseries()
         {
             pb.Visibility = Visibility.Visible;
-            SetStatusText(_bs.Error);
-            if (_user == null)
-                _user = Utilisateur.Current();
+            SetStatusText(_bs.Value.Error);
 
-            var t = new Task<EpisodeRoot>(() => _bs.GetListeNouveauxEpisodesTest());
+            var t = new Task<EpisodeRoot>(() => _bs.Value.GetListeNouveauxEpisodesTest());
             t.ContinueWith(r => Dispatcher.BeginInvoke(new Action(() =>
             {
                 if (r != null && r.Result != null)
@@ -540,10 +532,8 @@ namespace BezyFB
             pb.Visibility = Visibility.Visible;
 
             T411Client.BaseAddress = "https://api.t411.io/";
-            if (_client == null)
-                _client = new T411Client(Settings.Default.LoginT411, Settings.Default.PassT411);
 
-            var topWeek = await _client.GetTopWeek();
+            var topWeek = await _client.GetAwaiter().GetResult().GetTopWeek();
             Dispatcher.BeginInvoke((Action)(() => lv.ItemsSource =
                    topWeek
                     .Where(t => t.CategoryName == "Film")
@@ -552,7 +542,7 @@ namespace BezyFB
 
 
             var categories = new List<SousCategorie>();
-            foreach (var category1 in (await _client.GetCategory()))
+            foreach (var category1 in (await _client.GetAwaiter().GetResult().GetCategory()))
             {
                 foreach (var cat in category1.Value.Cats)
                 {
@@ -565,7 +555,7 @@ namespace BezyFB
                 comboCategoryT411.SelectedIndex = categories.IndexOf(categories.FirstOrDefault(c => c.Cat.Name == "Film"));
             }));
 
-            var user = await _client.GetUserDetails(_client.UserId);
+            var user = await _client.GetAwaiter().GetResult().GetUserDetails(_client.GetAwaiter().GetResult().UserId);
 
             Dispatcher.BeginInvoke((Action)(() =>
                 labelT411.Content =
