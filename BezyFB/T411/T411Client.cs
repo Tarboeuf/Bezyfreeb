@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace BezyFB.T411
 {
@@ -239,7 +239,6 @@ namespace BezyFB.T411
             T torrents = JsonConvert.DeserializeObject<T>(data);
             return torrents;
         }
-
 
         private async Task<string> GetRawResponse(Uri uri)
         {
