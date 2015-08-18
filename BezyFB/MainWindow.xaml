@@ -32,7 +32,12 @@
             <DockPanel>
                 <TabControl SelectionChanged="Selector_OnSelectionChanged" Name="tc">
                     <TabItem>
-                        <TabItem.Header>Series</TabItem.Header>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Image/Betaseries.png" Height="32" />
+                                <TextBlock Margin="10 0" VerticalAlignment="Center">Series</TextBlock>
+                            </StackPanel>
+                        </TabItem.Header>
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                 <Button Content="Charger la liste des non vus" Click="Button_Click" Margin="5" />
@@ -85,7 +90,13 @@
                             </TreeView>
                         </DockPanel>
                     </TabItem>
-                    <TabItem Header="T411" Height="23" VerticalAlignment="Top" Margin="-2,1,-2,-1">
+                    <TabItem  >
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Image/T411.png" Height="32" />
+                                <TextBlock Margin="10 0" VerticalAlignment="Center">T411</TextBlock>
+                            </StackPanel>
+                        </TabItem.Header>
                         <DockPanel>
                             <Label Name="labelT411" DockPanel.Dock="Top"></Label>
 
@@ -155,7 +166,13 @@
                             </ListView>
                         </DockPanel>
                     </TabItem>
-                    <TabItem Header="Freebox" x:Name="TabFreebox" d:DataContext="{d:DesignData UserFreebox}">
+                    <TabItem  x:Name="TabFreebox" d:DataContext="{d:DesignData UserFreebox}">
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Image/freebox.png" Height="32" />
+                                <TextBlock Margin="10 0" VerticalAlignment="Center">Freebox</TextBlock>
+                            </StackPanel>
+                        </TabItem.Header>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -224,9 +241,15 @@
                             <Setter Property="Margin" Value="10" />
                         </Style>
                     </StackPanel.Resources>
-                    <Button Click="Betaseries_OnClick">BetaSerie</Button>
-                    <Button Click="T411_OnClick">T411</Button>
-                    <Button Click="Freebox_OnClick">Freebox</Button>
+                    <Button Click="Betaseries_OnClick">
+                        <Image Source="Image/Betaseries.png" Height="60" />
+                    </Button>
+                    <Button Click="T411_OnClick">
+                        <Image Source="Image/T411.png" Height="60" />
+                    </Button>
+                    <Button Click="Freebox_OnClick">
+                        <Image Source="Image/freebox.png" Height="60" />
+                    </Button>
                 </StackPanel>
             </Grid>
         </Grid>

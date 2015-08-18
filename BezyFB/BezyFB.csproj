@@ -254,6 +254,16 @@
   <ItemGroup>
     <Resource Include="Image\infos.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\Betaseries.png" />
+    <Resource Include="Image\T411.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\freebox.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\dossier.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
