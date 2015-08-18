@@ -66,6 +66,9 @@
                                                     <Button Click="SetSetSeen" CommandParameter="{Binding .}" Margin="5 1">
                                                         <Image Source="Image/eye.png" Width="16" Height="16" />
                                                     </Button>
+                                                    <Button Click="SetSetUnSeen" CommandParameter="{Binding .}" Margin="5 1">
+                                                        Unseen
+                                                    </Button>
                                                     <TextBlock Text="{Binding code}" ToolTip="{Binding description}" VerticalAlignment="Center" Margin="5 0" />
                                                     <TextBlock Text="{Binding title}" ToolTip="{Binding id}" VerticalAlignment="Center" />
                                                     <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray" VerticalAlignment="Center" />
@@ -77,6 +80,9 @@
                                         <StackPanel Orientation="Horizontal">
                                             <Button Click="SettingsClick" CommandParameter="{Binding .}" Margin="5 1">
                                                 <Image Source="Image/settings.png" Width="16" Height="16" />
+                                            </Button>
+                                            <Button Click="ChargerTout_OnClick" CommandParameter="{Binding .}" Margin="5 1">
+                                                Charger Tout
                                             </Button>
                                             <TextBlock Text="{Binding title}" ToolTip="{Binding id}" />
                                             <TextBlock Margin="5 0 0 0" Text="(" Foreground="Gray" />

@@ -2,10 +2,12 @@
 // Le : 03-06-2014
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows.Documents;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using BezyFB.Helpers;
@@ -40,6 +42,8 @@ namespace BezyFB.BetaSerie
         //private const string Shows = "/shows";
         private const string Subtitles = "/subtitles";
         private const string Watched = "/watched";
+        private const string Note = "/note";
+        private const string Shows = "/shows";
 
         //private const string Timeline = "/timeline";
 
@@ -203,6 +207,7 @@ namespace BezyFB.BetaSerie
                 Error = "GetPathSousTitre : " + e.Message;
             }
         }
+        
         public void SetEpisodeUnSeen(Episode episode)
         {
             if (!GenereToken())
@@ -224,6 +229,43 @@ namespace BezyFB.BetaSerie
             {
                 Error = "GetPathSousTitre : " + e.Message;
             }
+        }
+
+        public void NoterEpisode(Episode episode, int note)
+        {
+            string link = ApiAdresse + Episodes + Note + EnteteArgs;
+            link += "&id=" + episode.id + "&note=" + note + "&token=" + Token;
+            ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
+        }
+
+        public List<Episode> GetShowEpisode(rootShowsShow show)
+        {
+            if (!GenereToken())
+                return null;
+
+            Error = "";
+            try
+            {
+                string link = ApiAdresse + Shows + Episodes + EnteteArgs;
+                link += "&id=" + show.id + "&token=" + Token;
+                var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
+
+                var serializer = new XmlSerializer(typeof(EpisodeList), new XmlRootAttribute("root"));
+                var reader = GenerateStreamFromString(xml);
+                if (null == xml)
+                {
+                    Error = "Erreur lors de la récupération des nouveaux épisodes.";
+                    return null;
+                }
+                var rt = (EpisodeList)serializer.Deserialize(reader);
+                reader.Close();
+                return rt.episodes.ToList();
+            }
+            catch (Exception e)
+            {
+                Error = "GetListeNouveauxEpisodesTest : " + e.Message;
+            }
+            return null;
         }
     }
 }

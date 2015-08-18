@@ -75,6 +75,8 @@ namespace BezyFB
             Cursor = Cursors.Wait;
             var episode = ((Button)sender).CommandParameter as Episode;
 
+            new NoteWindow(_bs.Value, episode).ShowDialog();
+
             if (episode != null)
                 _bs.Value.SetEpisodeSeen(episode);
             Cursor = Cursors.Arrow;
@@ -582,6 +584,27 @@ namespace BezyFB
         {
             gridButton.Visibility = Visibility.Collapsed;
             tc.SelectedIndex = 2;
+        }
+
+        private void ChargerTout_OnClick(object sender, RoutedEventArgs e)
+        {
+            var s = ((Button)sender).CommandParameter as rootShowsShow;
+
+            if (s != null)
+            {
+                var episodes = _bs.Value.GetShowEpisode(s);
+                s.unseen = episodes.ToArray();
+            }
+        }
+
+        private void SetSetUnSeen(object sender, RoutedEventArgs e)
+        {
+            Cursor = Cursors.Wait;
+            var episode = ((Button)sender).CommandParameter as Episode;
+
+            if (episode != null)
+                _bs.Value.SetEpisodeUnSeen(episode);
+            Cursor = Cursors.Arrow;
         }
     }
 }
