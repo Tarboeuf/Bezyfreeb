@@ -26,6 +26,9 @@ namespace BezyFB.EzTv
 
         public static string GetMagnetSerieEpisode(string serie, string episode)
         {
+            if (serie == null)
+                return null;
+
             string html;
             if (_PagesSeries.ContainsKey(serie))
             {

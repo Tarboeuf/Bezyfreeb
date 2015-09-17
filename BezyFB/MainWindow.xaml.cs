@@ -87,6 +87,8 @@ namespace BezyFB
             Cursor = Cursors.Wait;
             var episode = ((Button)sender).CommandParameter as Episode;
 
+            
+
             if (DownloadMagnet(episode) && DownloadSsTitre(episode))
                 _bs.Value.SetEpisodeDownnloaded(episode);
             Cursor = Cursors.Arrow;
@@ -345,6 +347,11 @@ namespace BezyFB
 
         private void Download_All_Click(object sender, RoutedEventArgs e)
         {
+            if(MessageBox.Show("Êtes-vous sûr de vouloir tout télécharger ?", "Confirmation", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
             var root = _bs.Value.GetListeNouveauxEpisodesTest();
             var errors = "";
 
