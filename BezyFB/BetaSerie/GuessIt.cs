@@ -5,7 +5,6 @@ namespace BezyFB.BetaSerie
 {
     public static class GuessIt
     {
-
         public static string GuessNom(string name)
         {
             var jsonGuessit = ApiConnector.Call("http://guessit.io/guess?filename=" + name.Replace(" ", "%20") + ".avi", WebMethod.Get);

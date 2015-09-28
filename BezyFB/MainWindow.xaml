@@ -18,7 +18,7 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Fichier">
-                <MenuItem Header="Quitter" Click="Quitter_OnClick"/>
+                <MenuItem Header="Quitter" Click="Quitter_OnClick" />
             </MenuItem>
             <MenuItem Header="Edition">
                 <MenuItem Header="Configuration" Click="Configuration_Click" />
@@ -96,7 +96,7 @@
                             </TreeView>
                         </DockPanel>
                     </TabItem>
-                    <TabItem  >
+                    <TabItem>
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="Image/T411.png" Height="32" />
@@ -144,7 +144,7 @@
                                         <GridViewColumn Header="NbDL" DisplayMemberBinding="{Binding Times_completed}"  util:GridViewSort.PropertyName="Times_completed" />
                                         <GridViewColumn Header="NbDLPerHour" DisplayMemberBinding="{Binding TimesCompletedByHours, StringFormat='##0.#'}" util:GridViewSort.PropertyName="TimesCompletedByHours" />
                                         <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note}" />
-                                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Nom}" Width="80"/>
+                                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Nom}" Width="80" />
                                         <GridViewColumn Header="Infos">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate DataType="t411:MyTorrent">

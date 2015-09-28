@@ -1,6 +1,8 @@
 ﻿// Créer par : pepinat
 // Le : 22-06-2014
 
+using BezyFB.EzTv;
+using BezyFB.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,8 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
-using BezyFB.EzTv;
-using BezyFB.Properties;
 
 namespace BezyFB.Configuration
 {

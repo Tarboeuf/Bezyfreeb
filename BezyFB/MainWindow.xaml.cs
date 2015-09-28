@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Web;
-using BezyFB.BetaSerie;
+﻿using BezyFB.BetaSerie;
 using BezyFB.Configuration;
 using BezyFB.EzTv;
 using BezyFB.Freebox;
@@ -8,25 +6,19 @@ using BezyFB.Helpers;
 using BezyFB.Properties;
 using BezyFB.T411;
 using ICSharpCode.SharpZipLib.Zip;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Win32;
 
 namespace BezyFB
 {
@@ -45,7 +37,6 @@ namespace BezyFB
             InitializeComponent();
             SetStatusText("Veuillez choisir votre catégorie");
             gridButton.Visibility = Visibility.Visible;
-            T411Client.BaseAddress = "https://api.t411.io/";
         }
 
         public void InitialiseElements()
@@ -86,8 +77,6 @@ namespace BezyFB
         {
             Cursor = Cursors.Wait;
             var episode = ((Button)sender).CommandParameter as Episode;
-
-            
 
             if (DownloadMagnet(episode) && DownloadSsTitre(episode))
                 _bs.Value.SetEpisodeDownnloaded(episode);
@@ -347,7 +336,7 @@ namespace BezyFB
 
         private void Download_All_Click(object sender, RoutedEventArgs e)
         {
-            if(MessageBox.Show("Êtes-vous sûr de vouloir tout télécharger ?", "Confirmation", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+            if (MessageBox.Show("Êtes-vous sûr de vouloir tout télécharger ?", "Confirmation", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
             {
                 return;
             }
@@ -540,15 +529,12 @@ namespace BezyFB
             var worker = new BackgroundWorker();
             pb.Visibility = Visibility.Visible;
 
-            T411Client.BaseAddress = "https://api.t411.io/";
-
             var topWeek = await _client.GetAwaiter().GetResult().GetTopWeek();
-            Dispatcher.BeginInvoke((Action)(() => lv.ItemsSource =
-                   topWeek
-                    .Where(t => t.CategoryName == "Film")
-                    .OrderByDescending(t => t.Times_completed)
-                    .Select(t => new MyTorrent(t))));
-
+            await Dispatcher.BeginInvoke((Action)(() => lv.ItemsSource =
+                    topWeek
+                     .Where(t => t.CategoryName == "Film")
+                     .OrderByDescending(t => t.Times_completed)
+                     .Select(t => new MyTorrent(t))));
 
             var categories = new List<SousCategorie>();
             foreach (var category1 in (await _client.GetAwaiter().GetResult().GetCategory()))
@@ -558,17 +544,17 @@ namespace BezyFB
                     categories.Add(new SousCategorie(cat.Value, category1.Value.Name));
                 }
             }
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                comboCategoryT411.ItemsSource = categories;
-                comboCategoryT411.SelectedIndex = categories.IndexOf(categories.FirstOrDefault(c => c.Cat.Name == "Film"));
-            }));
+
+            await Dispatcher.BeginInvoke((Action)(() =>
+             {
+                 comboCategoryT411.ItemsSource = categories;
+                 comboCategoryT411.SelectedIndex = categories.IndexOf(categories.FirstOrDefault(c => c.Cat.Name == "Film"));
+             }));
 
             var user = await _client.GetAwaiter().GetResult().GetUserDetails(_client.GetAwaiter().GetResult().UserId);
-
-            Dispatcher.BeginInvoke((Action)(() =>
-                labelT411.Content =
-                    user.Username + " Ratio : " + (user.Uploaded / (double)user.Downloaded).ToString("##.###")));
+            await Dispatcher.BeginInvoke((Action)(() =>
+                      labelT411.Content =
+                          user.Username + " Ratio : " + (user.Uploaded / (double)user.Downloaded).ToString("##.###")));
 
             gridButton.Visibility = Visibility.Collapsed;
             pb.Visibility = Visibility.Collapsed;

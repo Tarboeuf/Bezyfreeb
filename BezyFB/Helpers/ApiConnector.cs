@@ -22,12 +22,16 @@ namespace BezyFB.Helpers
             {
                 case WebMethod.Get:
                     return "GET";
+
                 case WebMethod.Post:
                     return "POST";
+
                 case WebMethod.Put:
                     return "PUT";
+
                 case WebMethod.DELETE:
                     return "DELETE";
+
                 default:
                     throw new ArgumentOutOfRangeException("method");
             }
@@ -123,6 +127,7 @@ namespace BezyFB.Helpers
     public static class FormUpload
     {
         private static readonly Encoding encoding = Encoding.UTF8;
+
         public static HttpWebResponse MultipartFormDataPost(string postUrl, string userAgent, Dictionary<string, object> postParameters, IEnumerable<Tuple<string, string>> headers = null)
         {
             string formDataBoundary = String.Format("----------{0:N}", Guid.NewGuid());
@@ -132,6 +137,7 @@ namespace BezyFB.Helpers
 
             return PostForm(postUrl, userAgent, contentType, formData, headers);
         }
+
         private static HttpWebResponse PostForm(string postUrl, string userAgent, string contentType, byte[] formData, IEnumerable<Tuple<string, string>> headers = null)
         {
             HttpWebRequest request = WebRequest.Create(postUrl) as HttpWebRequest;
@@ -226,8 +232,15 @@ namespace BezyFB.Helpers
             public byte[] File { get; set; }
             public string FileName { get; set; }
             public string ContentType { get; set; }
-            public FileParameter(byte[] file) : this(file, null) { }
-            public FileParameter(byte[] file, string filename) : this(file, filename, null) { }
+
+            public FileParameter(byte[] file) : this(file, null)
+            {
+            }
+
+            public FileParameter(byte[] file, string filename) : this(file, filename, null)
+            {
+            }
+
             public FileParameter(byte[] file, string filename, string contenttype)
             {
                 File = file;

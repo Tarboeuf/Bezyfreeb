@@ -1,25 +1,22 @@
 ﻿// Créer par : tkahn
 // Le : 24-06-2014
 
-using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using System.Windows.Forms.VisualStyles;
-using System.Windows.Threading;
 using BezyFB.BetaSerie;
 using BezyFB.Helpers;
 using BezyFB.Properties;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace BezyFB.Freebox
 {
@@ -455,9 +452,8 @@ namespace BezyFB.Freebox
                     userFreebox.Downloads.Add(di);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-
             }
 
             return userFreebox;
