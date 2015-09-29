@@ -126,10 +126,15 @@
                                 <Image Source="{Binding OmDb.Poster}" MaxWidth="250"></Image>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
-                                <Label VerticalAlignment="Center">Category</Label>
-                                <ComboBox Name="comboCategoryT411" VerticalAlignment="Center" Width="180" Margin="10 5" DisplayMemberPath="NameWithParent" />
+                                <CheckBox Content="Choix Categorie" Name="AvecCategorie" VerticalAlignment="Center" />
+                                <ComboBox Name="comboCategoryT411" VerticalAlignment="Center" Width="180" Margin="10 5" DisplayMemberPath="NameWithParent"
+                                          IsEnabled="{ Binding ElementName=AvecCategorie, Path=IsChecked}" />
                                 <Label VerticalAlignment="Center">Nom</Label>
                                 <TextBox Name="textBoxRechercheT411" Width="150" Margin="10 5"  VerticalAlignment="Center"></TextBox>
+                                <RadioButton Content="GetTop100" GroupName="numgrp" Name="GetTop100" VerticalAlignment="Center" />
+                                <RadioButton Content="GetTopToday" GroupName="numgrp" Name="GetTopToday" VerticalAlignment="Center" />
+                                <RadioButton Content="GetTopWeek" GroupName="numgrp" Name="GetTopWeek" VerticalAlignment="Center" IsChecked="True" />
+                                <RadioButton Content="GetTopMonth" GroupName="numgrp" Name="GetTopMonth" VerticalAlignment="Center" />
                                 <Button Name="buttonT411Rechercher" Margin="10 5" Click="buttonT411Rechercher_Click" VerticalAlignment="Center">Rechercher</Button>
                             </StackPanel>
                             <ListView Name="lv"

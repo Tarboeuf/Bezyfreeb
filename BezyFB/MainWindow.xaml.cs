@@ -479,25 +479,47 @@ namespace BezyFB
         private async void buttonT411Rechercher_Click(object sender, RoutedEventArgs e)
         {
             pb.Visibility = Visibility.Visible;
+            List<Torrent> items = null;
             if (string.IsNullOrEmpty(textBoxRechercheT411.Text))
             {
-                SetStatusText("Connecté t411 recherche topWeek");
-                lv.ItemsSource = (await _client.GetAwaiter().GetResult().GetTopWeek()).Where(t => t.CategoryName == ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Name).OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
+                if (GetTop100.IsChecked == true)
+                {
+                    SetStatusText("Connecté t411 recherche top 100");
+                    items = (await _client.GetAwaiter().GetResult().GetTop100());
+                }
+                else if (GetTopMonth.IsChecked == true)
+                {
+                    SetStatusText("Connecté t411 recherche top month");
+                    items = (await _client.GetAwaiter().GetResult().GetTopMonth());
+                }
+                else if (GetTopWeek.IsChecked == true)
+                {
+                    SetStatusText("Connecté t411 recherche top week");
+                    items = (await _client.GetAwaiter().GetResult().GetTopWeek());
+                }
+                else if (GetTopToday.IsChecked == true)
+                {
+                    SetStatusText("Connecté t411 recherche top today");
+                    items = (await _client.GetAwaiter().GetResult().GetTopToday());
+                }
+                if (AvecCategorie.IsChecked == true)
+                    items = items.Where(t => t.CategoryName == ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Name).ToList();
             }
             else
             {
                 SetStatusText("Connecté t411 recherche par nom");
-                lv.ItemsSource = (await _client.GetAwaiter().GetResult().GetQuery(string.Format("{0}", HttpUtility.UrlEncode(textBoxRechercheT411.Text)),
-                    new QueryOptions
-                    {
-                        CategoryIds = new List<int>
-                        {
-                            ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Id
-                        },
-                        Limit = 1000
-                    })).Torrents
-                    .OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
+                if (AvecCategorie.IsChecked == true)
+                {
+                    items = (await _client.GetAwaiter().GetResult().GetQuery(string.Format("{0}", HttpUtility.UrlEncode(textBoxRechercheT411.Text)),
+                    new QueryOptions { CategoryIds = new List<int> { ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Id }, Limit = 1000 })).Torrents;
+                }
+                else
+                {
+                    items = (await _client.GetAwaiter().GetResult().GetQuery(string.Format("{0}", HttpUtility.UrlEncode(textBoxRechercheT411.Text)))).Torrents;
+                }
             }
+
+            lv.ItemsSource = items.OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
             StatusBar.Items.Add("torrents récupéré");
             pb.Visibility = Visibility.Collapsed;
         }
@@ -532,7 +554,6 @@ namespace BezyFB
             var topWeek = await _client.GetAwaiter().GetResult().GetTopWeek();
             await Dispatcher.BeginInvoke((Action)(() => lv.ItemsSource =
                     topWeek
-                     .Where(t => t.CategoryName == "Film")
                      .OrderByDescending(t => t.Times_completed)
                      .Select(t => new MyTorrent(t))));
 
