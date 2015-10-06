@@ -139,7 +139,7 @@ namespace BezyFB
                     }
                     if (string.IsNullOrEmpty(Settings.Default.PathNonReseau))
                     {
-                        pathreseau = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                        pathreseau = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/";
                     }
                     else
                     {
@@ -166,10 +166,7 @@ namespace BezyFB
                         }
                         catch (Exception ex)
                         {
-                            if (Settings.Default.AffichageErreurMessageBox)
-                                MessageBox.Show(ex.Message);
-                            else
-                                Console.WriteLine(ex.Message);
+                            Helper.AfficherMessage(ex.Message);
                             Cursor = Cursors.Arrow;
                             return false;
                         }
@@ -184,10 +181,7 @@ namespace BezyFB
                 }
                 else
                 {
-                    if (Settings.Default.AffichageErreurMessageBox)
-                        MessageBox.Show("Aucun sous titre disponible");
-                    else
-                        Console.WriteLine("Aucun sous titre disponible");
+                    Helper.AfficherMessage("Aucun sous titre disponible");
                     Cursor = Cursors.Arrow;
                     return false;
                 }
@@ -293,11 +287,7 @@ namespace BezyFB
                     episode.IdDownload = _freeboxApi.Value.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""));
                 else if (serie.IdEztv == null)
                 {
-                    if (Settings.Default.AffichageErreurMessageBox)
-                        MessageBox.Show("Serie non configurée");
-                    else
-                        Console.WriteLine("Serie non configurée");
-
+                    Helper.AfficherMessage("Serie " + serie.ShowName + " + non configurée");
                     Cursor = Cursors.Arrow;
                     return false;
                 }
@@ -308,15 +298,11 @@ namespace BezyFB
 
                     if (null != torrentStream)
                     {
-                        //ByteArrayToFile("E:\\test.torrent", torrentStream);
                         episode.IdDownload = _freeboxApi.Value.DownloadFile(torrentStream, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), true);
                     }
                     else
                     {
-                        if (Settings.Default.AffichageErreurMessageBox)
-                            MessageBox.Show("Episode " + episode.code + " non trouvé");
-                        else
-                            Console.WriteLine("Episode " + episode.code + " non trouvé");
+                        Helper.AfficherMessage("Episode " + episode.code + " de la serie " + serie.ShowName + " non trouvé");
                         Cursor = Cursors.Arrow;
                         return false;
                     }
@@ -341,8 +327,9 @@ namespace BezyFB
                 return;
             }
 
+            Mouse.OverrideCursor = Cursors.Wait;
+
             var root = _bs.Value.GetListeNouveauxEpisodesTest();
-            var errors = "";
 
             foreach (var rootShowsShow in root.shows)
             {
@@ -354,11 +341,7 @@ namespace BezyFB
                     }
                     catch (Exception ex)
                     {
-                        if (Settings.Default.AffichageErreurMessageBox)
-                            MessageBox.Show(ex.Message);
-                        else
-                            Console.WriteLine(ex.Message);
-                        errors += episode.show_title + "(" + episode.code + ") : " + ex.Message + "\r\n";
+                        Helper.AfficherMessage(episode.show_title + "(" + episode.code + ") : " + ex.Message + "\r\n");
                     }
 
                     try
@@ -367,17 +350,17 @@ namespace BezyFB
                     }
                     catch (Exception ex)
                     {
-                        if (Settings.Default.AffichageErreurMessageBox)
-                            MessageBox.Show(ex.Message);
-                        else
-                            Console.WriteLine(ex.Message);
-                        errors += episode.show_title + "(" + episode.code + ") : " + ex.Message + "\r\n";
+                        Helper.AfficherMessage(episode.show_title + "(" + episode.code + ") : " + ex.Message + "\r\n");
                     }
                 }
             }
 
-            if (!String.IsNullOrEmpty(errors))
-                MessageBox.Show(errors);
+            Mouse.OverrideCursor = null;
+            if (!string.IsNullOrEmpty(Helper.MessageBuffer))
+            {
+                MessageBox.Show(Helper.MessageBuffer);
+                Helper.MessageBuffer = string.Empty;
+            }
         }
 
         private void MainWindow_OnClosed(object sender, EventArgs e)

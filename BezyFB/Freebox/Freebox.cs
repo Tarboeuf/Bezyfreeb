@@ -56,10 +56,7 @@ namespace BezyFB.Freebox
             }
             catch (Exception ex)
             {
-                if (Settings.Default.AffichageErreurMessageBox)
-                    MessageBox.Show(ex.Message);
-                else
-                    Console.WriteLine(ex.Message);
+                Helper.AfficherMessage(Settings.Default.IpFreebox + " (TesterConnexionFreebox) : " + ex.Message);
                 return false;
             }
             return true;
@@ -132,10 +129,7 @@ namespace BezyFB.Freebox
             }
             catch (Exception ex)
             {
-                if (Settings.Default.AffichageErreurMessageBox)
-                    MessageBox.Show(ex.Message);
-                else
-                    Console.WriteLine(ex.Message);
+                Helper.AfficherMessage(Settings.Default.IpFreebox + " (Deconnexion) : " + ex.Message);
                 return null;
             }
         }
@@ -168,10 +162,7 @@ namespace BezyFB.Freebox
 
             if (!(bool)jsonObject["success"])
             {
-                if (Settings.Default.AffichageErreurMessageBox)
-                    MessageBox.Show((string)jsonObject["msg"]);
-                else
-                    Console.WriteLine((string)jsonObject["msg"]);
+                Helper.AfficherMessage(Settings.Default.IpFreebox + " (Ls " + directory + ") : " + (string)jsonObject["msg"]);
                 return null;
             }
             var result = jsonObject["result"];
@@ -200,10 +191,7 @@ namespace BezyFB.Freebox
             var jsonObject = JObject.Parse(json);
             if (!(bool)jsonObject["success"])
             {
-                if (Settings.Default.AffichageErreurMessageBox)
-                    MessageBox.Show((string)jsonObject["msg"]);
-                else
-                    Console.WriteLine((string)jsonObject["msg"]);
+                Helper.AfficherMessage(Settings.Default.IpFreebox + " (Download magnet ) : " + (string)jsonObject["msg"]);
                 return null;
             }
 
@@ -277,10 +265,7 @@ namespace BezyFB.Freebox
             var jsonObject = JObject.Parse(strReponse);
             if (!(bool)jsonObject["success"])
             {
-                if (Settings.Default.AffichageErreurMessageBox)
-                    MessageBox.Show((string)jsonObject["msg"]);
-                else
-                    Console.WriteLine((string)jsonObject["msg"]);
+                Helper.AfficherMessage(Settings.Default.IpFreebox + " (DownloadFile " + nomFichier + " ) : " + (string)jsonObject["msg"]);
                 return null;
             }
 
@@ -319,7 +304,7 @@ namespace BezyFB.Freebox
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
             if (json == null)
             {
-                AfficherMessage("Erreur lors de l'appel à la freebox");
+                Helper.AfficherMessage(Settings.Default.IpFreebox + " (UploadFile " + inputFile + " ) : Erreur lors de l'appel à la freebox ");
                 return null;
             }
 
@@ -337,7 +322,7 @@ namespace BezyFB.Freebox
 
                 if (!(bool)jobj["success"])
                 {
-                    MessageBox.Show(jobj["msg"].ToString());
+                    Helper.AfficherMessage(Settings.Default.IpFreebox + " (UploadFile " + inputFile + " ) : " + jobj["msg"].ToString());
                     return null;
                 }
                 var id = (string)jobj["result"]["id"];
@@ -355,7 +340,7 @@ namespace BezyFB.Freebox
             }
             catch (Exception ex)
             {
-                AfficherMessage(ex.Message);
+                Helper.AfficherMessage(Settings.Default.IpFreebox + " (UploadFile " + inputFile + " ) : " + ex.Message);
                 return null;
             }
 
@@ -393,10 +378,7 @@ namespace BezyFB.Freebox
             var jsonObject = JObject.Parse(json);
             if (!(bool)jsonObject["success"])
             {
-                if (Settings.Default.AffichageErreurMessageBox)
-                    MessageBox.Show((string)jsonObject["msg"]);
-                else
-                    Console.WriteLine((string)jsonObject["msg"]);
+                Helper.AfficherMessage(Settings.Default.IpFreebox + " (GetFileNameDownloaded " + idDownload + " ) : " + (string)jsonObject["msg"]);
                 return null;
             }
             return ((string)jsonObject["result"]["name"]);
@@ -414,10 +396,7 @@ namespace BezyFB.Freebox
 
             if (!(bool)jsonObject["success"])
             {
-                if (Settings.Default.AffichageErreurMessageBox)
-                    MessageBox.Show((string)jsonObject["msg"]);
-                else
-                    Console.WriteLine((string)jsonObject["msg"]);
+                Helper.AfficherMessage(Settings.Default.IpFreebox + " (GetInfosFreebox ) : " + (string)jsonObject["msg"]);
                 return null;
             }
             var userFreebox = new UserFreebox(this);
@@ -431,10 +410,7 @@ namespace BezyFB.Freebox
 
             if (!(bool)jsonObject["success"])
             {
-                if (Settings.Default.AffichageErreurMessageBox)
-                    MessageBox.Show((string)jsonObject["msg"]);
-                else
-                    Console.WriteLine((string)jsonObject["msg"]);
+                Helper.AfficherMessage(Settings.Default.IpFreebox + " (GetInfosFreebox) : " + (string)jsonObject["msg"]);
                 return null;
             }
 
@@ -457,14 +433,6 @@ namespace BezyFB.Freebox
             }
 
             return userFreebox;
-        }
-
-        private void AfficherMessage(string message)
-        {
-            if (Settings.Default.AffichageErreurMessageBox)
-                MessageBox.Show(message);
-            else
-                Console.WriteLine(message);
         }
     }
 
