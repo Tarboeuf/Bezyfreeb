@@ -51,7 +51,7 @@
       <Value Profile="(Default)">/Disque dur/Vidéos/__FILM/</Value>
     </Setting>
     <Setting Name="T411Address" Type="System.String" Scope="User">
-      <Value Profile="(Default)">http://www.t411.in/</Value>
+      <Value Profile="(Default)">https://api.t411.in/</Value>
     </Setting>
   </Settings>
 </SettingsFile>

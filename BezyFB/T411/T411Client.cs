@@ -40,7 +40,7 @@ namespace BezyFB.T411
 
         static T411Client()
         {
-            BaseAddress = "https://api.t411.me/";
+            BaseAddress = "https://api.t411.in/";
         }
 
         public async static Task<T411Client> New(string username, string password)
@@ -56,15 +56,12 @@ namespace BezyFB.T411
             _password = password;
         }
 
-        private Task Initialiser()
+        private async Task Initialiser()
         {
-            return Task.Run(() =>
-            {
-                _token = GetToken();
-            });
+            _token = await GetToken();
         }
 
-        private string GetToken()
+        private async Task<string> GetToken()
         {
             using (var handler = new HttpClientHandler())
             {
@@ -79,7 +76,7 @@ namespace BezyFB.T411
                     dico.Add("password", _password);
 
                     HttpResponseMessage response = client.PostAsync("/auth", new FormUrlEncodedContent(dico)).Result;
-                    var tokResult = response.Content.ReadAsStringAsync().Result;
+                    var tokResult = await response.Content.ReadAsStringAsync();
                     var tokObj = JsonConvert.DeserializeObject<AuthResult>(tokResult);
                     string token = tokObj.Token;
                     return token;

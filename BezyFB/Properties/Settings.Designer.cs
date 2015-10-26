@@ -217,7 +217,7 @@ namespace BezyFB.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://www.t411.in/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://api.t411.in/")]
         public string T411Address {
             get {
                 return ((string)(this["T411Address"]));

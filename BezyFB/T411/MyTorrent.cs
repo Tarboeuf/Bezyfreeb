@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
-using System.Windows;
-using BezyFB.BetaSerie;
+﻿using BezyFB.BetaSerie;
+using Essy.Tools.InputBox;
 using System;
 using System.ComponentModel;
-using Essy.Tools.InputBox;
+using System.Threading.Tasks;
 
 namespace BezyFB.T411
 {

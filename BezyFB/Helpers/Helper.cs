@@ -1,6 +1,5 @@
-﻿// Créer par : pepinat
-// Le : 25-06-2014
-
+﻿using BezyFB.Properties;
+using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -36,6 +35,23 @@ namespace BezyFB.Helpers
                 byte[] hashmessage = hmacsha1.ComputeHash(byteInput);
                 return string.Concat(hashmessage.Select(b => string.Format("{0:X2}", b).ToLower()));
             }
+        }
+
+        public static string MessageBuffer { get; set; }
+
+        public static void AddMessageBuffer(string message)
+        {
+            if (!string.IsNullOrEmpty(MessageBuffer))
+                MessageBuffer += Environment.NewLine;
+            MessageBuffer += message;
+        }
+
+        public static void AfficherMessage(string message)
+        {
+            if (Settings.Default.AffichageErreurMessageBox)
+                MessageBox.Show(message);
+            else
+                AddMessageBuffer(message);
         }
     }
 

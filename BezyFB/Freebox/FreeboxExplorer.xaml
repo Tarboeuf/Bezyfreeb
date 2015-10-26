@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:BezyFB.Freebox"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="Explorateur de freebox" Height="388" MinWidth="299" Width="400" Background="#FFCFCFCF" >
+        Title="Explorateur de freebox" Height="388" MinWidth="299" Width="400" Background="#FFCFCFCF">
     <DockPanel>
         <Label DockPanel.Dock="Top" Foreground="#FF5F0303" FontSize="16" FontFamily="Sitka Small" FontWeight="Bold">Choisissez le dossier d'enregistrement</Label>
         <DockPanel DockPanel.Dock="Top">
@@ -16,8 +16,8 @@
             <Label Name="labelResume" DockPanel.Dock="Left" />
         </DockPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom">
-            <Button Content="OK" MinWidth="50" Margin="5" Click="Button_Click"/>
-            <Button Content="Annuler"  MinWidth="50" Margin="5" Click="Button_Click_1"/>
+            <Button Content="OK" MinWidth="50" Margin="5" Click="Button_Click" />
+            <Button Content="Annuler"  MinWidth="50" Margin="5" Click="Button_Click_1" />
         </StackPanel>
         <ListBox Background="Transparent" Name="fichiers" HorizontalContentAlignment="Stretch">
             <ItemsControl.ItemTemplate>
@@ -29,9 +29,9 @@
                                     <Label Content="{TemplateBinding Content}" Background="LightBlue" Name="PART_Label" />
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="PART_Label" Property="Background" Value="Blue"/>
-                                            <Setter TargetName="PART_Label" Property="Foreground" Value="White"/>
-                                            <Setter TargetName="PART_Label" Property="Cursor" Value="Hand"/>
+                                            <Setter TargetName="PART_Label" Property="Background" Value="Blue" />
+                                            <Setter TargetName="PART_Label" Property="Foreground" Value="White" />
+                                            <Setter TargetName="PART_Label" Property="Cursor" Value="Hand" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>

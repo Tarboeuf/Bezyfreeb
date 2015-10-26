@@ -154,7 +154,7 @@ namespace BezyFB.Helpers
             public static readonly DependencyProperty SortGlyphDescendingProperty =
                 DependencyProperty.RegisterAttached("SortGlyphDescending", typeof(ImageSource), typeof(GridViewSort), new UIPropertyMetadata(null));
 
-            #endregion
+            #endregion Public attached properties
 
             #region Private attached properties
 
@@ -172,7 +172,7 @@ namespace BezyFB.Helpers
             private static readonly DependencyProperty SortedColumnHeaderProperty =
                 DependencyProperty.RegisterAttached("SortedColumnHeader", typeof(GridViewColumnHeader), typeof(GridViewSort), new UIPropertyMetadata(null));
 
-            #endregion
+            #endregion Private attached properties
 
             #region Column header click event handler
 
@@ -204,7 +204,7 @@ namespace BezyFB.Helpers
                 }
             }
 
-            #endregion
+            #endregion Column header click event handler
 
             #region Helper methods
 
@@ -279,7 +279,7 @@ namespace BezyFB.Helpers
                 }
             }
 
-            #endregion
+            #endregion Helper methods
 
             #region SortGlyphAdorner nested class
 
@@ -346,7 +346,7 @@ namespace BezyFB.Helpers
                 }
             }
 
-            #endregion
+            #endregion SortGlyphAdorner nested class
         }
     }
 }

@@ -1,17 +1,14 @@
 ﻿// Créer par : pepinat
 // Le : 03-06-2014
 
+using BezyFB.Helpers;
+using BezyFB.Properties;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Windows.Documents;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using BezyFB.Helpers;
-using BezyFB.Properties;
 
 namespace BezyFB.BetaSerie
 {
@@ -41,6 +38,7 @@ namespace BezyFB.BetaSerie
         //private const string Planning = "/planning";
         //private const string Shows = "/shows";
         private const string Subtitles = "/subtitles";
+
         private const string Watched = "/watched";
         private const string Note = "/note";
         private const string Shows = "/shows";
@@ -99,14 +97,14 @@ namespace BezyFB.BetaSerie
                 link += "&userid=" + Settings.Default.LoginBetaSerie + "&token=" + Token;
                 var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
-                var serializer = new XmlSerializer(typeof (EpisodeRoot), new XmlRootAttribute("root"));
+                var serializer = new XmlSerializer(typeof(EpisodeRoot), new XmlRootAttribute("root"));
                 var reader = GenerateStreamFromString(xml);
                 if (null == xml)
                 {
                     Error = "Erreur lors de la récupération des nouveaux épisodes.";
                     return null;
                 }
-                var rt = (EpisodeRoot) serializer.Deserialize(reader);
+                var rt = (EpisodeRoot)serializer.Deserialize(reader);
                 reader.Close();
                 Root = rt;
                 return rt;
@@ -141,9 +139,9 @@ namespace BezyFB.BetaSerie
                 link += "&id=" + episode + "&language=vf&token=" + Token;
                 var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
-                var serializer = new XmlSerializer(typeof (SousTitreRoot), new XmlRootAttribute("root"));
+                var serializer = new XmlSerializer(typeof(SousTitreRoot), new XmlRootAttribute("root"));
                 var reader = GenerateStreamFromString(xml);
-                var rt = (SousTitreRoot) serializer.Deserialize(reader);
+                var rt = (SousTitreRoot)serializer.Deserialize(reader);
                 reader.Close();
 
                 if (!rt.subtitles.Any())
@@ -207,7 +205,7 @@ namespace BezyFB.BetaSerie
                 Error = "GetPathSousTitre : " + e.Message;
             }
         }
-        
+
         public void SetEpisodeUnSeen(Episode episode)
         {
             if (!GenereToken())

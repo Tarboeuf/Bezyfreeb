@@ -3,13 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Note ?" Height="119" Width="361">
     <Grid>
-        <Label>Quel note ?</Label>
-        <StackPanel Orientation="Horizontal" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Content="Quelle note ?" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center">
             <Button Click="Button_Click">1</Button>
             <Button Click="Button_Click">2</Button>
             <Button Click="Button_Click">3</Button>
             <Button Click="Button_Click">4</Button>
             <Button Click="Button_Click">5</Button>
         </StackPanel>
+        <Button Grid.Row="2" Click="Close_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Pas de note" />
     </Grid>
 </Window>

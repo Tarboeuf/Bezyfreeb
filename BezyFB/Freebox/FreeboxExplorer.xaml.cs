@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace BezyFB.Freebox
 {
@@ -18,11 +9,12 @@ namespace BezyFB.Freebox
     /// </summary>
     public partial class FreeboxExplorer : Window
     {
-        Freebox _Freebox;
+        private Freebox _Freebox;
 
         public Freebox Freebox { get { return _Freebox; } }
 
-        public string FilePath {get;private set;}
+        public string FilePath { get; private set; }
+
         public FreeboxExplorer()
         {
             InitializeComponent();

@@ -2,7 +2,6 @@
 {
     public class SousCategorie
     {
-
         public SousCategorie(Category cat, string parentName)
         {
             Cat = cat;
