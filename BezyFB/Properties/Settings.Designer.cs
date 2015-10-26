@@ -214,5 +214,17 @@ namespace BezyFB.Properties {
                 this["PathFilm"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://www.t411.in/")]
+        public string T411Address {
+            get {
+                return ((string)(this["T411Address"]));
+            }
+            set {
+                this["T411Address"] = value;
+            }
+        }
     }
 }

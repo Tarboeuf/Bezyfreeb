@@ -45,7 +45,7 @@ namespace BezyFB
             InitializeComponent();
             SetStatusText("Veuillez choisir votre catégorie");
             gridButton.Visibility = Visibility.Visible;
-            T411Client.BaseAddress = "https://api.t411.io/";
+            T411Client.BaseAddress = Settings.Default.T411Address;
         }
 
         public void InitialiseElements()
@@ -532,8 +532,6 @@ namespace BezyFB
             SetStatusText("Chargement des données T411");
             var worker = new BackgroundWorker();
             pb.Visibility = Visibility.Visible;
-
-            T411Client.BaseAddress = "https://api.t411.io/";
 
             var topWeek = await _client.GetAwaiter().GetResult().GetTopWeek();
             Dispatcher.BeginInvoke((Action)(() => lv.ItemsSource =
