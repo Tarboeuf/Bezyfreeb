@@ -80,9 +80,16 @@ namespace BezyFB.T411
 
                     HttpResponseMessage response = client.PostAsync("/auth", new FormUrlEncodedContent(dico)).Result;
                     var tokResult = response.Content.ReadAsStringAsync().Result;
-                    var tokObj = JsonConvert.DeserializeObject<AuthResult>(tokResult);
-                    string token = tokObj.Token;
-                    return token;
+                    try
+                    {
+                        var tokObj = JsonConvert.DeserializeObject<AuthResult>(tokResult);
+                        string token = tokObj.Token;
+                        return token;
+                    }
+                    catch (Exception ex)
+                    {
+                        return null;
+                    }
                 }
             }
         }
