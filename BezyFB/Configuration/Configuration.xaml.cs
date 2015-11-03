@@ -1,7 +1,6 @@
 ﻿using BezyFB.Annotations;
 using BezyFB.Helpers;
 using BezyFB.Properties;
-using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.Security.Cryptography;

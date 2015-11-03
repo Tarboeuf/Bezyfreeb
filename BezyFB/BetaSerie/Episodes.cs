@@ -8,10 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using BezyFB.Annotations;
 using System.ComponentModel;
 using System.Linq;
-using System.Xml.Serialization;
-using BezyFB.Annotations;
 
 //
 // Ce code source a été automatiquement généré par xsd, Version=2.0.50727.3038.
@@ -389,12 +388,11 @@ namespace BezyFB
         public Episode[] unseen
         {
             get { return this.unseenField; }
-            set 
-            { 
+            set
+            {
                 this.unseenField = value;
                 OnPropertyChanged("unseen");
             }
-
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

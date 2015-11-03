@@ -11,7 +11,7 @@ namespace BezyFB.Helpers
             if (value is long)
             {
                 long ivalue = (long)value;
-                return (ivalue/1024/1024).ToString("## ##0") + " Mo";
+                return (ivalue / 1024 / 1024).ToString("## ##0") + " Mo";
             }
             return null;
         }

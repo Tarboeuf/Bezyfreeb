@@ -1,17 +1,12 @@
 ﻿// Créer par : pepinat
 // Le : 23-06-2014
 
-using System.IO;
-using System.Net;
-using System.Runtime.InteropServices;
-using BezyFB.Configuration;
 using BezyFB.Helpers;
+using HtmlAgilityPack;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using HtmlAgilityPack;
 
 namespace BezyFB.EzTv
 {
