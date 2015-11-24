@@ -396,10 +396,17 @@ namespace BezyFB
             {
                 if (!(TabFreebox.DataContext is UserFreebox))
                 {
-                    var uf = _freeboxApi.Value.GetInfosFreebox();
-                    TabFreebox.DataContext = uf;
+                    try
+                    {
+                        var uf = _freeboxApi.Value.GetInfosFreebox();
+                        TabFreebox.DataContext = uf;
 
-                    uf.LoadMovies(Dispatcher);
+                        uf.LoadMovies(Dispatcher);
+                    }
+                    catch (Exception ex)
+                    {
+                        Helper.AfficherMessage("Erreur lors de la récupération des infos freebox : \r\n" + ex.Message);
+                    }
                 }
             }
         }
@@ -493,12 +500,12 @@ namespace BezyFB
             {
                 SetStatusText("Connecté t411 recherche par nom");
                 if (AvecCategorie.IsChecked == true)
-                    {
+                {
                     items = (await _client.GetAwaiter().GetResult().GetQuery(string.Format("{0}", HttpUtility.UrlEncode(textBoxRechercheT411.Text)),
                     new QueryOptions { CategoryIds = new List<int> { ((SousCategorie)comboCategoryT411.SelectedValue).Cat.Id }, Limit = 1000 })).Torrents;
                 }
                 else
-                        {
+                {
                     items = (await _client.GetAwaiter().GetResult().GetQuery(string.Format("{0}", HttpUtility.UrlEncode(textBoxRechercheT411.Text)))).Torrents;
                 }
             }
@@ -534,37 +541,43 @@ namespace BezyFB
             SetStatusText("Chargement des données T411");
             var worker = new BackgroundWorker();
             pb.Visibility = Visibility.Visible;
-
-            var topWeek = await _client.GetAwaiter().GetResult().GetTopWeek();
-            await Dispatcher.BeginInvoke((Action)(() => lv.ItemsSource =
-                   topWeek
-                    .OrderByDescending(t => t.Times_completed)
-                    .Select(t => new MyTorrent(t))));
-
-            var categories = new List<SousCategorie>();
-            foreach (var category1 in (await _client.GetAwaiter().GetResult().GetCategory()))
+            try
             {
-                foreach (var cat in category1.Value.Cats)
+                var topWeek = await _client.GetAwaiter().GetResult().GetTopWeek();
+                await Dispatcher.BeginInvoke((Action)(() => lv.ItemsSource =
+                       topWeek
+                        .OrderByDescending(t => t.Times_completed)
+                        .Select(t => new MyTorrent(t))));
+
+                var categories = new List<SousCategorie>();
+                foreach (var category1 in (await _client.GetAwaiter().GetResult().GetCategory()))
                 {
-                    categories.Add(new SousCategorie(cat.Value, category1.Value.Name));
+                    foreach (var cat in category1.Value.Cats)
+                    {
+                        categories.Add(new SousCategorie(cat.Value, category1.Value.Name));
+                    }
                 }
+
+                await Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    comboCategoryT411.ItemsSource = categories;
+                    comboCategoryT411.SelectedIndex = categories.IndexOf(categories.FirstOrDefault(c => c.Cat.Name == "Film"));
+                }));
+
+                var user = await _client.GetAwaiter().GetResult().GetUserDetails(_client.GetAwaiter().GetResult().UserId);
+                await Dispatcher.BeginInvoke((Action)(() =>
+                    labelT411.Content =
+                        user.Username + " Ratio : " + (user.Uploaded / (double)user.Downloaded).ToString("##.###")));
+
+                gridButton.Visibility = Visibility.Collapsed;
+                pb.Visibility = Visibility.Collapsed;
+
+                worker.RunWorkerAsync();
             }
-
-            await Dispatcher.BeginInvoke((Action)(() =>
+            catch (Exception ex)
             {
-                comboCategoryT411.ItemsSource = categories;
-                comboCategoryT411.SelectedIndex = categories.IndexOf(categories.FirstOrDefault(c => c.Cat.Name == "Film"));
-            }));
-
-            var user = await _client.GetAwaiter().GetResult().GetUserDetails(_client.GetAwaiter().GetResult().UserId);
-            await Dispatcher.BeginInvoke((Action)(() =>
-                labelT411.Content =
-                    user.Username + " Ratio : " + (user.Uploaded / (double)user.Downloaded).ToString("##.###")));
-
-            gridButton.Visibility = Visibility.Collapsed;
-            pb.Visibility = Visibility.Collapsed;
-
-            worker.RunWorkerAsync();
+                Helper.AfficherMessage("Impossible de charger les données de T411.\r\n" + ex.Message);
+            }
         }
 
         private void Betaseries_OnClick(object sender, RoutedEventArgs e)

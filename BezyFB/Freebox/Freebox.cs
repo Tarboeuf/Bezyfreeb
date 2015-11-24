@@ -120,7 +120,7 @@ namespace BezyFB.Freebox
             try
             {
                 if (String.IsNullOrEmpty(SessionToken))
-                    GenererSessionToken();
+                    return null;
 
                 var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/login/logout/", WebMethod.Post, null, null,
                                              null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
@@ -392,6 +392,11 @@ namespace BezyFB.Freebox
             var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/storage/disk/", WebMethod.Get,
                                          "application/x-www-form-urlencoded", null, null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
+            if (json == null)
+            {
+                Helper.AfficherMessage(Settings.Default.IpFreebox + " (GetInfosFreebox ) : la requête n'a pas retournée de résultat");
+                return null;
+            }
             var jsonObject = JObject.Parse(json);
 
             if (!(bool)jsonObject["success"])
