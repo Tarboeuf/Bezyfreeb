@@ -15,6 +15,7 @@ namespace BezyFB.Configuration
         {
             InitializeComponent();
             DataContext = this;
+            PasswordBox.Focus();
         }
 
         public string Pwd

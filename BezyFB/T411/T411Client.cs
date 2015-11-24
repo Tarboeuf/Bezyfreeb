@@ -19,6 +19,11 @@ namespace BezyFB.T411
 
         private int _userId = -1;
 
+        public bool IsTokenCreated
+        {
+            get { return !string.IsNullOrEmpty(_token); }
+        }
+
         public int UserId
         {
             get

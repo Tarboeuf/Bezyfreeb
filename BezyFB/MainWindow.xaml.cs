@@ -27,7 +27,7 @@ namespace BezyFB
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Lazy<BetaSerie.BetaSerie> _bs = new Lazy<BetaSerie.BetaSerie>(() => new BetaSerie.BetaSerie());
+        private Lazy<BetaSerie.BetaSerie> _bs = new Lazy<BetaSerie.BetaSerie>(() => new BetaSerie.BetaSerie(Settings.Default.LoginBetaSerie, Settings.Default.PwdBetaSerie));
         private Lazy<Utilisateur> _user = new Lazy<Utilisateur>(Utilisateur.Current);
         private Lazy<Freebox.Freebox> _freeboxApi = new Lazy<Freebox.Freebox>(() => new Freebox.Freebox());
         private AsyncLazy<T411Client> _client = new AsyncLazy<T411Client>(() => T411Client.New(Settings.Default.LoginT411, Settings.Default.PassT411));
@@ -42,7 +42,7 @@ namespace BezyFB
 
         public void InitialiseElements()
         {
-            _bs = new Lazy<BetaSerie.BetaSerie>(() => new BetaSerie.BetaSerie());
+            _bs = new Lazy<BetaSerie.BetaSerie>(() => new BetaSerie.BetaSerie(Settings.Default.LoginBetaSerie, Settings.Default.PwdBetaSerie));
             _client = new AsyncLazy<T411Client>(() => T411Client.New(Settings.Default.LoginT411, Settings.Default.PassT411));
             _user = new Lazy<Utilisateur>(Utilisateur.Current);
         }
@@ -317,6 +317,7 @@ namespace BezyFB
         private void Configuration_Click(object sender, RoutedEventArgs e)
         {
             var c = new Configuration.Configuration(_bs.Value, _freeboxApi.Value);
+            c.Owner = this;
             c.ShowDialog();
             InitialiseElements();
         }

@@ -1,6 +1,7 @@
 ﻿// Créer par : pepinat
 // Le : 03-06-2014
 
+using System.CodeDom;
 using BezyFB.Helpers;
 using BezyFB.Properties;
 using System;
@@ -14,15 +15,18 @@ namespace BezyFB.BetaSerie
 {
     public class BetaSerie
     {
+        private readonly string _login;
+        private readonly string _password;
+
+        public BetaSerie(string login, string password)
+        {
+            _login = login;
+            _password = password;
+        }
+
         private const string ApiAdresse = "http://api.betaseries.com";
 
         private const string EnteteArgs = "?v=2.2&key=d0256f2444ab";
-
-        //private const string Login = "Tarboeuf";
-        //private const string Password = "55fc47e4665c3df4047618f941c054e5";
-
-        //private const string _Login = "haiecapique";
-        //private const string _Password = "d9fb8a057fb2af1c9c9557e49eee7dd4";
 
         //private const string _EnteteArgs = "?v=2.2&key=3c15b9796654";
 
@@ -58,7 +62,7 @@ namespace BezyFB.BetaSerie
                 try
                 {
                     string link = ApiAdresse + Members + "/auth.xml" + EnteteArgs;
-                    link += "&login=" + Settings.Default.LoginBetaSerie + "&password=" + Settings.Default.PwdBetaSerie;
+                    link += "&login=" + _login + "&password=" + _password;
                     Error = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
                     XDocument xdoc = XDocument.Parse(Error);
@@ -94,7 +98,7 @@ namespace BezyFB.BetaSerie
             try
             {
                 string link = ApiAdresse + Episodes + "/list" + EnteteArgs;
-                link += "&userid=" + Settings.Default.LoginBetaSerie + "&token=" + Token;
+                link += "&userid=" + _login + "&token=" + Token;
                 var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
                 var serializer = new XmlSerializer(typeof(EpisodeRoot), new XmlRootAttribute("root"));

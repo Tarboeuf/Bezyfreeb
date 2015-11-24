@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:configuration="clr-namespace:BezyFB.Configuration"
         mc:Ignorable="d"
-        Title="Configuration" Height="500" Width="600"
+        Title="Configuration" SizeToContent="Height" Width="600" ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
         d:DataContext="{d:DesignInstance configuration:Configuration}">
-    <Grid>
+    <Grid >
         <StackPanel Orientation="Vertical">
             <GroupBox Header="Freebox">
                 <StackPanel Orientation="Vertical">
@@ -17,11 +17,11 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                         <Label Content="Path Video : " />
-                        <TextBox Text="{Binding PathVideo, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" />
+                        <TextBox Text="{Binding PathVideo, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MinWidth="100" Margin="5" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Path Film : " />
-                        <TextBox Text="{Binding PathFilm, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" />
+                        <TextBox Text="{Binding PathFilm, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MinWidth="100" Margin="5" />
                     </StackPanel>
                     <Button Content="Synchroniser" Click="Button_Click" />
                 </StackPanel>
@@ -34,7 +34,8 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Password : " />
-                        <Button Content="Changer de password" Click="password_Click" Margin="5" />
+                        <Button Content="Changer de password" Style="{StaticResource ButtonImage}" Click="password_Click" />
+                        <Button Content="Tester"  Style="{StaticResource ButtonImage}" Click="TesterBetaseries" />
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
@@ -43,7 +44,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Path pour copie locale : " />
                         <TextBox Text="{Binding PathLocal}" MinWidth="200" Margin="5" VerticalAlignment="Center" VerticalContentAlignment="Center" />
-                        <Button Click="pathLocalclick" Margin="5">
+                        <Button Click="pathLocalclick" Margin="5" Style="{StaticResource ButtonImage}">
                             <Image Source="..\Image\dossier.png" Width="24" Height="24" />
                         </Button>
                     </StackPanel>
@@ -58,14 +59,15 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Password : " />
-                        <Button Content="Changer de password" Click="passwordT411_Click" Margin="5" />
+                        <Button Content="Changer de password" Style="{StaticResource ButtonImage}" Click="passwordT411_Click"/>
+                        <Button Content="Tester"  Style="{StaticResource ButtonImage}" Click="TesterT411" />
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
-            <StackPanel Orientation="Horizontal">
-                <Button Content="Ok" Click="Ok_Click" Width="50" Margin="5" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Ok" Click="Ok_Click" Width="70" Margin="5" IsDefault="True"/>
 
-                <Button Content="Annuler" Click="Cancel_Click" Width="50" Margin="5" />
+                <Button Content="Annuler" Click="Cancel_Click" Width="70" IsCancel="True" />
             </StackPanel>
         </StackPanel>
     </Grid>

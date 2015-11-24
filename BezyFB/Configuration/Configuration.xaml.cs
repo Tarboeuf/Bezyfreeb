@@ -6,13 +6,14 @@ using System.ComponentModel;
 using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Forms;
+using BezyFB.T411;
 
 namespace BezyFB.Configuration
 {
     /// <summary>
     /// Logique d'interaction pour Configuration.xaml
     /// </summary>
-    public sealed partial class Configuration : Window, INotifyPropertyChanged
+    public sealed partial class Configuration : INotifyPropertyChanged
     {
         private readonly BetaSerie.BetaSerie _bs;
         private readonly Freebox.Freebox _freeboxApi;
@@ -150,6 +151,7 @@ namespace BezyFB.Configuration
         private void password_Click(object sender, RoutedEventArgs e)
         {
             var passForm = new PasswordForm();
+            passForm.Owner = this;
             passForm.ShowDialog();
             if (null != passForm.Pwd)
                 PwdBetaSerie = passForm.Pwd;
@@ -158,6 +160,7 @@ namespace BezyFB.Configuration
         private void passwordT411_Click(object sender, RoutedEventArgs e)
         {
             var passForm = new PasswordForm();
+            passForm.Owner = this;
             passForm.ShowDialog();
             if (null != passForm.Pwd)
                 PassT411 = passForm.Pwd;
@@ -170,6 +173,47 @@ namespace BezyFB.Configuration
             if (diag.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 PathLocal = diag.SelectedPath;
+            }
+        }
+
+        private void TesterBetaseries(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var client = new BetaSerie.BetaSerie(LoginBetaSerie, PwdBetaSerie);
+                
+                if (client.GenereToken(true))
+                {
+                    Helper.AfficherMessage("La connexion s'est réalisé avec succés");
+                }
+                else
+                {
+                    Helper.AfficherMessage("Impossible de se connecter à BetaSeries :\r\n" + client.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Helper.AfficherMessage("Impossible de se connecter à T411 :\r\n" + ex.Message);
+            }
+        }
+
+        private void TesterT411(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                T411Client client = T411Client.New(LoginT411, PassT411).Result;
+                if (client.IsTokenCreated)
+                {
+                    Helper.AfficherMessage("La connexion s'est réalisé avec succés");
+                }
+                else
+                {
+                    Helper.AfficherMessage("Impossible de se connecter à T411 :\r\nLe token n'est pas créé");
+                }
+            }
+            catch (Exception ex)
+            {
+                Helper.AfficherMessage("Impossible de se connecter à T411 :\r\n" + ex.Message);
             }
         }
     }
