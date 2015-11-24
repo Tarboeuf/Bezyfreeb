@@ -252,16 +252,17 @@
                             <Setter Property="Margin" Value="10" />
                         </Style>
                     </StackPanel.Resources>
-                    <Button Click="Betaseries_OnClick">
+                    <Button Click="Betaseries_OnClick" Name="ButtonBetaserie">
                         <Image Source="Image/Betaseries.png" Height="60" />
                     </Button>
-                    <Button Click="T411_OnClick">
+                    <Button Click="T411_OnClick" Name="ButtonT411">
                         <Image Source="Image/T411.png" Height="60" />
                     </Button>
-                    <Button Click="Freebox_OnClick">
-                        <Image Source="Image/freebox.png" Height="60" />
+                    <Button Click="Freebox_OnClick" Name="ButtonFreebox" >
+                        <Image Source="Image/freebox.png" Height="60"/>
                     </Button>
                 </StackPanel>
+                <Label Visibility="Collapsed" Name="LabelAvertissement" VerticalAlignment="Bottom" HorizontalAlignment="Center">Des éléments ne sont pas configurés, certaines parties du logiciel risque de ne pas fonctionner correctement</Label>
             </Grid>
         </Grid>
     </DockPanel>
