@@ -49,33 +49,38 @@ namespace BezyFB_UWP
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
+            MainPage shell = Window.Current.Content as MainPage;
+            Frame rootFrame = null;
 
-            Frame rootFrame = Window.Current.Content as Frame;
-
-            // Ne répétez pas l'initialisation de l'application lorsque la fenêtre comporte déjà du contenu,
-            // assurez-vous juste que la fenêtre est active
-            if (rootFrame == null)
+            if (shell == null)
             {
-                // Créez un Frame utilisable comme contexte de navigation et naviguez jusqu'à la première page
-                rootFrame = new Frame();
-
-                rootFrame.NavigationFailed += OnNavigationFailed;
-
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                shell = new MainPage();
+                // Ne répétez pas l'initialisation de l'application lorsque la fenêtre comporte déjà du contenu,
+                // assurez-vous juste que la fenêtre est active
+                if (rootFrame == null)
                 {
-                    //TODO: chargez l'état de l'application précédemment suspendue
+                    // Créez un Frame utilisable comme contexte de navigation et naviguez jusqu'à la première page
+                    rootFrame = new Frame();
+
+                    rootFrame.NavigationFailed += OnNavigationFailed;
+
+                    if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                    {
+                        //TODO: chargez l'état de l'application précédemment suspendue
+                    }
+
                 }
 
+                shell.DataContext = rootFrame;
                 // Placez le frame dans la fenêtre active
-                Window.Current.Content = rootFrame;
-            }
-
-            if (rootFrame.Content == null)
-            {
-                // Quand la pile de navigation n'est pas restaurée, accédez à la première page,
-                // puis configurez la nouvelle page en transmettant les informations requises en tant que
-                // paramètre
-                rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                Window.Current.Content = shell;
+                //if (rootFrame.Content == null)
+                //{
+                //    // Quand la pile de navigation n'est pas restaurée, accédez à la première page,
+                //    // puis configurez la nouvelle page en transmettant les informations requises en tant que
+                //    // paramètre
+                //    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                //}
             }
             // Vérifiez que la fenêtre actuelle est active
             Window.Current.Activate();

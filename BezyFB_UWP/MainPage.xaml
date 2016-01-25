@@ -8,6 +8,37 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <SplitView x:Name="MySplitView" DisplayMode="CompactOverlay"  IsPaneOpen="False" 
+               CompactPaneLength="50" OpenPaneLength="150" Content="{Binding}" >
+            <SplitView.Pane>
+                <Grid>
+                    <StackPanel Background="Gray">
+                        <Button x:Name="HamburgerButton" FontFamily="Segoe MDL2 Assets" Content="&#xE700;"
+                    Width="50" Height="50" Background="Transparent" Click="HamburgerButton_Click"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Click="BetaSerie_Click" x:Name="MenuButton1" FontFamily="Segoe MDL2 Assets" Content="&#xE825;"
+                        Width="50" Height="50" Background="Transparent"/>
+                            <TextBlock Text="BetaSeries" FontSize="18" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Click="T411_Click" x:Name="MenuButton2" FontFamily="Segoe MDL2 Assets" Content="&#xE10F;"
+                        Width="50" Height="50" Background="Transparent"/>
+                            <TextBlock Text="T411" FontSize="18" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Click="Freebox_Click" x:Name="MenuButton3" FontFamily="Segoe MDL2 Assets" Content="&#xE1D6;"
+                        Width="50" Height="50" Background="Transparent"/>
+                            <TextBlock Text="Freebox" FontSize="18" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </StackPanel>
 
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                        <Button Click="MenuButtonSettings_Click" x:Name="MenuButtonSettings" FontFamily="Segoe MDL2 Assets" Content=""
+                        Width="50" Height="50" Background="Transparent"/>
+                        <TextBlock Text="Settings" FontSize="18" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+            </SplitView.Pane>
+        </SplitView>
     </Grid>
 </Page>

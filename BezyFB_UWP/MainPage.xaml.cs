@@ -26,5 +26,50 @@ namespace BezyFB_UWP
         {
             this.InitializeComponent();
         }
+
+        private void HamburgerButton_Click(object sender, RoutedEventArgs e)
+        {
+            MySplitView.IsPaneOpen = !MySplitView.IsPaneOpen;
+        }
+
+        private void BetaSerie_Click(object sender, RoutedEventArgs e)
+        {
+            var frame = this.DataContext as Frame;
+            Page page = frame?.Content as Page;
+            if (page?.GetType() != typeof(PageBetaserie))
+            {
+                frame.Navigate(typeof(PageBetaserie));
+            }
+        }
+
+        private void T411_Click(object sender, RoutedEventArgs e)
+        {
+            var frame = this.DataContext as Frame;
+            Page page = frame?.Content as Page;
+            if (page?.GetType() != typeof(PageT411))
+            {
+                frame.Navigate(typeof(PageT411));
+            }
+        }
+
+        private void Freebox_Click(object sender, RoutedEventArgs e)
+        {
+            var frame = this.DataContext as Frame;
+            Page page = frame?.Content as Page;
+            if (page?.GetType() != typeof(PageFreebox))
+            {
+                frame.Navigate(typeof(PageFreebox));
+            }
+        }
+
+        private void MenuButtonSettings_Click(object sender, RoutedEventArgs e)
+        {
+            var frame = this.DataContext as Frame;
+            Page page = frame?.Content as Page;
+            if (page?.GetType() != typeof(PageSettings))
+            {
+                frame.Navigate(typeof(PageSettings));
+            }
+        }
     }
 }
