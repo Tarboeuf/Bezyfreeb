@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using BezyFB_UWP.Lib.T411;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, voir la page http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -77,15 +78,16 @@ namespace BezyFB_UWP
         {
             try
             {
-                //T411Client client = T411Client.New(LoginT411, PassT411).Result;
-                //if (client.IsTokenCreated)
-                //{
+                Settings.Current.PassT411 = pwdT411.Password;
+                T411Client client = T411Client.New(Settings.Current.LoginT411, Settings.Current.PassT411).Result;
+                if (client.IsTokenCreated)
+                {
                     Helper.AfficherMessage("La connexion s'est réalisé avec succés");
-                //}
-                //else
-                //{
-                //    Helper.AfficherMessage("Impossible de se connecter à T411 :\r\nLe token n'est pas créé");
-                //}
+                }
+                else
+                {
+                    Helper.AfficherMessage("Impossible de se connecter à T411 :\r\nLe token n'est pas créé");
+                }
             }
             catch (Exception ex)
             {

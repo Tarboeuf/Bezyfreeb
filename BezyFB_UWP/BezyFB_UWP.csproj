@@ -118,6 +118,7 @@
     <Compile Include="Lib\Helpers\AsyncLazy.cs" />
     <Compile Include="Lib\Helpers\DownloadToFontFamilyConverter.cs" />
     <Compile Include="Lib\Helpers\Helper.cs" />
+    <Compile Include="Lib\Helpers\SizeConverter.cs" />
     <Compile Include="Lib\Helpers\SizeMoConverter.cs" />
     <Compile Include="Lib\Settings.cs" />
     <Compile Include="Lib\T411\ErrorCodeException.cs" />

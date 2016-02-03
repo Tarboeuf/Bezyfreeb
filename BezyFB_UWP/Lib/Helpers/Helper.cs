@@ -6,6 +6,7 @@ using Windows.UI.Popups;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 
 namespace BezyFB_UWP.Lib.Helpers
 {
@@ -65,5 +66,33 @@ namespace BezyFB_UWP.Lib.Helpers
             var md = new MessageDialog(message);
             await md.ShowAsync();
         }
+
+        public static async Task<YesNo> ShowYesNoDialog(string content)
+        {
+
+            var dialog = new MessageDialog(content,"Question");
+
+            dialog.Commands.Add(new Windows.UI.Popups.UICommand("Yes") { Id = YesNo.Yes });
+            dialog.Commands.Add(new Windows.UI.Popups.UICommand("No") { Id = YesNo.No });
+
+            //if (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily != "Windows.Mobile")
+            //{
+            //    // Adding a 3rd command will crash the app when running on Mobile !!!
+            //    dialog.Commands.Add(new Windows.UI.Popups.UICommand("Maybe later") { Id = 2 });
+            //}
+
+            dialog.DefaultCommandIndex = 0;
+            dialog.CancelCommandIndex = 1;
+
+            var result = await dialog.ShowAsync();
+            return (YesNo)result.Id;
+        }
+
+        
+    }
+    public enum YesNo
+    {
+        Yes,
+        No
     }
 }

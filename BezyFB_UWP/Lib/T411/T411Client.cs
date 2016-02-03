@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 
@@ -82,7 +83,9 @@ namespace BezyFB_UWP.Lib.T411
                     dico.Add("password", _password);
 
                     HttpResponseMessage response = client.PostAsync("/auth", new FormUrlEncodedContent(dico)).Result;
-                    var tokResult = await response.Content.ReadAsStringAsync();
+                    
+                    var tokResultBytes = await response.Content.ReadAsByteArrayAsync();
+                    var tokResult = Encoding.GetEncoding("latin1").GetString(tokResultBytes);
                     try
                     {
                         var tokObj = JsonConvert.DeserializeObject<AuthResult>(tokResult);
@@ -270,7 +273,8 @@ namespace BezyFB_UWP.Lib.T411
 
                     using (var response = client.SendAsync(requestMessage).Result)
                     {
-                        var result = response.Content.ReadAsStringAsync().Result;
+                        var resultBytes = response.Content.ReadAsByteArrayAsync().Result;
+                        var result = Encoding.GetEncoding("latin1").GetString(resultBytes);
                         return result;
                     }
                 }

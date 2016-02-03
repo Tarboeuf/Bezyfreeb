@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 using BezyFB_UWP.Lib.EzTv;
+using BezyFB_UWP.Lib.T411;
 
 namespace BezyFB_UWP.Lib
 {
@@ -25,12 +26,14 @@ namespace BezyFB_UWP.Lib
         private Lazy<BetaSerie.BetaSerie> _betaserie = new Lazy<BetaSerie.BetaSerie>(() => new BetaSerie.BetaSerie(Current.LoginBetaSerie, Current.PwdBetaSerie));
         private static readonly Lazy<Freebox.Freebox> _freebox = new Lazy<Freebox.Freebox>(() => new Freebox.Freebox(Current));
         private static readonly Lazy<Eztv> _eztv = new Lazy<Eztv>(() => new Eztv());
+        private static readonly AsyncLazy<T411Client> _t411Client = new AsyncLazy<T411Client>(() => T411Client.New(Current.LoginT411, Current.PassT411));
 
         public static Settings Current
         {
             get { return _current.Value; }
         }
 
+        public T411Client T411 => _t411Client.GetAwaiter().GetResult();
         public Freebox.Freebox Freebox => _freebox.Value;
 
         public BetaSerie.BetaSerie BetaSerie => _betaserie.Value;
@@ -144,7 +147,7 @@ namespace BezyFB_UWP.Lib
 
         private Lazy<Utilisateur> _users = new Lazy<Utilisateur>(() => Utilisateur.Current());
 
-        public Utilisateur User { get { return _users.Value; } }
+        public Utilisateur User => _users.Value;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
