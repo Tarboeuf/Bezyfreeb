@@ -189,7 +189,7 @@ namespace BezyFB_UWP.Lib.BetaSerie
             }
         }
 
-        public async void SetEpisodeSeen(Episode episode)
+        public async Task SetEpisodeSeen(Episode episode)
         {
             if (!await GenereToken())
                 return;

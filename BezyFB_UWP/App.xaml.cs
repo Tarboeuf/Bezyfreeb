@@ -69,6 +69,8 @@ namespace BezyFB_UWP
                         //TODO: chargez l'état de l'application précédemment suspendue
                     }
 
+                    rootFrame.Navigate(typeof (PageBezyF));
+
                 }
 
                 shell.DataContext = rootFrame;

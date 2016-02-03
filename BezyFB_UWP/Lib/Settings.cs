@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
+using BezyFB_UWP.Lib.EzTv;
 
 namespace BezyFB_UWP.Lib
 {
@@ -22,16 +23,19 @@ namespace BezyFB_UWP.Lib
 
         private static Lazy<Settings> _current = new Lazy<Settings>(() => new Settings());
         private Lazy<BetaSerie.BetaSerie> _betaserie = new Lazy<BetaSerie.BetaSerie>(() => new BetaSerie.BetaSerie(Current.LoginBetaSerie, Current.PwdBetaSerie));
-        private static Lazy<Freebox.Freebox> _freebox = new Lazy<Freebox.Freebox>(() => new Freebox.Freebox(Current));
+        private static readonly Lazy<Freebox.Freebox> _freebox = new Lazy<Freebox.Freebox>(() => new Freebox.Freebox(Current));
+        private static readonly Lazy<Eztv> _eztv = new Lazy<Eztv>(() => new Eztv());
 
         public static Settings Current
         {
             get { return _current.Value; }
         }
 
-        public Freebox.Freebox Freebox { get { return _freebox.Value; } }
+        public Freebox.Freebox Freebox => _freebox.Value;
 
-        public BetaSerie.BetaSerie BetaSerie { get { return _betaserie.Value; } }
+        public BetaSerie.BetaSerie BetaSerie => _betaserie.Value;
+
+        public Eztv Eztv => _eztv.Value;
 
         public void ResetBetaserie()
         {

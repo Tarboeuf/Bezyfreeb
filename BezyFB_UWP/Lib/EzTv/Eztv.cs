@@ -18,7 +18,8 @@ namespace BezyFB_UWP.Lib.EzTv
         //private const string Url = "http://eztv-proxy.net/";
         //private const string Url = https://eztv.ch/";
 
-        private static Dictionary<string, string> _PagesSeries = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> PagesSeries = new Dictionary<string, string>();
+        private static List<Show> _shows = null;
 
         public static async System.Threading.Tasks.Task<string> GetMagnetSerieEpisode(string serie, string episode)
         {
@@ -26,9 +27,9 @@ namespace BezyFB_UWP.Lib.EzTv
                 return null;
 
             string html;
-            if (_PagesSeries.ContainsKey(serie))
+            if (PagesSeries.ContainsKey(serie))
             {
-                html = _PagesSeries[serie];
+                html = PagesSeries[serie];
             }
             else
             {
@@ -59,9 +60,9 @@ namespace BezyFB_UWP.Lib.EzTv
         public static async System.Threading.Tasks.Task<string> GetTorrentSerieEpisode(string serie, string episode)
         {
             string html;
-            if (_PagesSeries.ContainsKey(serie))
+            if (PagesSeries.ContainsKey(serie))
             {
-                html = _PagesSeries[serie];
+                html = PagesSeries[serie];
             }
             else
             {
@@ -82,6 +83,10 @@ namespace BezyFB_UWP.Lib.EzTv
 
         public async Task<List<Show>> GetListShow()
         {
+            if (null != _shows)
+            {
+                return _shows;
+            }
             string html = await ApiConnector.Call(Url + "search/", WebMethod.Get, null, null, "text/xml");
 
             if (string.IsNullOrEmpty(html))
@@ -95,9 +100,9 @@ namespace BezyFB_UWP.Lib.EzTv
 
             var series = html.Split(new[] { "</option>" }, StringSplitOptions.RemoveEmptyEntries);
 
-            IEnumerable<Show> shows = series.Skip(1).Select(s => GetShow(s.Trim())).Where(s => s != null);
+            _shows = series.Skip(1).Select(s => GetShow(s.Trim())).Where(s => s != null).ToList();
 
-            return shows.ToList();
+            return _shows;
         }
 
         private Show GetShow(string str)

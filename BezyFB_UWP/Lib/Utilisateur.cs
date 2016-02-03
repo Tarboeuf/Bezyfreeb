@@ -13,11 +13,10 @@ namespace BezyFB_UWP.Lib
 {
     public class Utilisateur
     {
+        private static readonly Lazy<Utilisateur> _current = new Lazy<Utilisateur>(() => new Utilisateur());
         public static Utilisateur Current()
         {
-            Utilisateur user = new Utilisateur();
-
-            return user;
+            return _current.Value;
         }
 
         public void SerializeElement()
@@ -82,7 +81,7 @@ namespace BezyFB_UWP.Lib
             return await GetSerie(episode.show_id, episode.show_title);
         }
 
-        public async Task<object> GetSerie(rootShowsShow rootShow)
+        public async Task<ShowConfiguration> GetSerie(rootShowsShow rootShow)
         {
             return await GetSerie(rootShow.id, rootShow.title);
         }
