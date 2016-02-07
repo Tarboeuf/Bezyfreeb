@@ -1,0 +1,35 @@
+﻿<Page
+    x:Class="BezyFB_UWP.TorrentDetailPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BezyFB_UWP"
+    xmlns:helper="using:BezyFB_UWP.Lib.Helpers"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled"
+    Loaded="PageRoot_Loaded"
+    Unloaded="PageRoot_Unloaded"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition />
+        </TransitionCollection>
+    </Page.Transitions>
+
+    <Page.Resources>
+        <helper:DownloadToFontFamilyConverter x:Key="DownloadToFontFamilyConverter" />
+    </Page.Resources>
+
+    <!-- Don't realize our content by default. See PageRoot_Loaded. -->
+    <Grid x:Name="RootPanel" x:DeferLoadStrategy="Lazy" >
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <WebView Grid.Row="0" Name="View" Margin="5">
+            
+        </WebView>
+        <local:T411UserControl Grid.Row="1"/>
+    </Grid>
+</Page>
