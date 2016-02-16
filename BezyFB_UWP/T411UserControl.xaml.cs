@@ -32,6 +32,7 @@ namespace BezyFB_UWP
 
             if (await Helper.ShowYesNoDialog("Êtes-vous sûr de vouloir télécharger ce film ?") == YesNo.Yes)
             {
+                ProgressBarDC.Current.IsProgress = true;
                 var torrent = DataContext as Torrent;
                 if (null != torrent)
                 {
@@ -48,6 +49,7 @@ namespace BezyFB_UWP
                         }
                     }
                 }
+                ProgressBarDC.Current.IsProgress = false;
             }
         }
     }

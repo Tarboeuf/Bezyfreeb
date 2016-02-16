@@ -42,8 +42,6 @@ namespace BezyFB_UWP
             set { SetValue(s_itemProperty, value); }
         }
 
-
-
         public TorrentDetails Details
         {
             get { return (TorrentDetails)GetValue(DetailsProperty); }

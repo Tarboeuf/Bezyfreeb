@@ -40,6 +40,7 @@ namespace BezyFB_UWP
 
         private async void ConfigSerieDialog_Loaded(object sender, RoutedEventArgs e)
         {
+            ProgressBarDC.Current.IsProgress = true;
             _list = new FilteredCollection<Eztv.Show>(await _eztv.GetListShow());
             ListView.ItemsSource = _list;
 
@@ -48,6 +49,7 @@ namespace BezyFB_UWP
                 .Replace(")", "").Split(' ')
                 .OrderByDescending(n => n.Length).FirstOrDefault();
             TextBox.Text = texte;
+            ProgressBarDC.Current.IsProgress = false;
         }
 
         private void RefreshList()

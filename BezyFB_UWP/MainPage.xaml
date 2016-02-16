@@ -8,7 +8,8 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <SplitView x:Name="MySplitView" DisplayMode="CompactOverlay"  IsPaneOpen="False" 
+
+        <SplitView Grid.Row="1" x:Name="MySplitView" DisplayMode="CompactOverlay"  IsPaneOpen="False" 
                CompactPaneLength="50" OpenPaneLength="150" Content="{Binding}" >
             <SplitView.Pane>
                 <Grid>
@@ -40,5 +41,6 @@
                 </Grid>
             </SplitView.Pane>
         </SplitView>
+        <ProgressBar VerticalAlignment="Top" Grid.Row="0" Name="ProgressBar" Visibility="{Binding Visibility}" IsIndeterminate="True" ></ProgressBar>
     </Grid>
 </Page>
