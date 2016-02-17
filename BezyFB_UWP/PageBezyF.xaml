@@ -12,7 +12,8 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="textBlock" Margin="5" FontSize="45" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Bezyfreeb" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlock" Margin="5" Style="{StaticResource HeaderTextBlockStyle}" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Bezyfreeb" VerticalAlignment="Top"/>
+        <Button Content="" Grid.Column="0"  Grid.Row="0" HorizontalAlignment="Right" Click="Refresh_Click" FontFamily="Segoe MDL2 Assets" />
 
         <StackPanel Grid.Row="1" VerticalAlignment="Center">
             <TextBlock TextWrapping="WrapWholeWords"  Margin="10 5">Cette application vous permet de gérer vos séries ajoutée sur Betaserie, puis de les télécharger sur votre freebox.</TextBlock>

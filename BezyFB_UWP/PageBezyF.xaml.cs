@@ -26,5 +26,10 @@ namespace BezyFB_UWP
         {
             this.InitializeComponent();
         }
+
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }

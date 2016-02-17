@@ -378,7 +378,7 @@ namespace BezyFB_UWP.Lib.Freebox
                     Helper.AfficherMessage(IpFreebox + " (UploadFile " + inputFile + " ) : " + jobj["msg"].ToString());
                     return null;
                 }
-                var id = jobj["result"].GetObject()["id"].GetString();
+                var id = jobj["result"].GetObject()["id"].GetNumber();
 
                 string text = File.ReadAllText(inputFile, Encoding.UTF8);
 
@@ -458,8 +458,8 @@ namespace BezyFB_UWP.Lib.Freebox
                 return null;
             }
             var userFreebox = new UserFreebox(this);
-            userFreebox.FreeSpace = (long)jsonObject["result"].GetObject().First().Value.GetObject()["partitions"].GetObject().First().Value.GetObject()["free_bytes"].GetNumber();
-            userFreebox.Ratio = 100.0 - userFreebox.FreeSpace / (long)jsonObject["result"].GetObject().First().Value.GetObject()["total_bytes"].GetNumber() * 100;
+            userFreebox.FreeSpace = (long)jsonObject["result"].GetArray()[0].GetObject()["partitions"].GetArray()[0].GetObject()["free_bytes"].GetNumber();
+            userFreebox.Ratio = 100.0 - userFreebox.FreeSpace / jsonObject["result"].GetArray()[0].GetObject()["total_bytes"].GetNumber() * 100;
 
             json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/downloads/", WebMethod.Get,
                                          "application/x-www-form-urlencoded", null, null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
