@@ -54,6 +54,10 @@
             <GroupBox Header="T411">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
+                        <Label Content="Adresse API : " />
+                        <TextBox Text="{Binding T411Address, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" Margin="5" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
                         <Label Content="Login : " />
                         <TextBox Text="{Binding LoginT411, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" Margin="5" />
                     </StackPanel>

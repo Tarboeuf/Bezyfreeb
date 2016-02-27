@@ -32,7 +32,7 @@ namespace BezyFB.Configuration
             set
             {
                 Settings.Default.IpFreebox = value;
-                OnPropertyChanged("FreeboxIp");
+                OnPropertyChanged(nameof(FreeboxIp));
             }
         }
 
@@ -73,6 +73,16 @@ namespace BezyFB.Configuration
             {
                 Settings.Default.LoginT411 = value;
                 OnPropertyChanged("LoginT411");
+            }
+        }
+
+        public string T411Address
+        {
+            get { return Settings.Default.T411Address; }
+            set
+            {
+                Settings.Default.T411Address = value;
+                OnPropertyChanged(nameof(T411Address));
             }
         }
 

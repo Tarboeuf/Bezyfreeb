@@ -39,8 +39,9 @@ namespace BezyFB_UWP.Lib.T411
                 {
                     nom = await GuessIt.GuessNom(_torrent.Name.Trim());
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
+                    // ignored
                 }
             }
             var omDb = new OMDb();
@@ -53,8 +54,9 @@ namespace BezyFB_UWP.Lib.T411
                 else
                     omDb = await OMDb.GetNote(Name);
             }
-            catch (Exception e)
+            catch (Exception)
             {
+                // ignored
             }
 
             return new RetourOMDB { OMDB = omDb, Nom = nom };
@@ -65,17 +67,17 @@ namespace BezyFB_UWP.Lib.T411
             return await Task.Run(() => InitialiserData(nom));
         }
 
-        public Torrent Torrent { get { return _torrent; } }
+        public Torrent Torrent => _torrent;
 
-        public string Name { get { return _torrent.Name; } }
+        public string Name => _torrent.Name;
 
-        public long Size { get { return _torrent.Size; } }
+        public long Size => _torrent.Size;
 
-        public int Seeders { get { return _torrent.Seeders; } }
+        public int Seeders => _torrent.Seeders;
 
-        public int Times_completed { get { return _torrent.Times_completed; } }
+        public int TimesCompleted => _torrent.Times_completed;
 
-        public double TimesCompletedByHours { get { return _torrent.Times_completed / (DateTime.Now - _torrent.Added).TotalHours; } }
+        public double TimesCompletedByHours => _torrent.Times_completed / (DateTime.Now - _torrent.Added).TotalHours;
 
         public double Note
         {
@@ -117,7 +119,7 @@ namespace BezyFB_UWP.Lib.T411
         protected virtual void OnPropertyChanged(string propertyName = null)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private class RetourOMDB
