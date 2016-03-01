@@ -9,6 +9,7 @@
         xmlns:t411="clr-namespace:BezyFB.T411"
         xmlns:util="clr-namespace:BezyFB.Helpers.Wpf.Util"
         xmlns:betaSerie="clr-namespace:BezyFB.BetaSerie"
+        xmlns:wpfTemplateLib="clr-namespace:WpfTemplateLib;assembly=WpfTemplateLib"
         mc:Ignorable="d"
         Title="BezyFreeb" Height="500" Width="1225"
         Closed="MainWindow_OnClosed">
@@ -26,7 +27,15 @@
         </Menu>
         <DockPanel  DockPanel.Dock="Bottom">
             <ProgressBar Name="pb" IsIndeterminate="True" Width="200" DockPanel.Dock="Right" Visibility="Collapsed"></ProgressBar>
-            <StatusBar Height="20" Name="StatusBar" ></StatusBar>
+            <wpfTemplateLib:Notification Name="Notification" NotificationTime="2000" >
+                <wpfTemplateLib:Notification.NotificationTemplate>
+                    <DataTemplate >
+                        <Border BorderBrush="WhiteSmoke" Background="DarkGray" BorderThickness="2" CornerRadius="3">
+                            <Label Content="{Binding .}" Margin="20" />
+                        </Border>
+                    </DataTemplate>
+                </wpfTemplateLib:Notification.NotificationTemplate>
+            </wpfTemplateLib:Notification>
         </DockPanel>
         <Grid>
             <DockPanel>
@@ -42,6 +51,9 @@
                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                 <Button Content="Charger la liste des non vus" Click="Button_Click" Margin="5" />
                                 <Button Content="Telecharger tout" Click="Download_All_Click" Margin="5" />
+
+                                <TextBlock Margin="20 0" VerticalAlignment="Center"> Reste à voir</TextBlock>
+                                <TextBlock Margin="0 0" VerticalAlignment="Center" Name="TextBlockResteAVoir"></TextBlock>
                             </StackPanel>
                             <TreeView Name="tv" DockPanel.Dock="Bottom">
                                 <TreeView.ItemTemplate>

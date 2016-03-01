@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace BezyFB_UWP.Lib.Helpers
 {
@@ -40,7 +41,7 @@ namespace BezyFB_UWP.Lib.Helpers
 
     public static class ApiConnector
     {
-        public static async System.Threading.Tasks.Task<string> Call(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null,
+        public static async Task<string> Call(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null,
                                   string headerAccept = null, IEnumerable<Tuple<string, string>> headers = null, Encoding encoding = null)
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
@@ -82,7 +83,7 @@ namespace BezyFB_UWP.Lib.Helpers
             }
         }
 
-        public static async System.Threading.Tasks.Task<string> CallByte(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null, byte[] text = null,
+        public static async Task<string> CallByte(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null, byte[] text = null,
                                   string headerAccept = null, IEnumerable<Tuple<string, string>> headers = null)
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
@@ -130,7 +131,7 @@ namespace BezyFB_UWP.Lib.Helpers
     {
         private static readonly Encoding encoding = Encoding.UTF8;
 
-        public static async System.Threading.Tasks.Task<HttpWebResponse> MultipartFormDataPost(string postUrl, string userAgent, Dictionary<string, object> postParameters, IEnumerable<Tuple<string, string>> headers = null)
+        public static async Task<HttpWebResponse> MultipartFormDataPost(string postUrl, string userAgent, Dictionary<string, object> postParameters, IEnumerable<Tuple<string, string>> headers = null)
         {
             string formDataBoundary = String.Format("----------{0:N}", Guid.NewGuid());
             string contentType = "multipart/form-data; boundary=" + formDataBoundary;
@@ -140,7 +141,7 @@ namespace BezyFB_UWP.Lib.Helpers
             return await PostForm(postUrl, userAgent, contentType, formData, headers);
         }
 
-        private static async System.Threading.Tasks.Task<HttpWebResponse> PostForm(string postUrl, string userAgent, string contentType, byte[] formData, IEnumerable<Tuple<string, string>> headers = null)
+        private static async Task<HttpWebResponse> PostForm(string postUrl, string userAgent, string contentType, byte[] formData, IEnumerable<Tuple<string, string>> headers = null)
         {
             HttpWebRequest request = WebRequest.Create(postUrl) as HttpWebRequest;
 

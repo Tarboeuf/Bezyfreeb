@@ -19,6 +19,8 @@ using System.Web;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using WpfTemplateBaseLib;
+using WpfTemplateLib;
 
 namespace BezyFB
 {
@@ -194,8 +196,9 @@ namespace BezyFB
 
         private void SetStatusText(string text)
         {
-            StatusBar.Items.Clear();
-            StatusBar.Items.Add(text);
+            var window = Notification.FindAncestor<Window>();
+            if(window == null) return;
+            Notification.AddNotification(text);
         }
 
         private static byte[] UnzipFromStream(byte[] st, string encoding)
@@ -514,7 +517,7 @@ namespace BezyFB
             }
 
             lv.ItemsSource = items.OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
-            StatusBar.Items.Add("torrents récupéré");
+            SetStatusText("torrents récupéré");
             pb.Visibility = Visibility.Collapsed;
         }
 
@@ -526,7 +529,10 @@ namespace BezyFB
         private void LoadBetaseries()
         {
             pb.Visibility = Visibility.Visible;
-            SetStatusText(_bs.Value.Error);
+            if(!string.IsNullOrEmpty(_bs.Value.Error))
+                SetStatusText(_bs.Value.Error);
+            else
+                SetStatusText("Récupération des épisodes depuis BetaSeries");
 
             var t = new Task<EpisodeRoot>(() => _bs.Value.GetListeNouveauxEpisodesTest());
             t.ContinueWith(r => Dispatcher.BeginInvoke(new Action(() =>
@@ -535,6 +541,8 @@ namespace BezyFB
                     tv.ItemsSource = r.Result.shows;
                 gridButton.Visibility = Visibility.Collapsed;
                 pb.Visibility = Visibility.Collapsed;
+                TextBlockResteAVoir.Text = r.Result.shows.Select(s => s.unseen.Count()).Sum().ToString();
+                SetStatusText("Episodes récupérés");
             })));
             t.Start();
         }
