@@ -125,6 +125,7 @@ namespace BezyFB.Freebox
                 var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/login/logout/", WebMethod.Post, null, null,
                                              null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
+                if (json == null) return null;
                 return JObject.Parse(json).ToString();
             }
             catch (Exception ex)
@@ -439,6 +440,58 @@ namespace BezyFB.Freebox
 
             return userFreebox;
         }
+
+        public List<FBFileInfo> LsFileInfo(string directory)
+        {
+            if (directory.EndsWith(".")) return null;
+
+            if (String.IsNullOrEmpty(SessionToken))
+                GenererSessionToken();
+
+            var json = ApiConnector.Call("http://" + Settings.Default.IpFreebox + "/api/v3/fs/ls/" + Helper.EncodeTo64(directory) + "?onlyFolder=0&countSubFolder=1",
+                                         WebMethod.Get, "application/x-www-form-urlencoded", null, null,
+                                         new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+
+            if (json == null)
+                return null;
+
+            var jsonObject = JObject.Parse(json);
+
+            if (!(bool)jsonObject["success"])
+            {
+                return null;
+            }
+            var result = jsonObject["result"];
+
+            return result.Select(t => new FBFileInfo(t)).ToList();
+        }
+    }
+
+    public class FBFileInfo
+    {
+        public FBFileInfo(JToken token)
+        {
+            Name = token["name"].ToString();
+            Mimetype = token["mimetype"].ToString();
+            Type = token["type"].ToString();
+            Size = token["size"].ToString();
+
+            try
+            {
+                Filecount = token.Value<string>("filecount");
+                Foldercount = token.Value<string>("foldercount");
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public string Name { get; set; }
+        public string Filecount { get; set; }
+        public string Foldercount { get; set; }
+        public string Mimetype { get; set; }
+        public string Type { get; set; }
+        public string Size { get; set; }
     }
 
     public class UserFreebox

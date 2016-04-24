@@ -204,14 +204,15 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="200" />
+                                <RowDefinition Height="6" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0">Free Space</Label>
+                            <Button Grid.Row="0" Grid.Column="0" Click="FreeSpace_OnClick">Free Space</Button>
                             <Label Grid.Row="0" Grid.Column="1" Content="{Binding FreeSpace, Converter={StaticResource SizeConverter}}"></Label>
                             <Label Grid.Row="1" Grid.Column="0">Ratio</Label>
                             <ProgressBar Grid.Row="1" Grid.Column="1" Maximum="100" Minimum="0" Height="15" Value="{Binding Ratio}"></ProgressBar>
-                            <ListView MaxHeight="200" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0"
+                            <ListView Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0"
                               ItemsSource="{Binding Downloads}">
                                 <ListView.View>
                                     <GridView>
@@ -234,7 +235,9 @@
                                     </GridView>
                                 </ListView.View>
                             </ListView>
-                            <ListView Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" ItemsSource="{Binding Movies}">
+                            <GridSplitter Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" Height="3"
+                                          ResizeBehavior="PreviousAndNext" ResizeDirection="Rows" />
+                            <ListView Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0" ItemsSource="{Binding Movies}">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding FileName}" />

@@ -177,6 +177,9 @@
     <Compile Include="T411\MyTorrent.cs" />
     <Compile Include="T411\SousCategorie.cs" />
     <Compile Include="T411\T411Client.cs" />
+    <Compile Include="TailleDossierFreebox.xaml.cs">
+      <DependentUpon>TailleDossierFreebox.xaml</DependentUpon>
+    </Compile>
     <Page Include="Configuration\Configuration.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -210,6 +213,10 @@
     <Page Include="NoteWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TailleDossierFreebox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

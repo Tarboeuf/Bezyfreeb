@@ -642,5 +642,11 @@ namespace BezyFB
                 ? Visibility.Collapsed
                 : Visibility.Visible;
         }
+
+        private void FreeSpace_OnClick(object sender, RoutedEventArgs e)
+        {
+            TailleDossierFreebox window = new TailleDossierFreebox(_freeboxApi.Value);
+            window.ShowDialog();
+        }
     }
 }
