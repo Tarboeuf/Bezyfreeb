@@ -1,5 +1,5 @@
-﻿using System;
-using BezyFB.Freebox;
+﻿using BezyFB.FreeboxLib;
+using System;
 using System.IO;
 using System.Windows;
 using MessageBox = System.Windows.Forms.MessageBox;
@@ -15,7 +15,7 @@ namespace BezyFB
         {
         }
 
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private async void Application_Startup(object sender, StartupEventArgs e)
         {
             if (e.Args.Length > 0)
             {
@@ -31,7 +31,7 @@ namespace BezyFB
                             FreeboxExplorer fb = new FreeboxExplorer();
                             if (fb.ShowDialog() ?? false)
                             {
-                                fb.Freebox.DownloadFile(fi, fb.FilePath + "/", false);
+                                await ClientContext.Current.Freebox.DownloadFile(nomFichier, fb.FilePath + "/", false);
                             }
                         }
                     }
@@ -44,7 +44,7 @@ namespace BezyFB
                         FreeboxExplorer fb = new FreeboxExplorer();
                         if (fb.ShowDialog() ?? false)
                         {
-                            fb.Freebox.Download(nomFichier.Substring(5), fb.FilePath + "/");
+                            await fb.Freebox.Download(nomFichier.Substring(5), fb.FilePath + "/");
                         }
                     }
                 }

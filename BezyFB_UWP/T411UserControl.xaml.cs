@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Navigation;
 using BezyFB_UWP.Lib;
 using BezyFB_UWP.Lib.Helpers;
 using BezyFB_UWP.Lib.T411;
+using CommonLib;
+using CommonPortableLib;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -30,22 +32,22 @@ namespace BezyFB_UWP
         private async void Download_OnClick(object sender, RoutedEventArgs e)
         {
 
-            if (await Helper.ShowYesNoDialog("Êtes-vous sûr de vouloir télécharger ce film ?") == YesNo.Yes)
+            if (await ClientContext.Current.MessageDialogService.ShowYesNoDialog("Êtes-vous sûr de vouloir télécharger ce film ?") == DialogResult.Yes)
             {
                 ProgressBarDC.Current.IsProgress = true;
                 var torrent = DataContext as Torrent;
                 if (null != torrent)
                 {
-                    using (var stream = Settings.Current.T411.DownloadTorrent(torrent.Id))
+                    using (var stream = ClientContext.Current.T411.DownloadTorrent(torrent.Id))
                     {
                         try
                         {
-                            await Settings.Current.Freebox.DownloadFile(stream, torrent.Name + ".torrent", Settings.Current.PathFilm, false);
-                            Helper.AfficherMessage("Le téléchargement a été rajouté");
+                            await ClientContext.Current.Freebox.DownloadFile(stream, torrent.Name + ".torrent", Settings.Current.PathFilm, false);
+                            await ClientContext.Current.MessageDialogService.AfficherMessage("Le téléchargement a été rajouté");
                         }
                         catch (Exception)
                         {
-                            Helper.AfficherMessage("Une erreur est survenue lors de l'ajout du téléchargement");
+                            await ClientContext.Current.MessageDialogService.AfficherMessage("Une erreur est survenue lors de l'ajout du téléchargement");
                         }
                     }
                 }

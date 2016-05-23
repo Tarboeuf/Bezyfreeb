@@ -8,44 +8,37 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using BezyFB_UWP.Lib.EzTv;
 using BezyFB_UWP.Lib.T411;
+using CommonLib;
+using FreeboxPortableLib;
+using CommonPortableLib;
+using Windows.Networking.Connectivity;
 
 namespace BezyFB_UWP.Lib
 {
-    public class Settings : INotifyPropertyChanged
+    public class Settings : INotifyPropertyChanged, ISettingsFreebox
     {
         private Settings()
         {
 
         }
 
-        public const string AppName = "BezyFreeb";
-        public const string AppVersion = "UWP";
-        public const string AppId = "fr.freebox.bezyfreeb";
+        public string AppName { get; } = "BezyFreeb";
+        public string AppVersion { get; } = "UWP";
+        public string AppId { get; } = "fr.freebox.bezyfreeb";
 
         private static Lazy<Settings> _current = new Lazy<Settings>(() => new Settings());
-        private Lazy<BetaSerie.BetaSerie> _betaserie = new Lazy<BetaSerie.BetaSerie>(() => new BetaSerie.BetaSerie(Current.LoginBetaSerie, Current.PwdBetaSerie));
-        private static readonly Lazy<Freebox.Freebox> _freebox = new Lazy<Freebox.Freebox>(() => new Freebox.Freebox(Current));
-        private static readonly Lazy<Eztv> _eztv = new Lazy<Eztv>(() => new Eztv());
-        private static readonly AsyncLazy<T411Client> _t411Client = new AsyncLazy<T411Client>(() => T411Client.New(Current.LoginT411, Current.PassT411));
+        private Lazy<Utilisateur> _users = new Lazy<Utilisateur>(() => Utilisateur.Current());
+
+        public Utilisateur User => _users.Value;
+
+        public ICryptographic Crypto { get; set; }
 
         public static Settings Current
         {
             get { return _current.Value; }
         }
-
-        public T411Client T411 => _t411Client.GetAwaiter().GetResult();
-        public Freebox.Freebox Freebox => _freebox.Value;
-
-        public BetaSerie.BetaSerie BetaSerie => _betaserie.Value;
-
-        public Eztv Eztv => _eztv.Value;
-
-        public void ResetBetaserie()
-        {
-            _betaserie = new Lazy<Lib.BetaSerie.BetaSerie>(() => new BetaSerie.BetaSerie(Current.LoginBetaSerie, Current.PwdBetaSerie));
-        }
         
-        public String FreeboxIp
+        public string FreeboxIp
         {
             get { return ApplicationData.Current.LocalSettings.Values["IpFreebox"] as string; }
             set
@@ -110,7 +103,7 @@ namespace BezyFB_UWP.Lib
             get { return ApplicationData.Current.LocalSettings.Values["PwdBetaSerie"] as string; }
             set
             {
-                ApplicationData.Current.LocalSettings.Values["PwdBetaSerie"] = Helper.GetMd5Hash(value);
+                ApplicationData.Current.LocalSettings.Values["PwdBetaSerie"] = Crypto.GetMd5Hash(value);
                 OnPropertyChanged("PwdBetaSerie");
             }
         }
@@ -144,10 +137,24 @@ namespace BezyFB_UWP.Lib
                 OnPropertyChanged("ShowConfigurationList");
             }
         }
+        
+        public string Hostname
+        {
+            get
+            {
+                return NetworkInformation.GetHostNames().FirstOrDefault(ni => ni.Type == Windows.Networking.HostNameType.DomainName)?.DisplayName;
+            }
+        }
 
-        private Lazy<Utilisateur> _users = new Lazy<Utilisateur>(() => Utilisateur.Current());
-
-        public Utilisateur User => _users.Value;
+        public string TokenFreebox
+        {
+            get { return ApplicationData.Current.LocalSettings.Values["TokenFreebox"] as string; }
+            set
+            {
+                ApplicationData.Current.LocalSettings.Values["TokenFreebox"] = value;
+                OnPropertyChanged("TokenFreebox");
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

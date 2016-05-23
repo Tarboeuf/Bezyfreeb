@@ -13,6 +13,8 @@ using Windows.UI.Xaml.Navigation;
 using BezyFB_UWP.Lib;
 using BezyFB_UWP.Lib.Helpers;
 using BezyFB_UWP.Lib.T411;
+using CommonLib;
+using CommonPortableLib;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, voir la page http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -26,6 +28,8 @@ namespace BezyFB_UWP
         private Torrent _torrent;
         private static List<Torrent> _movies;
         private static List<Category> _categories;
+
+        public IMessageDialogService MessageDialog { get; set; }
 
         public PageT411()
         {
@@ -46,19 +50,19 @@ namespace BezyFB_UWP
                 {
                     if (rbTop100.IsChecked ?? false)
                     {
-                        _movies = await Settings.Current.T411.GetTop100();
+                        _movies = await ClientContext.Current.T411.GetTop100();
                     }
                     if (rbTopMonth.IsChecked ?? false)
                     {
-                        _movies = await Settings.Current.T411.GetTopMonth();
+                        _movies = await ClientContext.Current.T411.GetTopMonth();
                     }
                     if (rbTopToday.IsChecked ?? false)
                     {
-                        _movies = await Settings.Current.T411.GetTopToday();
+                        _movies = await ClientContext.Current.T411.GetTopToday();
                     }
                     if (rbTopWeek.IsChecked ?? false)
                     {
-                        _movies = await Settings.Current.T411.GetTopWeek();
+                        _movies = await ClientContext.Current.T411.GetTopWeek();
                     }
                     if (categorie != null && categorie.Id != -1)
                     {
@@ -70,11 +74,11 @@ namespace BezyFB_UWP
                 {
                     if (categorie == null || categorie.Id == -1)
                     {
-                        _movies = (await Settings.Current.T411.GetQuery(string.Format("{0}", WebUtility.UrlEncode(textBoxNom.Text)))).Torrents;
+                        _movies = (await ClientContext.Current.T411.GetQuery(string.Format("{0}", WebUtility.UrlEncode(textBoxNom.Text)))).Torrents;
                     }
                     else
                     {
-                        _movies = (await Settings.Current.T411.GetQuery(string.Format("{0}", WebUtility.UrlEncode(textBoxNom.Text)),
+                        _movies = (await ClientContext.Current.T411.GetQuery(string.Format("{0}", WebUtility.UrlEncode(textBoxNom.Text)),
                                 new QueryOptions { CategoryIds = new List<int> { categorie.Id }, Limit = 1000 })).Torrents;
                     }
                 }
@@ -106,7 +110,7 @@ namespace BezyFB_UWP
             {
                 try
                 {
-                    var cats = await Settings.Current.T411.GetCategory();
+                    var cats = await ClientContext.Current.T411.GetCategory();
                     _categories = cats.Select(c => c.Value).ToList();
                     _categories.Insert(0, new Category
                     {
@@ -116,7 +120,7 @@ namespace BezyFB_UWP
                 }
                 catch (Exception e)
                 {
-                    Helper.AfficherMessage(e.Message);
+                    await ClientContext.Current.MessageDialogService.AfficherMessage(e.Message);
                 }
 
             }
@@ -177,7 +181,7 @@ namespace BezyFB_UWP
             if (_torrent != null)
             {
                 ProgressBarDC.Current.IsProgress = true;
-                var detail = await Settings.Current.T411.GetTorrentDetails(_torrent.Id);
+                var detail = await ClientContext.Current.T411.GetTorrentDetails(_torrent.Id);
                 ((WebView)sender).NavigateToString(detail.Description);
                 ProgressBarDC.Current.IsProgress = false;
             }
@@ -187,7 +191,7 @@ namespace BezyFB_UWP
         {
             if (_torrent != null)
             {
-                var detail = await Settings.Current.T411.GetTorrentDetails(_torrent.Id);
+                var detail = await ClientContext.Current.T411.GetTorrentDetails(_torrent.Id);
                 ((WebView)sender).NavigateToString(detail.Description);
             }
         }

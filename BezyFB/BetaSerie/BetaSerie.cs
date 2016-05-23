@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using System.Threading.Tasks;
 
 namespace BezyFB.BetaSerie
 {
@@ -89,7 +90,7 @@ namespace BezyFB.BetaSerie
             return true;
         }
 
-        public EpisodeRoot GetListeNouveauxEpisodesTest()
+        public async Task<EpisodeRoot> GetListeNouveauxEpisodesTest()
         {
             if (!GenereToken())
                 return null;
@@ -99,7 +100,7 @@ namespace BezyFB.BetaSerie
             {
                 string link = ApiAdresse + Episodes + "/list" + EnteteArgs;
                 link += "&userid=" + _login + "&token=" + Token;
-                var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
+                var xml = await ClientContext.Current.ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
                 var serializer = new XmlSerializer(typeof(EpisodeRoot), new XmlRootAttribute("root"));
                 var reader = GenerateStreamFromString(xml);

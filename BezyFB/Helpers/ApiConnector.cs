@@ -1,8 +1,10 @@
-﻿using System;
+﻿using CommonPortableLib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace BezyFB.Helpers
 {
@@ -38,9 +40,14 @@ namespace BezyFB.Helpers
         }
     }
 
-    public static class ApiConnector
+    public class ApiConnector : IApiConnectorService
     {
-        public static string Call(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null,
+        public Task<string> Call(string url, CommonPortableLib.WebMethod method = CommonPortableLib.WebMethod.Post, string contentType = null, string content = null, string headerAccept = null, IEnumerable<Tuple<string, string>> headers = null, Encoding encoding = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> Call(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null,
                                   string headerAccept = null, IEnumerable<Tuple<string, string>> headers = null, Encoding encoding = null)
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
@@ -58,14 +65,14 @@ namespace BezyFB.Helpers
                 byte[] byteArray = (encoding ?? Encoding.UTF8).GetBytes(content);
                 httpWebRequest.ContentLength = byteArray.Length;
 
-                Stream dataStream = httpWebRequest.GetRequestStream();
+                Stream dataStream = await httpWebRequest.GetRequestStreamAsync();
                 dataStream.Write(byteArray, 0, byteArray.Length);
                 dataStream.Close();
             }
 
             try
             {
-                using (Stream httpResponse = httpWebRequest.GetResponse().GetResponseStream())
+                using (Stream httpResponse =(await httpWebRequest.GetResponseAsync()).GetResponseStream())
                 {
                     if (null == httpResponse) return null;
                     using (var streamReader = new StreamReader(httpResponse))
@@ -81,7 +88,12 @@ namespace BezyFB.Helpers
             }
         }
 
-        public static string CallByte(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null, byte[] text = null,
+        public Task<string> CallByte(string url, CommonPortableLib.WebMethod method = CommonPortableLib.WebMethod.Post, string contentType = null, string content = null, byte[] text = null, string headerAccept = null, IEnumerable<Tuple<string, string>> headers = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> CallByte(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null, byte[] text = null,
                                   string headerAccept = null, IEnumerable<Tuple<string, string>> headers = null)
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
@@ -99,7 +111,7 @@ namespace BezyFB.Helpers
                 byte[] byteArray = (Encoding.UTF8).GetBytes(content);
                 httpWebRequest.ContentLength = byteArray.Length + text.Length;
 
-                using (Stream dataStream = httpWebRequest.GetRequestStream())
+                using (Stream dataStream = await httpWebRequest.GetRequestStreamAsync())
                 {
                     dataStream.Write(byteArray, 0, byteArray.Length);
                     dataStream.Write(text, 0, text.Length);
@@ -109,7 +121,7 @@ namespace BezyFB.Helpers
 
             try
             {
-                Stream httpResponse = httpWebRequest.GetResponse().GetResponseStream();
+                Stream httpResponse = (await httpWebRequest.GetResponseAsync()).GetResponseStream();
                 if (null == httpResponse) return null;
                 using (var streamReader = new StreamReader(httpResponse))
                 {
@@ -122,20 +134,30 @@ namespace BezyFB.Helpers
                 return null;
             }
         }
+        
+        public async Task<byte[]> GetResponse(string url, string contentType)
+        {
+            return null;
+        }
     }
 
     public static class FormUpload
     {
         private static readonly Encoding encoding = Encoding.UTF8;
 
-        public static HttpWebResponse MultipartFormDataPost(string postUrl, string userAgent, Dictionary<string, object> postParameters, IEnumerable<Tuple<string, string>> headers = null)
+        public static string MultipartFormDataPost(string postUrl, string userAgent, Dictionary<string, object> postParameters, IEnumerable<Tuple<string, string>> headers = null)
         {
             string formDataBoundary = String.Format("----------{0:N}", Guid.NewGuid());
             string contentType = "multipart/form-data; boundary=" + formDataBoundary;
 
             byte[] formData = GetMultipartFormData(postParameters, formDataBoundary);
 
-            return PostForm(postUrl, userAgent, contentType, formData, headers);
+            var response = PostForm(postUrl, userAgent, contentType, formData, headers).GetResponseStream();
+
+            using (StreamReader sr = new StreamReader(response))
+            {
+                return sr.ReadToEnd();
+            }
         }
 
         private static HttpWebResponse PostForm(string postUrl, string userAgent, string contentType, byte[] formData, IEnumerable<Tuple<string, string>> headers = null)

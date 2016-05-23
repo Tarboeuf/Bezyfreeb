@@ -11,6 +11,7 @@ namespace BezyFB_UWP.Lib.T411
         private double _note;
         private string _nom;
         private OMDb _omDb;
+        private IGuessIt GuessIt { get; set; }
 
         public MyTorrent(Torrent torrent)
         {
@@ -52,7 +53,9 @@ namespace BezyFB_UWP.Lib.T411
                     omDb = await OMDb.GetNote(nom);
                 }
                 else
+                {
                     omDb = await OMDb.GetNote(Name);
+                }
             }
             catch (Exception)
             {

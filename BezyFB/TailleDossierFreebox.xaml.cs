@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FreeboxPortableLib;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,7 +14,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using BezyFB.Freebox;
 
 namespace BezyFB
 {
@@ -22,24 +22,23 @@ namespace BezyFB
     /// </summary>
     public partial class TailleDossierFreebox : Window
     {
-        private readonly Freebox.Freebox _freebox;
+        private Freebox _freebox;
 
-        public TailleDossierFreebox(Freebox.Freebox freebox)
+        public TailleDossierFreebox()
         {
-            _freebox = freebox;
+            _freebox = ClientContext.Current.Freebox;
             InitializeComponent();
 
             Fichiers = new ObservableCollection<Fichier>();
-
-            Charger("/", Fichiers, null);
+            
             DataContext = this;
         }
 
-        private void Charger(string directory, ObservableCollection<Fichier> fichiers, Fichier parent)
+        private async Task Charger(string directory, ObservableCollection<Fichier> fichiers, Fichier parent)
         {
             try
             {
-                var files = _freebox.LsFileInfo(directory);
+                var files = await _freebox.LsFileInfo(directory);
 
                 if (files == null) return;
                 foreach (var file in files)
@@ -53,7 +52,7 @@ namespace BezyFB
                     fichiers.Add(fichier);
                     if (file.Type == "dir")
                     {
-                        Charger(directory + "/" + file.Name, fichier.Fichiers, fichier);
+                        await Charger(directory + "/" + file.Name, fichier.Fichiers, fichier);
                     }
                     var view = CollectionViewSource.GetDefaultView(fichiers);
                     view.SortDescriptions.Add(new SortDescription("TailleTotal", ListSortDirection.Ascending));
@@ -65,6 +64,11 @@ namespace BezyFB
             }
         }
         public ObservableCollection<Fichier> Fichiers { get; set; }
+
+        private async void Window_Initialized(object sender, EventArgs e)
+        {
+            await Charger("/", Fichiers, null);
+        }
     }
 
     public class Fichier

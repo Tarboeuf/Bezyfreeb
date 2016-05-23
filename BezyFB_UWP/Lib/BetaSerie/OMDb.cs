@@ -1,12 +1,17 @@
 ﻿using BezyFB_UWP.Lib.Helpers;
+using CommonLib;
+using CommonPortableLib;
 using System;
+using System.Threading.Tasks;
 using Windows.Data.Json;
 
 namespace BezyFB_UWP.Lib.BetaSerie
 {
     public class OMDb
     {
-        public static async System.Threading.Tasks.Task<OMDb> GetNote(string nom, string fileName = null)
+        public static IApiConnectorService ApiConnector { get; set; }
+
+        public static async Task<OMDb> GetNote(string nom, string fileName = null)
         {
             var jsonOmdb = await ApiConnector.Call("http://www.omdbapi.com/?t=" + nom, WebMethod.Get);
             if (null == jsonOmdb)

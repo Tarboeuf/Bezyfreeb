@@ -1,6 +1,7 @@
 ﻿using BezyFB_UWP.Lib;
 using BezyFB_UWP.Lib.EzTv;
 using BezyFB_UWP.Lib.Helpers;
+using CommonPortableLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,6 +31,9 @@ namespace BezyFB_UWP
     {
         private Episode _episode;
 
+        public IMessageDialogService DialogService { get; set; }
+        public IEztv Eztv { get; set; }
+
         public DownloadDialog(Episode episode)
         {
             this.InitializeComponent();
@@ -58,7 +62,7 @@ namespace BezyFB_UWP
         }
         private async void Vu_Click(object sender, RoutedEventArgs e)
         {
-            await Settings.Current.BetaSerie.SetEpisodeSeen(_episode);
+            await ClientContext.Current.BetaSerie.SetEpisodeSeen(_episode);
             Hide();
         }
         private async void SousTitre_Click(object sender, RoutedEventArgs e)
@@ -78,13 +82,13 @@ namespace BezyFB_UWP
                 var serie = await Settings.Current.User.GetSerie(episode);
                 if (serie.IdEztv == null)
                 {
-                    Helper.AfficherMessage("La série n'est pas configuré");
+                    DialogService.AfficherMessage("La série n'est pas configuré");
                     return false;
                 }
 
                 var magnet = await Eztv.GetMagnetSerieEpisode(serie.IdEztv, episode.code);
                 if (magnet != null)
-                    episode.IdDownload = await Settings.Current.Freebox.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""));
+                    episode.IdDownload = await ClientContext.Current.Freebox.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""));
                 else
                 {
                     // try to get torrent file.
@@ -92,18 +96,18 @@ namespace BezyFB_UWP
 
                     if (null != torrentStream)
                     {
-                        episode.IdDownload = await Settings.Current.Freebox.DownloadFile(torrentStream, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), true);
+                        episode.IdDownload = await ClientContext.Current.Freebox.DownloadFile(torrentStream, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), true);
 
                     }
                     else
                     {
-                        Helper.AfficherMessage("Episode " + episode.code + " de la serie " + serie.ShowName + " non trouvé");
+                        DialogService.AfficherMessage("Episode " + episode.code + " de la serie " + serie.ShowName + " non trouvé");
                         return false;
                     }
                 }
             }
 
-            await Settings.Current.BetaSerie.SetEpisodeDownnloaded(_episode);
+            await ClientContext.Current.BetaSerie.SetEpisodeDownnloaded(_episode);
             Hide();
             return true;
         }
@@ -114,14 +118,14 @@ namespace BezyFB_UWP
                 var userShow = await Settings.Current.User.GetSerie(episode);
                 string pathFreebox = ApplicationData.Current.LocalFolder.Path;
 
-                var str = await Settings.Current.BetaSerie.GetPathSousTitre(episode.id);
+                var str = await ClientContext.Current.BetaSerie.GetPathSousTitre(episode.id);
                 if (str.subtitles.Any())
                 {
                     string fileName = episode.show_title + "_" + episode.code + ".srt";
 
                     if (!string.IsNullOrEmpty(episode.IdDownload))
                     {
-                        string file = await Settings.Current.Freebox.GetFileNameDownloaded(episode.IdDownload);
+                        string file = await ClientContext.Current.Freebox.GetFileNameDownloaded(episode.IdDownload);
 
                         if (!string.IsNullOrEmpty(file))
                         {
@@ -135,7 +139,7 @@ namespace BezyFB_UWP
 
                     if (string.IsNullOrEmpty(episode.IdDownload))
                     {
-                        var lst = await Settings.Current.Freebox.Ls(Settings.Current.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), false);
+                        var lst = await ClientContext.Current.Freebox.Ls(Settings.Current.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), false);
                         if (lst != null)
                         {
                             string f = lst.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
@@ -170,20 +174,20 @@ namespace BezyFB_UWP
                         }
                         catch (Exception ex)
                         {
-                            Helper.AfficherMessage(ex.Message);
+                            DialogService.AfficherMessage(ex.Message);
                             return false;
                         }
 
                         File.WriteAllText(pathreseau + fileName, st2);
-                        await Settings.Current.Freebox.UploadFile(pathreseau + fileName, userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), fileName);
-                        await Settings.Current.Freebox.CleanUpload();
+                        await ClientContext.Current.Freebox.UploadFile(pathreseau + fileName, userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), fileName);
+                        await ClientContext.Current.Freebox.CleanUpload();
                         File.Delete(pathreseau + fileName);
 
                     }
                 }
                 else
                 {
-                    Helper.AfficherMessage("Aucun sous titre disponible");
+                    DialogService.AfficherMessage("Aucun sous titre disponible");
                     return false;
                 }
             }

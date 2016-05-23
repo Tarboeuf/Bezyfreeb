@@ -37,7 +37,7 @@ namespace BezyFB_UWP
         private async void Page_Loading(FrameworkElement sender, object args)
         {
             ProgressBarDC.Current.IsProgress = true;
-            Episodes = await Settings.Current.BetaSerie.GetListeNouveauxEpisodesTest();
+            Episodes = await ClientContext.Current.BetaSerie.GetListeNouveauxEpisodesTest();
             episodes.ItemsSource = Episodes?.shows;
             ProgressBarDC.Current.IsProgress = false;
         }
@@ -108,7 +108,7 @@ namespace BezyFB_UWP
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
             ProgressBarDC.Current.IsProgress = true;
-            Episodes = await Settings.Current.BetaSerie.GetListeNouveauxEpisodesTest();
+            Episodes = await ClientContext.Current.BetaSerie.GetListeNouveauxEpisodesTest();
             episodes.ItemsSource = Episodes?.shows;
             ProgressBarDC.Current.IsProgress = false;
         }

@@ -16,6 +16,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using BezyFB_UWP.Lib.T411;
+using CommonLib;
+using CommonPortableLib;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, voir la page http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -45,8 +47,8 @@ namespace BezyFB_UWP
 
         private async void Freebox_Click(object sender, RoutedEventArgs e)
         {
-            if (await Settings.Freebox.ConnectNewFreebox())
-                Settings.Current.FreeboxIp = Settings.Freebox.IpFreebox;
+            if (await ClientContext.Current.Freebox.ConnectNewFreebox())
+                Settings.Current.FreeboxIp = ClientContext.Current.Freebox.IpFreebox;
         }
 
         private async void TesterBetaseries(object sender, RoutedEventArgs e)
@@ -56,42 +58,43 @@ namespace BezyFB_UWP
             try
             {   
                 Settings.PwdBetaSerie = pwdBetaSerie.Password;
-                Settings.ResetBetaserie();
-                var client = Settings.BetaSerie;
+                ClientContext.Current.ResetBetaserie();
+                var client = ClientContext.Current.BetaSerie;
                 
                 if (await client.GenereToken(true))
                 {
-                    Helper.AfficherMessage("La connexion s'est réalisé avec succés");
+                    await ClientContext.Current.MessageDialogService.AfficherMessage("La connexion s'est réalisé avec succés");
                 }
                 else
                 {
-                    Helper.AfficherMessage("Impossible de se connecter à BetaSeries :\r\n" + client.Error);
+                    await ClientContext.Current.MessageDialogService.AfficherMessage("Impossible de se connecter à BetaSeries :\r\n" + client.Error);
                 }
             }
             catch (Exception ex)
             {
-                Helper.AfficherMessage("Impossible de se connecter à T411 :\r\n" + ex.Message);
+                await ClientContext.Current.MessageDialogService.AfficherMessage("Impossible de se connecter à T411 :\r\n" + ex.Message);
             }
         }
 
-        private void TesterT411(object sender, RoutedEventArgs e)
+        private async void TesterT411(object sender, RoutedEventArgs e)
         {
             try
             {
                 Settings.Current.PassT411 = pwdT411.Password;
-                T411Client client = T411Client.New(Settings.Current.LoginT411, Settings.Current.PassT411).Result;
+                T411Client client = await T411Client.New(Settings.Current.LoginT411, Settings.Current.PassT411);
                 if (client.IsTokenCreated)
                 {
-                    Helper.AfficherMessage("La connexion s'est réalisé avec succés");
+                    await ClientContext.Current.MessageDialogService.AfficherMessage("La connexion s'est réalisé avec succés");
+                    ClientContext.Current.ResetT411();
                 }
                 else
                 {
-                    Helper.AfficherMessage("Impossible de se connecter à T411 :\r\nLe token n'est pas créé");
+                    await ClientContext.Current.MessageDialogService.AfficherMessage("Impossible de se connecter à T411 :\r\nLe token n'est pas créé");
                 }
             }
             catch (Exception ex)
             {
-                Helper.AfficherMessage("Impossible de se connecter à T411 :\r\n" + ex.Message);
+                await ClientContext.Current.MessageDialogService.AfficherMessage("Impossible de se connecter à T411 :\r\n" + ex.Message);
             }
         }
         
