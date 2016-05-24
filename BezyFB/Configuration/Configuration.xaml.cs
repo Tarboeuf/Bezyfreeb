@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Forms;
 using BezyFB.T411;
 using FreeboxPortableLib;
+using BezyFB.BetaSerieLib;
 
 namespace BezyFB.Configuration
 {
@@ -16,7 +17,7 @@ namespace BezyFB.Configuration
     /// </summary>
     public sealed partial class Configuration
     {
-        private readonly BetaSerie.BetaSerie _bs;
+        private readonly BetaSerie _bs;
         private readonly Freebox _freeboxApi;
 
         public Configuration()
@@ -28,20 +29,15 @@ namespace BezyFB.Configuration
         }
 
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async void ButtonSynchroniser_Click(object sender, RoutedEventArgs e)
         {
             if (await _freeboxApi.ConnectNewFreebox())
                 MySettings.Current.FreeboxIp = Settings.Default.IpFreebox;
-            else
-                Settings.Default.Reload();
         }
 
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
             Settings.Default.Save();
-            _bs.GenereToken(true);
-            if (String.IsNullOrEmpty(Settings.Default.TokenFreebox))
-                Button_Click(null, null);
             Close();
         }
 
@@ -83,9 +79,9 @@ namespace BezyFB.Configuration
         {
             try
             {
-                var client = new BetaSerie.BetaSerie(MySettings.Current.LoginBetaSerie, MySettings.Current.PwdBetaSerie);
+                var client = new BetaSerie(MySettings.Current.LoginBetaSerie, MySettings.Current.PwdBetaSerie);
                 
-                if (client.GenereToken(true))
+                if (await client.GenereToken(true))
                 {
                     await ClientContext.Current.MessageDialogService.AfficherMessage("La connexion s'est réalisé avec succés");
                 }

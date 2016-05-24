@@ -13,10 +13,17 @@ namespace BezyFB
     {
         public App()
         {
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+        }
+
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Console.WriteLine(e.Exception.Message);
         }
 
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
+            ClientContext.Init();
             if (e.Args.Length > 0)
             {
                 string nomFichier = e.Args[0];

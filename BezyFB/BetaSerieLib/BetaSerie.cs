@@ -11,13 +11,15 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Threading.Tasks;
+using CommonPortableLib;
 
-namespace BezyFB.BetaSerie
+namespace BezyFB.BetaSerieLib
 {
     public class BetaSerie
     {
         private readonly string _login;
         private readonly string _password;
+        public IApiConnectorService ApiConnector { get; set; }
 
         public BetaSerie(string login, string password)
         {
@@ -56,7 +58,7 @@ namespace BezyFB.BetaSerie
 
         private string Token { get; set; }
 
-        public bool GenereToken(bool force = false)
+        public async Task<bool> GenereToken(bool force = false)
         {
             if (force || String.IsNullOrEmpty(Token))
             {
@@ -64,7 +66,7 @@ namespace BezyFB.BetaSerie
                 {
                     string link = ApiAdresse + Members + "/auth.xml" + EnteteArgs;
                     link += "&login=" + _login + "&password=" + _password;
-                    Error = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
+                    Error = await ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
                     XDocument xdoc = XDocument.Parse(Error);
                     var t = from lv1 in xdoc.Descendants("token")
@@ -92,7 +94,7 @@ namespace BezyFB.BetaSerie
 
         public async Task<EpisodeRoot> GetListeNouveauxEpisodesTest()
         {
-            if (!GenereToken())
+            if (!await GenereToken())
                 return null;
 
             Error = "";
@@ -132,9 +134,9 @@ namespace BezyFB.BetaSerie
             return stream;
         }
 
-        public SousTitreRoot GetPathSousTitre(string episode)
+        public async Task<SousTitreRoot> GetPathSousTitre(string episode)
         {
-            if (!GenereToken())
+            if (!await GenereToken())
                 return null;
 
             Error = "";
@@ -142,7 +144,7 @@ namespace BezyFB.BetaSerie
             {
                 string link = ApiAdresse + Subtitles + "/episode" + EnteteArgs;
                 link += "&id=" + episode + "&language=vf&token=" + Token;
-                var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
+                var xml = await ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
                 var serializer = new XmlSerializer(typeof(SousTitreRoot), new XmlRootAttribute("root"));
                 var reader = GenerateStreamFromString(xml);
@@ -153,7 +155,7 @@ namespace BezyFB.BetaSerie
                 {
                     link = ApiAdresse + Subtitles + "/episode" + EnteteArgs;
                     link += "&id=" + episode + "&token=" + Token;
-                    xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
+                    xml = await ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
                     serializer = new XmlSerializer(typeof(SousTitreRoot), new XmlRootAttribute("root"));
                     reader = GenerateStreamFromString(xml);
@@ -169,9 +171,9 @@ namespace BezyFB.BetaSerie
             return null;
         }
 
-        public void SetEpisodeDownnloaded(Episode episode)
+        public async Task SetEpisodeDownnloaded(Episode episode)
         {
-            if (!GenereToken())
+            if (!await GenereToken())
                 return;
 
             Error = "";
@@ -179,7 +181,7 @@ namespace BezyFB.BetaSerie
             {
                 string link = ApiAdresse + Episodes + "/downloaded" + EnteteArgs;
                 link += "&id=" + episode.id + "&token=" + Token;
-                ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
+                await ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
                 episode.user[0].downloaded = "1";
             }
             catch (Exception e)
@@ -188,9 +190,9 @@ namespace BezyFB.BetaSerie
             }
         }
 
-        public void SetEpisodeSeen(Episode episode)
+        public async Task SetEpisodeSeen(Episode episode)
         {
-            if (!GenereToken())
+            if (!await GenereToken())
                 return;
 
             Error = "";
@@ -198,7 +200,7 @@ namespace BezyFB.BetaSerie
             {
                 string link = ApiAdresse + Episodes + Watched + EnteteArgs;
                 link += "&id=" + episode.id + "&token=" + Token;
-                ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
+                await ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
                 foreach (var rootShowsShow in Root.shows)
                 {
                     if (rootShowsShow.unseen.Contains(episode))
@@ -211,9 +213,9 @@ namespace BezyFB.BetaSerie
             }
         }
 
-        public void SetEpisodeUnSeen(Episode episode)
+        public async Task SetEpisodeUnSeen(Episode episode)
         {
-            if (!GenereToken())
+            if (!await GenereToken())
                 return;
 
             Error = "";
@@ -221,7 +223,7 @@ namespace BezyFB.BetaSerie
             {
                 string link = ApiAdresse + Episodes + Watched + EnteteArgs;
                 link += "&id=" + episode.id + "&token=" + Token;
-                ApiConnector.Call(link, WebMethod.DELETE, null, null, "text/xml");
+                await ApiConnector.Call(link, WebMethod.DELETE, null, null, "text/xml");
                 foreach (var rootShowsShow in Root.shows)
                 {
                     if (rootShowsShow.unseen.Contains(episode))
@@ -234,16 +236,16 @@ namespace BezyFB.BetaSerie
             }
         }
 
-        public void NoterEpisode(Episode episode, int note)
+        public async Task NoterEpisode(Episode episode, int note)
         {
             string link = ApiAdresse + Episodes + Note + EnteteArgs;
             link += "&id=" + episode.id + "&note=" + note + "&token=" + Token;
-            ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
+            await ApiConnector.Call(link, WebMethod.Post, null, null, "text/xml");
         }
 
-        public List<Episode> GetShowEpisode(rootShowsShow show)
+        public async Task<List<Episode>> GetShowEpisode(rootShowsShow show)
         {
-            if (!GenereToken())
+            if (!await GenereToken())
                 return null;
 
             Error = "";
@@ -251,7 +253,7 @@ namespace BezyFB.BetaSerie
             {
                 string link = ApiAdresse + Shows + Episodes + EnteteArgs;
                 link += "&id=" + show.id + "&token=" + Token;
-                var xml = ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
+                var xml = await ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
 
                 var serializer = new XmlSerializer(typeof(EpisodeList), new XmlRootAttribute("root"));
                 var reader = GenerateStreamFromString(xml);

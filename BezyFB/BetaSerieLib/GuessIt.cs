@@ -1,13 +1,17 @@
 ﻿using BezyFB.Helpers;
+using CommonPortableLib;
 using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
-namespace BezyFB.BetaSerie
+namespace BezyFB.BetaSerieLib
 {
-    public static class GuessIt
+    public class GuessIt
     {
-        public static string GuessNom(string name)
+        public IApiConnectorService ApiConnector { get; set; }
+
+        public async Task<string> GuessNom(string name)
         {
-            var jsonGuessit = ApiConnector.Call("http://guessit.io/guess?filename=" + name.Replace(" ", "%20") + ".avi", WebMethod.Get);
+            var jsonGuessit = await ApiConnector.Call("http://guessit.io/guess?filename=" + name.Replace(" ", "%20") + ".avi", WebMethod.Get);
             if (string.IsNullOrEmpty(jsonGuessit))
                 return name;
 

@@ -2,24 +2,25 @@
 // Le : 23-06-2014
 
 using BezyFB.Helpers;
+using CommonPortableLib;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace BezyFB.EzTv
 {
     public sealed class Eztv
     {
         private const string Url = "https://eztv.ag/";
-        //private const string Url = "http://eztv.it/";
-        //private const string Url = "http://eztv-proxy.net/";
-        //private const string Url = https://eztv.ch/";
 
         private static Dictionary<string, string> _PagesSeries = new Dictionary<string, string>();
 
-        public static string GetMagnetSerieEpisode(string serie, string episode)
+        public IApiConnectorService ApiConnector { get; set; }
+
+        public async Task<string> GetMagnetSerieEpisode(string serie, string episode)
         {
             if (serie == null)
                 return null;
@@ -31,7 +32,7 @@ namespace BezyFB.EzTv
             }
             else
             {
-                html = ApiConnector.Call(Url + "shows/" + serie + "/", WebMethod.Get, null, null, "text/xml");
+                html = await ApiConnector.Call(Url + "shows/" + serie + "/", WebMethod.Get, null, null, "text/xml");
             }
 
             if (html != null)
@@ -55,7 +56,7 @@ namespace BezyFB.EzTv
             return null;
         }
 
-        public static string GetTorrentSerieEpisode(string serie, string episode)
+        public async Task<string> GetTorrentSerieEpisode(string serie, string episode)
         {
             string html;
             if (_PagesSeries.ContainsKey(serie))
@@ -64,7 +65,7 @@ namespace BezyFB.EzTv
             }
             else
             {
-                html = ApiConnector.Call(Url + "shows/" + serie + "/", WebMethod.Get, null, null, "text/xml");
+                html = await ApiConnector.Call(Url + "shows/" + serie + "/", WebMethod.Get, null, null, "text/xml");
             }
 
             var doc = new HtmlDocument();
@@ -77,9 +78,9 @@ namespace BezyFB.EzTv
             return null;
         }
 
-        public IEnumerable<Show> GetListShow()
+        public async Task<IEnumerable<Show>> GetListShow()
         {
-            string html = ApiConnector.Call(Url + "search/", WebMethod.Get, null, null, "text/xml");
+            string html = await ApiConnector.Call(Url + "search/", WebMethod.Get, null, null, "text/xml");
 
             if (string.IsNullOrEmpty(html))
                 return new List<Show>();

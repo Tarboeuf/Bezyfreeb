@@ -1,14 +1,16 @@
 ﻿using BezyFB.Helpers;
+using CommonPortableLib;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Threading.Tasks;
 
-namespace BezyFB.BetaSerie
+namespace BezyFB.BetaSerieLib
 {
     public class OMDb
     {
-        public static OMDb GetNote(string nom, string fileName = null)
+        public static async Task<OMDb> GetNote(string nom, IApiConnectorService apiConnector, string fileName = null)
         {
-            var jsonOmdb = ApiConnector.Call("http://www.omdbapi.com/?t=" + nom, WebMethod.Get);
+            var jsonOmdb = await apiConnector.Call("http://www.omdbapi.com/?t=" + nom, WebMethod.Get);
             if (null == jsonOmdb)
                 return new OMDb();
             var jobj = JObject.Parse(jsonOmdb);

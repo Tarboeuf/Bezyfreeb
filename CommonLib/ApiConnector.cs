@@ -47,7 +47,7 @@ namespace CommonLib
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -90,7 +90,7 @@ namespace CommonLib
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }

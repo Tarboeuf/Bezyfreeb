@@ -5,11 +5,11 @@
         xmlns:helpers="clr-namespace:BezyFB.Helpers"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:freebox="clr-namespace:BezyFB.Freebox"
         xmlns:t411="clr-namespace:BezyFB.T411"
         xmlns:util="clr-namespace:BezyFB.Helpers.Wpf.Util"
-        xmlns:betaSerie="clr-namespace:BezyFB.BetaSerie"
+        xmlns:betaSerie="clr-namespace:BezyFB.BetaSerieLib"
         xmlns:wpfTemplateLib="clr-namespace:WpfTemplateLib;assembly=WpfTemplateLib"
+        xmlns:freebox="clr-namespace:FreeboxPortableLib;assembly=FreeboxPortableLib"
         mc:Ignorable="d"
         Title="BezyFreeb" Height="500" Width="1225"
         Closed="MainWindow_OnClosed">
@@ -23,6 +23,9 @@
             </MenuItem>
             <MenuItem Header="Edition">
                 <MenuItem Header="Configuration" Click="Configuration_Click" />
+                <Separator />
+                <MenuItem Header="Exporter configuration" Click="ExporterConfiguration_Click" />
+                <MenuItem Header="Importer configuration" Click="ImporterConfiguration_Click" />
             </MenuItem>
         </Menu>
         <DockPanel  DockPanel.Dock="Bottom">

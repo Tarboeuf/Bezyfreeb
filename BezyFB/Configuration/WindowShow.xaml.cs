@@ -16,12 +16,13 @@ namespace BezyFB.Configuration
             DataContextChanged += WindowShow_DataContextChanged;
         }
 
-        private void WindowShow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private async void WindowShow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (string.IsNullOrEmpty(ShowConfig.IdEztv))
             {
                 var ez = new Eztv();
-                var liste = ez.GetListShow().ToList();
+                var l = await ez.GetListShow();
+                var liste = l.ToList();
                 comboSeries.ItemsSource = liste;
                 ShowConfig.IdEztv = liste.Where(c => ShowConfig.ShowName.ToLower() == c.Name.ToLower()).Select(c => c.Name).FirstOrDefault();
             }
@@ -39,10 +40,9 @@ namespace BezyFB.Configuration
             Close();
         }
 
-        private void LoadSerieEZTV(object sender, RoutedEventArgs e)
+        private async void LoadSerieEZTV(object sender, RoutedEventArgs e)
         {
-            var ez = new Eztv();
-            comboSeries.ItemsSource = ez.GetListShow();
+            comboSeries.ItemsSource = await ClientContext.Current.Eztv.GetListShow();
         }
 
         private void ComboSeries_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -95,7 +95,7 @@ namespace BezyFB_UWP.Lib.T411
                         string token = tokObj.Token;
                         return token;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         return null;
                     }

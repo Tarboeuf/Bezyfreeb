@@ -55,7 +55,7 @@ namespace BezyFB.T411
             return t4;
         }
 
-        private T411Client(string username, string password)
+        public T411Client(string username, string password)
         {
             _username = username;
             _password = password;
@@ -88,7 +88,7 @@ namespace BezyFB.T411
                         string token = tokObj.Token;
                         return token;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         return null;
                     }
@@ -237,6 +237,7 @@ namespace BezyFB.T411
 
         private async Task<T> GetResponse<T>(Uri uri)
         {
+            await Initialiser();
             string data = await GetRawResponse(uri);
 
             if (data.StartsWith("{\"error\":"))

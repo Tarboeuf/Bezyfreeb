@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -56,13 +57,13 @@ namespace BezyFB.Configuration
                 Shows = new List<ShowConfiguration>();
         }
 
-        private ShowConfiguration GetSerie(String idBetaSerie, String nomSerie)
+        private async Task<ShowConfiguration> GetSerie(string idBetaSerie, string nomSerie)
         {
             var showConfiguration = Shows.FirstOrDefault(s => s.IdBetaSerie == idBetaSerie);
 
             if (showConfiguration != null)
                 return showConfiguration;
-
+            var listShows = await ClientContext.Current.Eztv.GetListShow();
             var show = new ShowConfiguration
             {
                 HasSubtitle = true,
@@ -71,16 +72,16 @@ namespace BezyFB.Configuration
                 ManageSeasonFolder = true,
                 PathFreebox = nomSerie,
                 ShowName = nomSerie,
-                IdEztv = new Eztv().GetListShow().Where(c => String.Equals(nomSerie, c.Name)).Select(c => c.Id).FirstOrDefault()
+                IdEztv = listShows.Where(c => String.Equals(nomSerie, c.Name)).Select(c => c.Id).FirstOrDefault()
             };
 
             Shows.Add(show);
             return show;
         }
 
-        public ShowConfiguration GetSerie(Episode episode)
+        public async Task<ShowConfiguration> GetSerie(Episode episode)
         {
-            return GetSerie(episode.show_id, episode.show_title);
+            return await GetSerie(episode.show_id, episode.show_title);
         }
 
         public object GetSerie(rootShowsShow rootShow)

@@ -1,4 +1,4 @@
-﻿using BezyFB.BetaSerie;
+﻿using BezyFB.BetaSerieLib;
 using BezyFB.Configuration;
 using BezyFB.EzTv;
 using BezyFB.Helpers;
@@ -10,6 +10,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -19,6 +20,8 @@ using System.Web;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using WpfTemplateBaseLib;
 using WpfTemplateLib;
 
@@ -45,22 +48,22 @@ namespace BezyFB
             _user = new Lazy<Utilisateur>(Utilisateur.Current);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            LoadBetaseries();
+            await LoadBetaseries();
         }
 
-        private void SetDl(object sender, RoutedEventArgs e)
+        private async void SetDl(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
             var episode = ((Button)sender).CommandParameter as Episode;
 
             if (episode != null)
-                ClientContext.Current.BetaSerie.SetEpisodeDownnloaded(episode);
+                await ClientContext.Current.BetaSerie.SetEpisodeDownnloaded(episode);
             Cursor = Cursors.Arrow;
         }
 
-        private void SetSetSeen(object sender, RoutedEventArgs e)
+        private async void SetSetSeen(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
             var episode = ((Button)sender).CommandParameter as Episode;
@@ -68,21 +71,21 @@ namespace BezyFB
             new NoteWindow(ClientContext.Current.BetaSerie, episode).ShowDialog();
 
             if (episode != null)
-                ClientContext.Current.BetaSerie.SetEpisodeSeen(episode);
+                await ClientContext.Current.BetaSerie.SetEpisodeSeen(episode);
             Cursor = Cursors.Arrow;
         }
 
-        private async Task DlTout(object sender, RoutedEventArgs e)
+        private async void DlTout(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
             var episode = ((Button)sender).CommandParameter as Episode;
 
             if (await DownloadMagnet(episode) && await DownloadSsTitre(episode))
-                ClientContext.Current.BetaSerie.SetEpisodeDownnloaded(episode);
+                await ClientContext.Current.BetaSerie.SetEpisodeDownnloaded(episode);
             Cursor = Cursors.Arrow;
         }
 
-        private async Task DlStClick(object sender, RoutedEventArgs e)
+        private async void DlStClick(object sender, RoutedEventArgs e)
         {
             var episode = ((Button)sender).CommandParameter as Episode;
             await DownloadSsTitre(episode);
@@ -102,10 +105,10 @@ namespace BezyFB
             Cursor = Cursors.Wait;
             if (episode != null)
             {
-                var userShow = _user.Value.GetSerie(episode);
+                var userShow = await _user.Value.GetSerie(episode);
                 string pathFreebox = userShow.PathReseau;
 
-                var str = ClientContext.Current.BetaSerie.GetPathSousTitre(episode.id);
+                var str = await ClientContext.Current.BetaSerie.GetPathSousTitre(episode.id);
                 if (str.subtitles.Any())
                 {
                     string fileName = episode.show_title + "_" + episode.code + ".srt";
@@ -270,7 +273,7 @@ namespace BezyFB
             }
         }
 
-        private async Task GetMagnetClick(object sender, RoutedEventArgs e)
+        private async void GetMagnetClick(object sender, RoutedEventArgs e)
         {
             var episode = ((Button)sender).CommandParameter as Episode;
             await DownloadMagnet(episode);
@@ -281,8 +284,8 @@ namespace BezyFB
             Cursor = Cursors.Wait;
             if (episode != null)
             {
-                var serie = _user.Value.GetSerie(episode);
-                var magnet = Eztv.GetMagnetSerieEpisode(serie.IdEztv, episode.code);
+                var serie = await _user.Value.GetSerie(episode);
+                var magnet = await ClientContext.Current.Eztv.GetMagnetSerieEpisode(serie.IdEztv, episode.code);
                 if (magnet != null)
                     episode.IdDownload = await ClientContext.Current.Freebox.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""));
                 else if (serie.IdEztv == null)
@@ -294,7 +297,7 @@ namespace BezyFB
                 else
                 {
                     // try to get torrent file.
-                    var torrentStream = Eztv.GetTorrentSerieEpisode(serie.IdEztv, episode.code);
+                    var torrentStream = await ClientContext.Current.Eztv.GetTorrentSerieEpisode(serie.IdEztv, episode.code);
 
                     if (null != torrentStream)
                     {
@@ -322,7 +325,7 @@ namespace BezyFB
             CheckConfiguration();
         }
 
-        private async Task Download_All_Click(object sender, RoutedEventArgs e)
+        private async void Download_All_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show("Êtes-vous sûr de vouloir tout télécharger ?", "Confirmation", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
             {
@@ -331,7 +334,7 @@ namespace BezyFB
 
             Mouse.OverrideCursor = Cursors.Wait;
 
-            var root = ClientContext.Current.BetaSerie.GetListeNouveauxEpisodesTest();
+            var root = await ClientContext.Current.BetaSerie.GetListeNouveauxEpisodesTest();
 
             foreach (var rootShowsShow in root.shows)
             {
@@ -339,7 +342,7 @@ namespace BezyFB
                 {
                     try
                     {
-                       await DownloadMagnet(episode);
+                        await DownloadMagnet(episode);
                     }
                     catch (Exception ex)
                     {
@@ -348,7 +351,7 @@ namespace BezyFB
 
                     try
                     {
-                       await DownloadSsTitre(episode);
+                        await DownloadSsTitre(episode);
                     }
                     catch (Exception ex)
                     {
@@ -365,7 +368,7 @@ namespace BezyFB
             }
         }
 
-        private async Task MainWindow_OnClosed(object sender, EventArgs e)
+        private async void MainWindow_OnClosed(object sender, EventArgs e)
         {
             await ClientContext.Current.Freebox.Deconnexion();
         }
@@ -412,7 +415,7 @@ namespace BezyFB
             }
         }
 
-        private async Task ButtonTelechargerTorrent_OnClick(object sender, RoutedEventArgs e)
+        private async void ButtonTelechargerTorrent_OnClick(object sender, RoutedEventArgs e)
         {
             Button senderButton = sender as Button;
             if (null != senderButton)
@@ -459,7 +462,7 @@ namespace BezyFB
             pb.Visibility = Visibility.Collapsed;
         }
 
-        private async Task SupprimerFilm_OnClick(object sender, RoutedEventArgs e)
+        private async void SupprimerFilm_OnClick(object sender, RoutedEventArgs e)
         {
             var dc = ((Button)sender).DataContext as OMDb;
             if (null != dc)
@@ -511,7 +514,7 @@ namespace BezyFB
                 }
             }
 
-            lv.ItemsSource = items.OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t));
+            lv.ItemsSource = items.OrderByDescending(t => t.Times_completed).Select(t => new MyTorrent(t, ClientContext.Current.GuessIt, ClientContext.Current.ApiConnector));
             SetStatusText("torrents récupéré");
             pb.Visibility = Visibility.Collapsed;
         }
@@ -525,17 +528,17 @@ namespace BezyFB
         {
             pb.Visibility = Visibility.Visible;
             if (!string.IsNullOrEmpty(ClientContext.Current.BetaSerie.Error))
-                SetStatusText(ClientContext.Current.BetaSerie.Value.Error);
+                SetStatusText(ClientContext.Current.BetaSerie.Error);
             else
                 SetStatusText("Récupération des épisodes depuis BetaSeries");
 
-            var root = ClientContext.Current.BetaSerie.GetListeNouveauxEpisodesTest();
+            var root = await ClientContext.Current.BetaSerie.GetListeNouveauxEpisodesTest();
 
             if (root != null)
                 tv.ItemsSource = root.shows;
             gridButton.Visibility = Visibility.Collapsed;
             pb.Visibility = Visibility.Collapsed;
-            TextBlockResteAVoir.Text = roor.shows.Select(s => s.unseen.Count()).Sum().ToString();
+            TextBlockResteAVoir.Text = root.shows.Select(s => s.unseen.Count()).Sum().ToString();
             SetStatusText("Episodes récupérés");
         }
 
@@ -550,7 +553,7 @@ namespace BezyFB
                 await Dispatcher.BeginInvoke((Action)(() => lv.ItemsSource =
                        topWeek
                         .OrderByDescending(t => t.Times_completed)
-                        .Select(t => new MyTorrent(t))));
+                        .Select(t => new MyTorrent(t, ClientContext.Current.GuessIt, ClientContext.Current.ApiConnector))));
 
                 var categories = new List<SousCategorie>();
                 foreach (var category1 in (await ClientContext.Current.T411.GetCategory()))
@@ -579,14 +582,14 @@ namespace BezyFB
             }
             catch (Exception ex)
             {
-                Helper.AfficherMessage("Impossible de charger les données de T411.\r\n" + ex.Message);
+                await ClientContext.Current.MessageDialogService.AfficherMessage("Impossible de charger les données de T411.\r\n" + ex.Message);
             }
         }
 
-        private void Betaseries_OnClick(object sender, RoutedEventArgs e)
+        private async void Betaseries_OnClick(object sender, RoutedEventArgs e)
         {
             tc.SelectedIndex = 0;
-            LoadBetaseries();
+            await LoadBetaseries();
         }
 
         private void T411_OnClick(object sender, RoutedEventArgs e)
@@ -600,24 +603,24 @@ namespace BezyFB
             tc.SelectedIndex = 2;
         }
 
-        private void ChargerTout_OnClick(object sender, RoutedEventArgs e)
+        private async void ChargerTout_OnClick(object sender, RoutedEventArgs e)
         {
             var s = ((Button)sender).CommandParameter as rootShowsShow;
 
             if (s != null)
             {
-                var episodes = _bs.Value.GetShowEpisode(s);
+                var episodes = await ClientContext.Current.BetaSerie.GetShowEpisode(s);
                 s.unseen = episodes.ToArray();
             }
         }
 
-        private void SetSetUnSeen(object sender, RoutedEventArgs e)
+        private async void SetSetUnSeen(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
             var episode = ((Button)sender).CommandParameter as Episode;
 
             if (episode != null)
-                _bs.Value.SetEpisodeUnSeen(episode);
+                await ClientContext.Current.BetaSerie.SetEpisodeUnSeen(episode);
             Cursor = Cursors.Arrow;
         }
 
@@ -637,8 +640,69 @@ namespace BezyFB
 
         private void FreeSpace_OnClick(object sender, RoutedEventArgs e)
         {
-            TailleDossierFreebox window = new TailleDossierFreebox(_freeboxApi.Value);
+            TailleDossierFreebox window = new TailleDossierFreebox();
             window.ShowDialog();
+        }
+
+        private void ExporterConfiguration_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "Fichier config (*.confbz)|*.confbz";
+                if (sfd.ShowDialog(this) ?? false)
+                {
+                    var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal);
+                    config.SaveAs(sfd.FileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                ClientContext.Current.MessageDialogService.AfficherMessage(ex.Message + ex.StackTrace);
+            }
+        }
+
+        private void ImporterConfiguration_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Multiselect = false;
+                ofd.Filter = "Fichier config (*.confbz)|*.confbz";
+                if (ofd.ShowDialog(this) ?? false)
+                {
+                    try
+                    {
+                        // Open settings file as XML
+                        var import = XDocument.Load(ofd.FileName);
+                        // Get the <setting> elements
+                        var settings = import.XPathSelectElements("//setting");
+                        foreach (var setting in settings)
+                        {
+                            string name = setting.Attribute("name").Value;
+                            string value = setting.XPathSelectElement("value").FirstNode.ToString();
+
+                            try
+                            {
+                                Settings.Default[name] = value; // throws SettingsPropertyNotFoundException
+                            }
+                            catch (SettingsPropertyNotFoundException spnfe)
+                            {
+                                //_logger.WarnException("An imported setting ({0}) did not match an existing setting.".FormatString(name), spnfe);
+                            }
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        //_logger.ErrorException("Could not import settings.", exc);
+                        Settings.Default.Reload(); // from last set saved, not defaults
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ClientContext.Current.MessageDialogService.AfficherMessage(ex.Message + ex.StackTrace);
+            }
         }
     }
 }

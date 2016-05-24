@@ -101,8 +101,8 @@ namespace BezyFB.Configuration
             get { return Settings.Default.PwdBetaSerie; }
             set
             {
-                Settings.Default.PwdBetaSerie = Helper.GetMd5Hash(MD5.Create(), value);
-                OnPropertyChanged("PwdBetaSerie");
+                Settings.Default.PwdBetaSerie = ClientContext.Current.Crypto.GetMd5Hash(value);
+                OnPropertyChanged(nameof(PwdBetaSerie));
             }
         }
 
@@ -116,37 +116,13 @@ namespace BezyFB.Configuration
             }
         }
 
-        public string AppId
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public string AppId => Settings.Default.AppId;
 
-        public string AppName
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public string AppName => Settings.Default.AppName;
 
-        public string AppVersion
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public string AppVersion => Settings.Default.AppVersion;
 
-        public string Hostname
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public string Hostname => Environment.MachineName;
 
         public string TokenFreebox
         {

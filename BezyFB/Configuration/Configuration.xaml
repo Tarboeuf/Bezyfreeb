@@ -23,7 +23,7 @@
                         <Label Content="Path Film : " />
                         <TextBox Text="{Binding PathFilm, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MinWidth="100" Margin="5" />
                     </StackPanel>
-                    <Button Content="Synchroniser" Click="Button_Click" />
+                    <Button Content="Synchroniser" Click="ButtonSynchroniser_Click" />
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="BetaSerie">

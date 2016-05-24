@@ -1,6 +1,7 @@
 ﻿using System;
-using BezyFB.BetaSerie;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using BezyFB.BetaSerieLib;
+using BezyFB.Helpers;
 
 namespace BezyFreebTest
 {
@@ -10,7 +11,11 @@ namespace BezyFreebTest
         [TestMethod]
         public void TestMethodGuessItCall()
         {
-            Assert.AreEqual("Disconnect", GuessIt.GuessNom("Disconnect.2012.TRUEFRENCH.BRRip.Xvid-BLUB.avi"));
+            var guess = new GuessIt
+            {
+                ApiConnector = new ApiConnector()
+            };
+            Assert.AreEqual("Disconnect", guess.GuessNom("Disconnect.2012.TRUEFRENCH.BRRip.Xvid-BLUB.avi"));
         }
     }
 }

@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -17,15 +16,15 @@ namespace FreeboxPortableLib
 {
     public class Freebox
     {
-        private ISettingsFreebox current;
-        private IApiConnectorService ApiConnector;
-        private ICryptographic Crypto;
-        private IMessageDialogService MessageDialogService;
-        private IFormUploadService FormUploadService;
+        private readonly ISettingsFreebox _current;
+        public IApiConnectorService ApiConnector { get; set; }
+        public ICryptographic Crypto { get; set; }
+        public IMessageDialogService MessageDialogService { get; set; }
+        public IFormUploadService FormUploadService { get; set; }
 
         public Freebox(ISettingsFreebox current)
         {
-            this.current = current;
+            this._current = current;
             IpFreebox = current.FreeboxIp;
             AppId = current.AppId;
             AppName = current.AppName;
@@ -83,7 +82,7 @@ namespace FreeboxPortableLib
                 return false;
             var challenge = (string)JObject.Parse(json)["result"]["challenge"];
 
-            var password = Crypto.Encode(challenge, current.TokenFreebox);
+            var password = Crypto.Encode(challenge, _current.TokenFreebox);
 
             json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/login/session/", WebMethod.Post, "application/json",
                                      new JObject() { { "password", password }, { "app_id", AppId } }.ToString());
@@ -122,7 +121,7 @@ namespace FreeboxPortableLib
             if (result != "granted")
                 return false;
 
-            current.TokenFreebox = appToken;
+            _current.TokenFreebox = appToken;
             return true;
         }
 
@@ -213,17 +212,17 @@ namespace FreeboxPortableLib
             return ((int)jobject["result"]["id"]).ToString();
         }
 
-        public async Task<string> DownloadFile(FileInfo torrentURL, string directory, bool isRelativeDir)
-        {
-            return await DownloadFile(File.ReadAllBytes(torrentURL.FullName), torrentURL.Name, directory, isRelativeDir);
-        }
+        //public async Task<string> DownloadFile(FileInfo torrentURL, string directory, bool isRelativeDir)
+        //{
+        //    return await DownloadFile(File.ReadAllBytes(torrentURL.FullName), torrentURL.Name, directory, isRelativeDir);
+        //}
 
         public async Task<string> DownloadFile(string urlFichier, string directory, bool isRelativeDir)
         {
             string lien = urlFichier;
             Uri uri = new Uri(lien);
             string nomFichier = uri.Segments[uri.Segments.Length - 1];
-           
+
             var content = await ApiConnector.GetResponse(lien, "application/x-bittorrent");
             if (null != content)
             {
@@ -449,7 +448,7 @@ namespace FreeboxPortableLib
             if (String.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
-            var json = await ApiConnector.Call("http://" + current.FreeboxIp + "/api/v3/fs/ls/" + Crypto.EncodeTo64(directory) + "?onlyFolder=0&countSubFolder=1",
+            var json = await ApiConnector.Call("http://" + _current.FreeboxIp + "/api/v3/fs/ls/" + Crypto.EncodeTo64(directory) + "?onlyFolder=0&countSubFolder=1",
                                          WebMethod.Get, "application/x-www-form-urlencoded", null, null,
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
