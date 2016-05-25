@@ -103,6 +103,8 @@
     </Compile>
     <Compile Include="Lib\ClientContext.cs" />
     <Compile Include="Lib\MessageDialogService.cs" />
+    <Compile Include="Lib\PropertiesInjectionExtension.cs" />
+    <Compile Include="Lib\PropertiesInjectorBuilderStrategy.cs" />
     <Compile Include="T411UserControl.xaml.cs">
       <DependentUpon>T411UserControl.xaml</DependentUpon>
     </Compile>
