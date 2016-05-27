@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -42,10 +43,12 @@ namespace BezyFB.Configuration
 
             XmlReaderSettings settings = new XmlReaderSettings();
 
+            var configListXml = WebUtility.HtmlDecode(Settings.Default.ShowConfigurationList);
+
             // No settings need modifying here
-            if (!string.IsNullOrEmpty(Settings.Default.ShowConfigurationList))
+            if (!string.IsNullOrEmpty(configListXml))
             {
-                using (StringReader textReader = new StringReader(Settings.Default.ShowConfigurationList))
+                using (StringReader textReader = new StringReader(configListXml))
                 {
                     using (XmlReader xmlReader = XmlReader.Create(textReader, settings))
                     {
@@ -84,9 +87,9 @@ namespace BezyFB.Configuration
             return await GetSerie(episode.show_id, episode.show_title);
         }
 
-        public object GetSerie(rootShowsShow rootShow)
+        public async Task<ShowConfiguration> GetSerie(rootShowsShow rootShow)
         {
-            return GetSerie(rootShow.id, rootShow.title);
+            return await GetSerie(rootShow.id, rootShow.title);
         }
     }
 

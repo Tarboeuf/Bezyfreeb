@@ -20,7 +20,7 @@ namespace BezyFB.Configuration
         {
             if (string.IsNullOrEmpty(ShowConfig.IdEztv))
             {
-                var ez = new Eztv();
+                var ez = ClientContext.Current.Eztv;
                 var l = await ez.GetListShow();
                 var liste = l.ToList();
                 comboSeries.ItemsSource = liste;

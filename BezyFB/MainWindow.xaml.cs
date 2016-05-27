@@ -373,13 +373,13 @@ namespace BezyFB
             await ClientContext.Current.Freebox.Deconnexion();
         }
 
-        private void SettingsClick(object sender, RoutedEventArgs e)
+        private async void SettingsClick(object sender, RoutedEventArgs e)
         {
             var s = ((Button)sender).CommandParameter as rootShowsShow;
 
             if (s != null)
             {
-                if ((new WindowShow { DataContext = _user.Value.GetSerie(s) }).ShowDialog() ?? false)
+                if ((new WindowShow { DataContext = await _user.Value.GetSerie(s) }).ShowDialog() ?? false)
                 {
                     _user.Value.SerializeElement();
                 }
