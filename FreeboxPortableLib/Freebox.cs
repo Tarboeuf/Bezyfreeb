@@ -481,6 +481,8 @@ namespace FreeboxPortableLib
                         Name = (string)obj["name"],
                         Status = (string)obj["status"],
                         RxPourcentage = (double)obj["tx_pct"],
+                        Id = (int)obj["id"]
+
                     };
                     userFreebox.Downloads.Add(di);
                 }
@@ -515,6 +517,14 @@ namespace FreeboxPortableLib
             var result = jsonObject["result"];
 
             return result.Select(t => new FBFileInfo(t)).ToList();
+        }
+
+        public async Task DeleteTerminated(int id)
+        {
+            var json = await ApiConnector.Call("http://" + _current.FreeboxIp + "/api/v3/downloads/" + id,
+                                         WebMethod.DELETE, null, null, null,
+                                         new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+
         }
     }
 
@@ -553,5 +563,6 @@ namespace FreeboxPortableLib
         public string Status { get; set; }
         public double Pourcentage { get; set; }
         public double RxPourcentage { get; set; }
+        public int Id { get; set; }
     }
 }
