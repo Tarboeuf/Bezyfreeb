@@ -174,7 +174,14 @@ namespace BezyFB
                         }
 
                         File.WriteAllBytes(pathreseau + fileName, st);
-                        await ClientContext.Current.Freebox.UploadFile(pathreseau + fileName, userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), fileName);
+                        try
+                        {
+                            await ClientContext.Current.Freebox.UploadFile(pathreseau + fileName, userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), fileName);
+                        }
+                        catch (Exception ex)
+                        {
+                            await ClientContext.Current.MessageDialogService.AfficherMessage(ex.Message);
+                        }
                         await ClientContext.Current.Freebox.CleanUpload();
                         File.Delete(pathreseau + fileName);
 
@@ -544,7 +551,6 @@ namespace BezyFB
 
         private async Task LoadT411()
         {
-            SetStatusText("Chargement des données T411");
             var worker = new BackgroundWorker();
             pb.Visibility = Visibility.Visible;
             try

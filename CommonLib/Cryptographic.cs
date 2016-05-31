@@ -14,7 +14,7 @@ namespace CommonLib
         public string EncodeTo64(string toEncode)
         {
             byte[] toEncodeAsBytes = Encoding.UTF8.GetBytes(toEncode);
-            string returnValue = System.Convert.ToBase64String(toEncodeAsBytes);
+            string returnValue = Convert.ToBase64String(toEncodeAsBytes);
             return returnValue;
         }
 

@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using BezyFB.Configuration;
 
 namespace BezyFB.Helpers
 {
@@ -59,9 +60,9 @@ namespace BezyFB.Helpers
                 dataStream.Close();
             }
 
-            try
+            using (var webResponse = await httpWebRequest.GetResponseAsync())
             {
-                using (Stream httpResponse =(await httpWebRequest.GetResponseAsync()).GetResponseStream())
+                using (Stream httpResponse = webResponse.GetResponseStream())
                 {
                     if (null == httpResponse) return null;
                     using (var streamReader = new StreamReader(httpResponse))
@@ -70,13 +71,8 @@ namespace BezyFB.Helpers
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-            }
         }
-        
+
         public async Task<string> CallByte(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null, byte[] text = null,
                                   string headerAccept = null, IEnumerable<Tuple<string, string>> headers = null)
         {
@@ -118,7 +114,7 @@ namespace BezyFB.Helpers
                 return null;
             }
         }
-        
+
         public async Task<byte[]> GetResponse(string url, string contentType)
         {
             return null;
@@ -232,6 +228,6 @@ namespace BezyFB.Helpers
 
             return formData;
         }
-        
+
     }
 }

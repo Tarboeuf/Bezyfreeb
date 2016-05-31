@@ -77,7 +77,7 @@ namespace FreeboxPortableLib
             if (IpFreebox.StartsWith("http:"))
                 return false;
 
-            var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/login/", WebMethod.Get);
+            var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v2/login/", WebMethod.Get);
             if (json == null)
                 return false;
             var challenge = (string)JObject.Parse(json)["result"]["challenge"];
@@ -109,7 +109,7 @@ namespace FreeboxPortableLib
 
             var appToken = (string)apptokenrequest["result"]["app_token"];
             var trackId = (double)apptokenrequest["result"]["track_id"];
-            String result;
+            string result;
             do
             {
                 json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/login/authorize/" + trackId, WebMethod.Get);
@@ -129,7 +129,7 @@ namespace FreeboxPortableLib
         {
             try
             {
-                if (String.IsNullOrEmpty(SessionToken))
+                if (string.IsNullOrEmpty(SessionToken))
                     return null;
 
                 var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/login/logout/", WebMethod.Post, null, null,
@@ -146,7 +146,7 @@ namespace FreeboxPortableLib
 
         public async Task<string> CreerDossier(string directory, string parent)
         {
-            if (String.IsNullOrEmpty(SessionToken))
+            if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
             var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/fs/mkdir/", WebMethod.Post,
@@ -162,7 +162,7 @@ namespace FreeboxPortableLib
 
         public async Task<List<string>> Ls(string directory, bool onlyFolder)
         {
-            if (String.IsNullOrEmpty(SessionToken))
+            if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
             var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/fs/ls/" + Crypto.EncodeTo64(directory) + "?onlyFolder=" + (onlyFolder ? 1 : 0),
@@ -186,12 +186,12 @@ namespace FreeboxPortableLib
 
         public async Task<string> Download(string magnetUrl, string directory)
         {
-            if (String.IsNullOrEmpty(SessionToken))
+            if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
             var pathDir = PathVideo;
 
-            foreach (var s in directory.Split('\\', '/').Where(s => !String.IsNullOrEmpty(s)))
+            foreach (var s in directory.Split('\\', '/').Where(s => !string.IsNullOrEmpty(s)))
             {
                 await CreerDossier(s, pathDir);
                 pathDir += "/" + s;
@@ -238,7 +238,7 @@ namespace FreeboxPortableLib
 
         public async Task<string> DownloadFile(byte[] fichier, string nomFichier, string directory, bool isRelativeDir)
         {
-            if (String.IsNullOrEmpty(SessionToken))
+            if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
             string pathDir;
@@ -277,75 +277,126 @@ namespace FreeboxPortableLib
             return ((int)jobject["result"]["id"]).ToString();
         }
 
-
         public async Task<string> UploadFile(string inputFile, string outputDir, string outputFileName)
         {
-            if (String.IsNullOrEmpty(SessionToken))
+            if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
             var pathDir = PathVideo;
 
-            foreach (var s in outputDir.Split('\\', '/').Where(s => !String.IsNullOrEmpty(s)))
+            foreach (var s in outputDir.Split('\\', '/').Where(s => !string.IsNullOrEmpty(s)))
             {
                 await CreerDossier(s, pathDir);
                 pathDir += "/" + s;
             }
 
-            var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/upload/", WebMethod.Post, "application/json",
-                                         new JObject
-                                         {
-                                             { "dirname", Crypto.EncodeTo64(pathDir) },
-                                             { "upload_name", outputFileName }
-                                         }.ToString(), null,
-                                         new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
-            if (json == null)
+            var id = await GetIdUpload(pathDir, outputFileName);
+
+            if (id == -1)
             {
-                await MessageDialogService.AfficherMessage(IpFreebox + " (UploadFile " + inputFile + " ) : Erreur lors de l'appel à la freebox ");
+                await
+                    MessageDialogService.AfficherMessage(IpFreebox + " (UploadFile " + inputFile + " ) : Erreur lors de l'appel à la freebox ");
                 return null;
             }
-
             try
             {
-                var jobj = JObject.Parse(json);
-                if (!(bool)jobj["success"] && (string)jobj["error_code"] == "conflict")
-                {
-                    await DeleteFile(pathDir + "/" + outputFileName);
-                    json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/upload/", WebMethod.Post, "application/json",
-                                         new JObject
-                                         {
-                                             { "dirname", Crypto.EncodeTo64(pathDir) },
-                                             { "upload_name", outputFileName }
-                                         }.ToString(), null,
-                                         new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
-                    jobj = JObject.Parse(json);
-                }
-
-                if (!(bool)jobj["success"])
-                {
-                    await MessageDialogService.AfficherMessage(IpFreebox + " (UploadFile " + inputFile + " ) : " + jobj["msg"].ToString());
-                    return null;
-                }
-                var id = (int)jobj["result"]["id"];
-
                 string text = File.ReadAllText(inputFile, Encoding.UTF8);
 
                 const string boundary = "----WebKitFormBoundary0Qvwx7fycAF2CWmh";
 
-                json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/upload/" + id + "/send", WebMethod.Post, "multipart/form-data; boundary=" + boundary,
+                var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/upload/" + id + "/send", WebMethod.Post, "multipart/form-data; boundary=" + boundary,
                                          "--" + boundary + Environment.NewLine +
                                          "Content-Disposition: form-data; name=\"" + outputFileName + "\"; filename=\"" + outputFileName + "\"" + Environment.NewLine +
                                          "Content-Type: text/plain" + Environment.NewLine + Environment.NewLine + text + Environment.NewLine +
                                          "--" + boundary + "--",
                                          null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+
+                return json;
             }
             catch (Exception ex)
             {
                 await MessageDialogService.AfficherMessage(IpFreebox + " (UploadFile " + inputFile + " ) : " + ex.Message);
                 return null;
             }
-
-            return JObject.Parse(json).ToString();
         }
+
+        private async Task<int> GetIdUpload(string pathDir, string outputFileName)
+        {
+            if (await IsFileExists(pathDir, outputFileName))
+            {
+                await DeleteFile(pathDir + "/" + outputFileName);
+            }
+
+            var json = await GetJsonIdUpload(pathDir, outputFileName);
+
+            if (json != null)
+            {
+                var jobj = JObject.Parse(json);
+                if (!(bool)jobj["success"])
+                {
+                    return -1;
+                }
+            }
+
+            if (json == null)
+            {
+                // tentative de récupération d'un upload en cours : 
+                json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/upload/", WebMethod.Get, null,
+                                        null, null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+                if (null != json)
+                {
+                    var jobj = JObject.Parse(json);
+                    if ((bool)jobj["success"])
+                    {
+                        var token = jobj["result"].FirstOrDefault(j => (string)j["status"] == "authorized");
+                        if (null != token)
+                        {
+                            return (int)token["id"];
+                        }
+                    }
+                }
+            }
+            return -1;
+        }
+
+        private async Task<string> GetJsonIdUpload(string pathDir, string outputFileName)
+        {
+            try
+            {
+                var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/upload/", WebMethod.Post, "application/json",
+                    new JObject
+                    {
+                    {"dirname", Crypto.EncodeTo64(pathDir)},
+                    {"upload_name", outputFileName}
+                    }.ToString(), null,
+                    new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+                return json;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private async Task<bool> IsFileExists(string pathDir, string outputFileName)
+        {
+            try
+            {
+                var json = await ApiConnector.Call("http://" + IpFreebox + "/api/fs/info/" + pathDir + outputFileName, WebMethod.Get, null, null, null,
+                    new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+                if (null == json)
+                {
+                    return false;
+                }
+                var job = JObject.Parse(json);
+                return (bool)job["result"];
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
 
         public async Task<string> DeleteFile(string filePath)
         {
@@ -369,7 +420,7 @@ namespace FreeboxPortableLib
 
         public async Task<string> GetFileNameDownloaded(string idDownload)
         {
-            if (String.IsNullOrEmpty(SessionToken))
+            if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
             var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/downloads/" + idDownload, WebMethod.Get,
@@ -386,7 +437,7 @@ namespace FreeboxPortableLib
 
         public async Task<UserFreebox> GetInfosFreebox()
         {
-            if (String.IsNullOrEmpty(SessionToken))
+            if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
             var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/storage/disk/", WebMethod.Get,
@@ -445,7 +496,7 @@ namespace FreeboxPortableLib
         {
             if (directory.EndsWith(".")) return null;
 
-            if (String.IsNullOrEmpty(SessionToken))
+            if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
             var json = await ApiConnector.Call("http://" + _current.FreeboxIp + "/api/v3/fs/ls/" + Crypto.EncodeTo64(directory) + "?onlyFolder=0&countSubFolder=1",

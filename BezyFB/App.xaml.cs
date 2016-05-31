@@ -19,6 +19,7 @@ namespace BezyFB
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             Console.WriteLine(e.Exception.Message);
+            e.Handled = true;
         }
 
         private async void Application_Startup(object sender, StartupEventArgs e)

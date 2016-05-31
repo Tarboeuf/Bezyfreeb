@@ -38,13 +38,18 @@ namespace BezyFB
 
         public static void Init()
         {
+            InitForTest(MySettings.Current);
+
+            Container.RegisterType<IMessageDialogService, MessageDialogService>(new ContainerControlledLifetimeManager());
+        }
+
+        public static void InitForTest(ISettingsFreebox settings)
+        {
             Container = new UnityContainer();
             Container.AddNewExtension<PropertiesInjectionExtension>(); // active l'injection par propriétés pour toutes les instance résolue dans le container
 
             Container.RegisterType<Freebox>(new ContainerControlledLifetimeManager()
-                , new InjectionConstructor(MySettings.Current));
-
-            Container.RegisterType<IMessageDialogService, MessageDialogService>(new ContainerControlledLifetimeManager());
+                , new InjectionConstructor(settings));
 
             Container.RegisterType<IApiConnectorService, ApiConnector>(new ContainerControlledLifetimeManager());
 
@@ -61,6 +66,11 @@ namespace BezyFB
             Container.RegisterType<IFormUploadService, FormUpload>(new ContainerControlledLifetimeManager());
 
             Container.RegisterType<ICryptographic, Cryptographic>(new ContainerControlledLifetimeManager());
+        }
+
+        public static void Register<T1, T2>() where T2 : T1
+        {
+            Container.RegisterType<T1, T2>(new ContainerControlledLifetimeManager());
         }
 
         public void ResetBetaserie()
@@ -103,9 +113,9 @@ namespace BezyFB
         public override void PostBuildUp(IBuilderContext context)
         {
             var resolvedObject = context.Existing;
-            
+
             var properties = resolvedObject.GetType().GetProperties();
-            
+
             foreach (var propertyInfo in properties)
             {
                 Type typeToResolveInContainer;
