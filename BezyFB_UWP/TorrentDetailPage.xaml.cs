@@ -66,7 +66,7 @@ namespace BezyFB_UWP
             // Parameter is item ID
             Item = e.Parameter as Torrent;
 
-            Details = await Settings.Current.T411.GetTorrentDetails(Item.Id);
+            Details = await ClientContext.Current.T411.GetTorrentDetails(Item.Id);
             View.NavigateToString(Details.Description);
 
             var backStack = Frame.BackStack;

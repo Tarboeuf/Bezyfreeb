@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using BezyFB.BetaSerieLib;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace BezyFB
@@ -8,21 +9,21 @@ namespace BezyFB
     /// </summary>
     public partial class NoteWindow : Window
     {
-        private readonly BetaSerie.BetaSerie _bs;
+        private readonly BetaSerie _bs;
         private readonly Episode _episode;
 
-        public NoteWindow(BetaSerie.BetaSerie bs, Episode episode)
+        public NoteWindow(BetaSerie bs, Episode episode)
         {
             _bs = bs;
             _episode = episode;
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             var content = ((Button)sender).Content;
             if (content != null)
-                _bs.NoterEpisode(_episode, int.Parse(content as string));
+                await _bs.NoterEpisode(_episode, int.Parse(content as string));
             Close();
         }
 

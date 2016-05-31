@@ -1,4 +1,5 @@
-﻿using BezyFB.BetaSerie;
+﻿using BezyFB.BetaSerieLib;
+using CommonPortableLib;
 using Essy.Tools.InputBox;
 using System;
 using System.ComponentModel;
@@ -12,9 +13,13 @@ namespace BezyFB.T411
         private double _note;
         private string _nom;
         private OMDb _omDb;
+        private GuessIt _guessIt;
+        private IApiConnectorService _apiConnetor;
 
-        public MyTorrent(Torrent torrent)
+        public MyTorrent(Torrent torrent, GuessIt guessIt, IApiConnectorService apiConnetor)
         {
+            _apiConnetor = apiConnetor;
+            _guessIt = guessIt;
             _torrent = torrent;
         }
 
@@ -32,14 +37,14 @@ namespace BezyFB.T411
             OmDb = value.OMDB;
         }
 
-        private RetourOMDB InitialiserData(string nom)
+        private async Task<RetourOMDB> InitialiserData(string nom)
         {
             if (string.IsNullOrEmpty(nom))
             {
                 nom = "";
                 try
                 {
-                    nom = GuessIt.GuessNom(_torrent.Name.Trim());
+                    nom = await _guessIt.GuessNom(_torrent.Name.Trim());
                 }
                 catch (Exception e)
                 {
@@ -51,10 +56,10 @@ namespace BezyFB.T411
             {
                 if (!string.IsNullOrEmpty(nom))
                 {
-                    omDb = OMDb.GetNote(nom);
+                    omDb = await OMDb.GetNote(nom, _apiConnetor);
                 }
                 else
-                    omDb = OMDb.GetNote(Name);
+                    omDb = await OMDb.GetNote(Name, _apiConnetor);
             }
             catch (Exception e)
             {

@@ -2,6 +2,8 @@
 // Le : 23-06-2014
 
 using BezyFB_UWP.Lib.Helpers;
+using CommonLib;
+using CommonPortableLib;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -11,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BezyFB_UWP.Lib.EzTv
 {
-    public sealed class Eztv
+    public sealed class Eztv : IEztv
     {
         private const string Url = "https://eztv.ag/";
         //private const string Url = "http://eztv.it/";
@@ -21,7 +23,9 @@ namespace BezyFB_UWP.Lib.EzTv
         private static readonly Dictionary<string, string> PagesSeries = new Dictionary<string, string>();
         private static List<Show> _shows = null;
 
-        public static async System.Threading.Tasks.Task<string> GetMagnetSerieEpisode(string serie, string episode)
+        public IApiConnectorService ApiConnector { get; set; }
+
+        public async Task<string> GetMagnetSerieEpisode(string serie, string episode)
         {
             if (serie == null)
                 return null;
@@ -57,7 +61,7 @@ namespace BezyFB_UWP.Lib.EzTv
             return null;
         }
 
-        public static async System.Threading.Tasks.Task<string> GetTorrentSerieEpisode(string serie, string episode)
+        public async Task<string> GetTorrentSerieEpisode(string serie, string episode)
         {
             string html;
             if (PagesSeries.ContainsKey(serie))
@@ -123,5 +127,11 @@ namespace BezyFB_UWP.Lib.EzTv
 
             public string Name { get; set; }
         }
+    }
+
+    public interface IEztv
+    {
+        Task<string> GetMagnetSerieEpisode(string idEztv, string code);
+        Task<string> GetTorrentSerieEpisode(string idEztv, string code);
     }
 }

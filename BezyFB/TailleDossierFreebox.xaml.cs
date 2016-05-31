@@ -1,8 +1,10 @@
-﻿using System;
+﻿using FreeboxPortableLib;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,36 +15,37 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using BezyFB.Freebox;
+using BezyFB.Annotations;
 
 namespace BezyFB
 {
     /// <summary>
     /// Logique d'interaction pour TailleDossierFreebox.xaml
     /// </summary>
-    public partial class TailleDossierFreebox : Window
+    public partial class TailleDossierFreebox : Window, INotifyPropertyChanged
     {
-        private readonly Freebox.Freebox _freebox;
+        private Freebox _freebox;
+        private ObservableCollection<Fichier> _fichiers;
 
-        public TailleDossierFreebox(Freebox.Freebox freebox)
+        public TailleDossierFreebox()
         {
-            _freebox = freebox;
+            _freebox = ClientContext.Current.Freebox;
             InitializeComponent();
 
             Fichiers = new ObservableCollection<Fichier>();
-
-            Charger("/", Fichiers, null);
+            
             DataContext = this;
         }
 
-        private void Charger(string directory, ObservableCollection<Fichier> fichiers, Fichier parent)
+        private async Task<ObservableCollection<Fichier>> Charger(string directory, Fichier parent)
         {
+            ObservableCollection<Fichier> fichiers = new ObservableCollection<Fichier>();
             try
             {
-                var files = _freebox.LsFileInfo(directory);
+                var files = await _freebox.LsFileInfo(directory);
 
-                if (files == null) return;
-                foreach (var file in files)
+                if (files == null) return null;
+                foreach (var file in files.Where(f => !f.Name.StartsWith(".")))
                 {
                     var fichier = new Fichier(parent)
                     {
@@ -53,18 +56,44 @@ namespace BezyFB
                     fichiers.Add(fichier);
                     if (file.Type == "dir")
                     {
-                        Charger(directory + "/" + file.Name, fichier.Fichiers, fichier);
+                        var sousFichiers = await Charger(directory + "/" + file.Name, fichier);
+                        fichier.Fichiers = sousFichiers;
                     }
                     var view = CollectionViewSource.GetDefaultView(fichiers);
-                    view.SortDescriptions.Add(new SortDescription("TailleTotal", ListSortDirection.Ascending));
+                    view.SortDescriptions.Add(new SortDescription("TailleTotal", ListSortDirection.Descending));
                 }
                 
             }
             catch (Exception)
             {
+                throw;
+            }
+            return fichiers;
+        }
+
+        public ObservableCollection<Fichier> Fichiers
+        {
+            get { return _fichiers; }
+            set
+            {
+                if (Equals(value, _fichiers)) return;
+                _fichiers = value;
+                OnPropertyChanged();
             }
         }
-        public ObservableCollection<Fichier> Fichiers { get; set; }
+
+        private async void Window_Initialized(object sender, EventArgs e)
+        {
+            Fichiers = await Charger("/", null);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     public class Fichier
@@ -84,7 +113,7 @@ namespace BezyFB
         {
             get
             {
-                if (IsDossier)
+                if (IsDossier && Fichiers != null)
                     return Fichiers.Select(f => f.TailleTotal).Sum();
                 return Taille / (1024 * 1024);
             }

@@ -1,5 +1,5 @@
-﻿using System;
-using BezyFB.Freebox;
+﻿using BezyFB.FreeboxLib;
+using System;
 using System.IO;
 using System.Windows;
 using MessageBox = System.Windows.Forms.MessageBox;
@@ -13,10 +13,18 @@ namespace BezyFB
     {
         public App()
         {
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
         }
 
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
+            Console.WriteLine(e.Exception.Message);
+            e.Handled = true;
+        }
+
+        private async void Application_Startup(object sender, StartupEventArgs e)
+        {
+            ClientContext.Init();
             if (e.Args.Length > 0)
             {
                 string nomFichier = e.Args[0];
@@ -31,7 +39,7 @@ namespace BezyFB
                             FreeboxExplorer fb = new FreeboxExplorer();
                             if (fb.ShowDialog() ?? false)
                             {
-                                fb.Freebox.DownloadFile(fi, fb.FilePath + "/", false);
+                                await ClientContext.Current.Freebox.DownloadFile(nomFichier, fb.FilePath + "/", false);
                             }
                         }
                     }
@@ -44,7 +52,7 @@ namespace BezyFB
                         FreeboxExplorer fb = new FreeboxExplorer();
                         if (fb.ShowDialog() ?? false)
                         {
-                            fb.Freebox.Download(nomFichier.Substring(5), fb.FilePath + "/", false);
+                            await fb.Freebox.Download(nomFichier.Substring(5), fb.FilePath + "/", false);
                         }
                     }
                 }

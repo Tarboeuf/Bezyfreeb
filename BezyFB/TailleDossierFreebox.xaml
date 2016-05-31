@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:BezyFB"
         xmlns:sparrowToolkit="http://sparrowtoolkit.codeplex.com/wpf"
         mc:Ignorable="d"
-        Title="TailleDossierFreebox" Height="300" Width="300">
+        Title="TailleDossierFreebox" Height="300" Width="300" Initialized="Window_Initialized">
     <Grid>
         <Grid.Resources>
             <HierarchicalDataTemplate DataType="{x:Type local:Fichier}" ItemsSource="{Binding Fichiers}">

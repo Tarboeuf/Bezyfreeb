@@ -9,6 +9,8 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Threading.Tasks;
 using BezyFB_UWP.Lib.Helpers;
+using CommonLib;
+using CommonPortableLib;
 
 namespace BezyFB_UWP.Lib.BetaSerie
 {
@@ -16,6 +18,8 @@ namespace BezyFB_UWP.Lib.BetaSerie
     {
         private readonly string _login;
         private readonly string _password;
+
+        public IApiConnectorService ApiConnector { get; set; }
 
         public BetaSerie(string login, string password)
         {

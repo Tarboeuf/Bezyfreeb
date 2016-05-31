@@ -65,7 +65,10 @@ namespace BezyFB_UWP.Lib.T411
 
         private async Task Initialiser()
         {
-            _token = await GetToken();
+            if (string.IsNullOrEmpty(_token))
+            {
+                _token = await GetToken();
+            }
         }
 
         private async Task<string> GetToken()
@@ -92,7 +95,7 @@ namespace BezyFB_UWP.Lib.T411
                         string token = tokObj.Token;
                         return token;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         return null;
                     }
@@ -241,6 +244,7 @@ namespace BezyFB_UWP.Lib.T411
 
         private async Task<T> GetResponse<T>(Uri uri)
         {
+            await Initialiser();
             string data = await GetRawResponse(uri);
 
             if (data.StartsWith("{\"error\":"))

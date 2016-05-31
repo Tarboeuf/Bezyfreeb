@@ -187,7 +187,7 @@ namespace BezyFB_UWP
             ProgressBarDC.Current.IsProgress = true;
             var show = await Utilisateur.Current().GetSerie(Item);
             ProgressBarDC.Current.IsProgress = false;
-            ConfigSerieDialog dialog = new ConfigSerieDialog(Settings.Current.Eztv, show);
+            ConfigSerieDialog dialog = new ConfigSerieDialog(ClientContext.Current.Eztv, show);
             await dialog.ShowAsync();
         }
 

@@ -101,6 +101,10 @@
     <Compile Include="ConfigSerieDialog.xaml.cs">
       <DependentUpon>ConfigSerieDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Lib\ClientContext.cs" />
+    <Compile Include="Lib\MessageDialogService.cs" />
+    <Compile Include="Lib\PropertiesInjectionExtension.cs" />
+    <Compile Include="Lib\PropertiesInjectorBuilderStrategy.cs" />
     <Compile Include="T411UserControl.xaml.cs">
       <DependentUpon>T411UserControl.xaml</DependentUpon>
     </Compile>
@@ -119,11 +123,7 @@
     <Compile Include="Lib\BetaSerie\OMDb.cs" />
     <Compile Include="Lib\BetaSerie\SousTitre.cs" />
     <Compile Include="Lib\EzTv\Eztv.cs" />
-    <Compile Include="Lib\Freebox\Freebox.cs" />
-    <Compile Include="Lib\Helpers\ApiConnector.cs" />
-    <Compile Include="Lib\Helpers\AsyncLazy.cs" />
     <Compile Include="Lib\Helpers\DownloadToFontFamilyConverter.cs" />
-    <Compile Include="Lib\Helpers\Helper.cs" />
     <Compile Include="Lib\Helpers\SizeConverter.cs" />
     <Compile Include="Lib\Helpers\SizeMoConverter.cs" />
     <Compile Include="Lib\Settings.cs" />
@@ -222,6 +222,24 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommonLib\CommonLib.csproj">
+      <Project>{7b587d62-0a0e-4436-a8e1-ddd2d36b9c83}</Project>
+      <Name>CommonLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommonPortableLib\CommonPortableLib.csproj">
+      <Project>{78bf2ea6-7f31-44f8-92af-3d37da9f8ce9}</Project>
+      <Name>CommonPortableLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FreeboxLib\FreeboxLib.csproj">
+      <Project>{248af8eb-0449-4fcf-9b57-dd543b196761}</Project>
+      <Name>FreeboxLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FreeboxPortableLib\FreeboxPortableLib.csproj">
+      <Project>{e45155c4-5e1f-40e3-b054-8142ba7eaefb}</Project>
+      <Name>FreeboxPortableLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

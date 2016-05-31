@@ -1,19 +1,15 @@
-﻿using System;
+﻿using CommonPortableLib;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
+using BezyFB.Configuration;
 
 namespace BezyFB.Helpers
 {
-    public enum WebMethod
-    {
-        Get,
-        Post,
-        Put,
-        DELETE,
-    };
-
     internal static class Extensions
     {
         public static string GetLibelle(this WebMethod method)
@@ -38,9 +34,10 @@ namespace BezyFB.Helpers
         }
     }
 
-    public static class ApiConnector
+    public class ApiConnector : IApiConnectorService
     {
-        public static string Call(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null,
+
+        public async Task<string> Call(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null,
                                   string headerAccept = null, IEnumerable<Tuple<string, string>> headers = null, Encoding encoding = null)
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
@@ -58,14 +55,14 @@ namespace BezyFB.Helpers
                 byte[] byteArray = (encoding ?? Encoding.UTF8).GetBytes(content);
                 httpWebRequest.ContentLength = byteArray.Length;
 
-                Stream dataStream = httpWebRequest.GetRequestStream();
+                Stream dataStream = await httpWebRequest.GetRequestStreamAsync();
                 dataStream.Write(byteArray, 0, byteArray.Length);
                 dataStream.Close();
             }
 
-            try
+            using (var webResponse = await httpWebRequest.GetResponseAsync())
             {
-                using (Stream httpResponse = httpWebRequest.GetResponse().GetResponseStream())
+                using (Stream httpResponse = webResponse.GetResponseStream())
                 {
                     if (null == httpResponse) return null;
                     using (var streamReader = new StreamReader(httpResponse))
@@ -74,14 +71,9 @@ namespace BezyFB.Helpers
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-            }
         }
 
-        public static string CallByte(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null, byte[] text = null,
+        public async Task<string> CallByte(string url, WebMethod method = WebMethod.Post, string contentType = null, string content = null, byte[] text = null,
                                   string headerAccept = null, IEnumerable<Tuple<string, string>> headers = null)
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
@@ -99,7 +91,7 @@ namespace BezyFB.Helpers
                 byte[] byteArray = (Encoding.UTF8).GetBytes(content);
                 httpWebRequest.ContentLength = byteArray.Length + text.Length;
 
-                using (Stream dataStream = httpWebRequest.GetRequestStream())
+                using (Stream dataStream = await httpWebRequest.GetRequestStreamAsync())
                 {
                     dataStream.Write(byteArray, 0, byteArray.Length);
                     dataStream.Write(text, 0, text.Length);
@@ -109,7 +101,7 @@ namespace BezyFB.Helpers
 
             try
             {
-                Stream httpResponse = httpWebRequest.GetResponse().GetResponseStream();
+                Stream httpResponse = (await httpWebRequest.GetResponseAsync()).GetResponseStream();
                 if (null == httpResponse) return null;
                 using (var streamReader = new StreamReader(httpResponse))
                 {
@@ -122,23 +114,33 @@ namespace BezyFB.Helpers
                 return null;
             }
         }
+
+        public async Task<byte[]> GetResponse(string url, string contentType)
+        {
+            return null;
+        }
     }
 
-    public static class FormUpload
+    public class FormUpload : IFormUploadService
     {
         private static readonly Encoding encoding = Encoding.UTF8;
 
-        public static HttpWebResponse MultipartFormDataPost(string postUrl, string userAgent, Dictionary<string, object> postParameters, IEnumerable<Tuple<string, string>> headers = null)
+        public async Task<string> MultipartFormDataPost(string postUrl, string userAgent, Dictionary<string, object> postParameters, IEnumerable<Tuple<string, string>> headers = null)
         {
-            string formDataBoundary = String.Format("----------{0:N}", Guid.NewGuid());
+            string formDataBoundary = $"----------{Guid.NewGuid():N}";
             string contentType = "multipart/form-data; boundary=" + formDataBoundary;
 
             byte[] formData = GetMultipartFormData(postParameters, formDataBoundary);
 
-            return PostForm(postUrl, userAgent, contentType, formData, headers);
+            var response = PostForm(postUrl, userAgent, contentType, formData, headers).GetResponseStream();
+
+            using (StreamReader sr = new StreamReader(response))
+            {
+                return sr.ReadToEnd();
+            }
         }
 
-        private static HttpWebResponse PostForm(string postUrl, string userAgent, string contentType, byte[] formData, IEnumerable<Tuple<string, string>> headers = null)
+        private HttpWebResponse PostForm(string postUrl, string userAgent, string contentType, byte[] formData, IEnumerable<Tuple<string, string>> headers = null)
         {
             HttpWebRequest request = WebRequest.Create(postUrl) as HttpWebRequest;
 
@@ -174,7 +176,7 @@ namespace BezyFB.Helpers
             return request.GetResponse() as HttpWebResponse;
         }
 
-        private static byte[] GetMultipartFormData(Dictionary<string, object> postParameters, string boundary)
+        private byte[] GetMultipartFormData(Dictionary<string, object> postParameters, string boundary)
         {
             Stream formDataStream = new System.IO.MemoryStream();
             bool needsCLRF = false;
@@ -227,26 +229,5 @@ namespace BezyFB.Helpers
             return formData;
         }
 
-        public class FileParameter
-        {
-            public byte[] File { get; set; }
-            public string FileName { get; set; }
-            public string ContentType { get; set; }
-
-            public FileParameter(byte[] file) : this(file, null)
-            {
-            }
-
-            public FileParameter(byte[] file, string filename) : this(file, filename, null)
-            {
-            }
-
-            public FileParameter(byte[] file, string filename, string contenttype)
-            {
-                File = file;
-                FileName = filename;
-                ContentType = contenttype;
-            }
-        }
     }
 }
