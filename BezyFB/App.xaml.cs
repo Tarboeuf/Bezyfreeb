@@ -44,7 +44,7 @@ namespace BezyFB
                         FreeboxExplorer fb = new FreeboxExplorer();
                         if (fb.ShowDialog() ?? false)
                         {
-                            fb.Freebox.Download(nomFichier.Substring(5), fb.FilePath + "/");
+                            fb.Freebox.Download(nomFichier.Substring(5), fb.FilePath + "/", false);
                         }
                     }
                 }

@@ -289,7 +289,7 @@ namespace BezyFB
                 var serie = _user.Value.GetSerie(episode);
                 var magnet = Eztv.GetMagnetSerieEpisode(serie.IdEztv, episode.code);
                 if (magnet != null)
-                    episode.IdDownload = _freeboxApi.Value.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""));
+                    episode.IdDownload = _freeboxApi.Value.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), true);
                 else if (serie.IdEztv == null)
                 {
                     Helper.AfficherMessage("Serie " + serie.ShowName + " + non configurée");

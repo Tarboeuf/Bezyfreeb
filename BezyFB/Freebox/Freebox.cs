@@ -171,17 +171,24 @@ namespace BezyFB.Freebox
             return result.Select(t => t["name"].ToString()).ToList();
         }
 
-        public string Download(String magnetUrl, string directory)
+        public string Download(String magnetUrl, string directory, bool isRelativeDir)
         {
             if (String.IsNullOrEmpty(SessionToken))
                 GenererSessionToken();
 
-            var pathDir = Settings.Default.PathVideo;
-
-            foreach (var s in directory.Split('\\', '/').Where(s => !String.IsNullOrEmpty(s)))
+            string pathDir;
+            if (isRelativeDir)
             {
-                CreerDossier(s, pathDir);
-                pathDir += "/" + s;
+                pathDir = Settings.Default.PathVideo;
+                foreach (var s in directory.Split('\\', '/').Where(s => !String.IsNullOrEmpty(s)))
+                {
+                    CreerDossier(s, pathDir);
+                    pathDir += "/" + s;
+                }
+            }
+            else
+            {
+                pathDir = directory;
             }
 
             var path = System.Web.HttpUtility.UrlEncode(magnetUrl);
