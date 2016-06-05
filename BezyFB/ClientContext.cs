@@ -1,5 +1,4 @@
 ﻿using BezyFB.Configuration;
-using BezyFB.EzTv;
 using BezyFB.Helpers;
 using BezyFB.T411;
 using CommonPortableLib;
@@ -11,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BetaseriesPortableLib;
+using EztvPortableLib;
 using Microsoft.Practices.ObjectBuilder2;
 using Microsoft.Practices.Unity.ObjectBuilder;
 

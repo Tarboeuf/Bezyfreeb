@@ -1,5 +1,4 @@
 ﻿using BezyFB.Configuration;
-using BezyFB.EzTv;
 using BezyFB.Helpers;
 using BezyFB.Properties;
 using BezyFB.T411;

@@ -188,7 +188,6 @@
       <DependentUpon>FreeboxExplorer.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ApiConnector.cs" />
-    <Compile Include="EzTv\Eztv.cs" />
     <Compile Include="Helpers\AsyncLazy.cs" />
     <Compile Include="Helpers\ExceptionExtension.cs" />
     <Compile Include="Helpers\GridViewSort.cs" />
@@ -331,10 +330,17 @@
       <Project>{78bf2ea6-7f31-44f8-92af-3d37da9f8ce9}</Project>
       <Name>CommonPortableLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EztvPortableLib\EztvPortableLib.csproj">
+      <Project>{116dfc09-45e4-49f5-9d49-67af0f4968c5}</Project>
+      <Name>EztvPortableLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FreeboxPortableLib\FreeboxPortableLib.csproj">
       <Project>{e45155c4-5e1f-40e3-b054-8142ba7eaefb}</Project>
       <Name>FreeboxPortableLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="EzTv\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

@@ -1,7 +1,6 @@
 ﻿// Créer par : pepinat
 // Le : 22-06-2014
 
-using BezyFB.EzTv;
 using BezyFB.Properties;
 using System;
 using System.Collections.Generic;

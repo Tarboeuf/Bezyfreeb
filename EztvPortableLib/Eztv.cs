@@ -1,7 +1,6 @@
 ﻿// Créer par : pepinat
 // Le : 23-06-2014
 
-using BezyFB.Helpers;
 using CommonPortableLib;
 using HtmlAgilityPack;
 using System;
@@ -10,7 +9,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace BezyFB.EzTv
+namespace EztvPortableLib
 {
     public sealed class Eztv
     {
@@ -70,7 +69,11 @@ namespace BezyFB.EzTv
 
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
-            var collection = doc.DocumentNode.SelectNodes("//a[@class]").Where(n => n.Attributes["href"].Value.Contains(episode) && n.Attributes["href"].Value.Contains(".torrent") && n.Attributes["class"].Value.StartsWith("download_")).Select(link => link.Attributes["href"].Value).ToList();
+            var nodes = doc.DocumentNode.Descendants("//a[@class]");
+
+            var collection = nodes.Where(n => n.Attributes["href"].Value.Contains(episode) && n.Attributes["href"].Value.Contains(".torrent") && n.Attributes["class"].Value.StartsWith("download_"))
+                                    .Select(link => link.Attributes["href"].Value).ToList();
+
             foreach (var link in collection.Where(h => !h.Contains("720p") && !h.Contains("1080p")).Union(collection))
             {
                 return link;
