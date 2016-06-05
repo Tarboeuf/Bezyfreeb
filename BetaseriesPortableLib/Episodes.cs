@@ -8,21 +8,19 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using BezyFB_UWP.Annotations;
 using System.ComponentModel;
 using System.Linq;
+using BetaseriesPortableLib.Properties;
 
 //
 // Ce code source a été automatiquement généré par xsd, Version=2.0.50727.3038.
 //
 
-namespace BezyFB_UWP.Lib
+namespace BetaseriesPortableLib
 {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    //[Serializable]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    //[System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public partial class Episode : INotifyPropertyChanged
@@ -191,9 +189,7 @@ namespace BezyFB_UWP.Lib
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    //[System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    //[System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public partial class episodeNotes
     {
@@ -230,9 +226,7 @@ namespace BezyFB_UWP.Lib
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    //[System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-    //[System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public partial class episodeUser : INotifyPropertyChanged
     {
@@ -272,9 +266,7 @@ namespace BezyFB_UWP.Lib
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-   // [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-   // [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public class EpisodeRoot
@@ -303,9 +295,7 @@ namespace BezyFB_UWP.Lib
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-   // [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-   // [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public class EpisodeList
@@ -334,9 +324,7 @@ namespace BezyFB_UWP.Lib
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-   // [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
-   // [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public partial class rootShowsShow : INotifyPropertyChanged
     {

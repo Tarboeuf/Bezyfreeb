@@ -8,17 +8,14 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Threading.Tasks;
-using BezyFB_UWP.Lib.Helpers;
-using CommonLib;
 using CommonPortableLib;
 
-namespace BezyFB_UWP.Lib.BetaSerie
+namespace BetaseriesPortableLib
 {
     public class BetaSerie
     {
         private readonly string _login;
         private readonly string _password;
-
         public IApiConnectorService ApiConnector { get; set; }
 
         public BetaSerie(string login, string password)
@@ -58,7 +55,7 @@ namespace BezyFB_UWP.Lib.BetaSerie
 
         private string Token { get; set; }
 
-        public async System.Threading.Tasks.Task<bool> GenereToken(bool force = false)
+        public async Task<bool> GenereToken(bool force = false)
         {
             if (force || String.IsNullOrEmpty(Token))
             {
@@ -92,7 +89,7 @@ namespace BezyFB_UWP.Lib.BetaSerie
             return true;
         }
 
-        public async System.Threading.Tasks.Task<EpisodeRoot> GetListeNouveauxEpisodesTest()
+        public async Task<EpisodeRoot> GetListeNouveauxEpisodesTest()
         {
             if (!await GenereToken())
                 return null;
@@ -113,7 +110,6 @@ namespace BezyFB_UWP.Lib.BetaSerie
                         return null;
                     }
                     var rt = (EpisodeRoot)serializer.Deserialize(reader);
-
                     Root = rt;
                     return rt;
                 }
@@ -152,9 +148,8 @@ namespace BezyFB_UWP.Lib.BetaSerie
                 SousTitreRoot rt;
                 using (var reader = GenerateStreamFromString(xml))
                 {
-                    rt = (SousTitreRoot)serializer.Deserialize(reader);
+                    rt = (SousTitreRoot) serializer.Deserialize(reader);
                 }
-
                 if (!rt.subtitles.Any())
                 {
                     link = ApiAdresse + Subtitles + "/episode" + EnteteArgs;
@@ -163,7 +158,9 @@ namespace BezyFB_UWP.Lib.BetaSerie
 
                     serializer = new XmlSerializer(typeof(SousTitreRoot), new XmlRootAttribute("root"));
                     using (var reader = GenerateStreamFromString(xml))
+                    {
                         rt = (SousTitreRoot)serializer.Deserialize(reader);
+                    }
                 }
                 return rt;
             }
@@ -216,7 +213,7 @@ namespace BezyFB_UWP.Lib.BetaSerie
             }
         }
 
-        public async void SetEpisodeUnSeen(Episode episode)
+        public async Task SetEpisodeUnSeen(Episode episode)
         {
             if (!await GenereToken())
                 return;
@@ -239,7 +236,7 @@ namespace BezyFB_UWP.Lib.BetaSerie
             }
         }
 
-        public async void NoterEpisode(Episode episode, int note)
+        public async Task NoterEpisode(Episode episode, int note)
         {
             string link = ApiAdresse + Episodes + Note + EnteteArgs;
             link += "&id=" + episode.id + "&note=" + note + "&token=" + Token;
@@ -266,7 +263,7 @@ namespace BezyFB_UWP.Lib.BetaSerie
                         Error = "Erreur lors de la récupération des nouveaux épisodes.";
                         return null;
                     }
-                    var rt = (EpisodeList)serializer.Deserialize(reader);
+                    var rt = (EpisodeList) serializer.Deserialize(reader);
                     return rt.episodes.ToList();
                 }
             }

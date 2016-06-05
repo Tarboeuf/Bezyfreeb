@@ -117,11 +117,6 @@
     <Compile Include="DownloadDialog.xaml.cs">
       <DependentUpon>DownloadDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Lib\BetaSerie\BetaSerie.cs" />
-    <Compile Include="Lib\BetaSerie\Episodes.cs" />
-    <Compile Include="Lib\BetaSerie\GuessIt.cs" />
-    <Compile Include="Lib\BetaSerie\OMDb.cs" />
-    <Compile Include="Lib\BetaSerie\SousTitre.cs" />
     <Compile Include="Lib\EzTv\Eztv.cs" />
     <Compile Include="Lib\Helpers\DownloadToFontFamilyConverter.cs" />
     <Compile Include="Lib\Helpers\SizeConverter.cs" />
@@ -224,6 +219,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BetaseriesPortableLib\BetaseriesPortableLib.csproj">
+      <Project>{4d1b5fa1-5d78-4164-bf90-79cd28b32b34}</Project>
+      <Name>BetaseriesPortableLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CommonLib\CommonLib.csproj">
       <Project>{7b587d62-0a0e-4436-a8e1-ddd2d36b9c83}</Project>
       <Name>CommonLib</Name>

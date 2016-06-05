@@ -12,6 +12,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using BetaseriesPortableLib;
 
 namespace BezyFB.Configuration
 {

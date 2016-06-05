@@ -184,17 +184,24 @@ namespace FreeboxPortableLib
             return result.Select(t => (string)t["name"]).ToList();
         }
 
-        public async Task<string> Download(string magnetUrl, string directory)
+        public async Task<string> Download(string magnetUrl, string directory, bool isRelativeDir)
         {
-            if (string.IsNullOrEmpty(SessionToken))
+            if (String.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
-            var pathDir = PathVideo;
-
-            foreach (var s in directory.Split('\\', '/').Where(s => !string.IsNullOrEmpty(s)))
+            string pathDir;
+            if (isRelativeDir)
             {
-                await CreerDossier(s, pathDir);
-                pathDir += "/" + s;
+                pathDir = PathVideo;
+                foreach (var s in directory.Split('\\', '/').Where(s => !String.IsNullOrEmpty(s)))
+                {
+                    CreerDossier(s, pathDir);
+                    pathDir += "/" + s;
+                }
+            }
+            else
+            {
+                pathDir = directory;
             }
 
             var path = WebUtility.UrlEncode(magnetUrl);
@@ -336,6 +343,7 @@ namespace FreeboxPortableLib
                 {
                     return -1;
                 }
+                return (int)jobj["result"]["id"];
             }
 
             if (json == null)

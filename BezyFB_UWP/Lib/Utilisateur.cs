@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using BetaseriesPortableLib;
 
 namespace BezyFB_UWP.Lib
 {
@@ -60,7 +61,7 @@ namespace BezyFB_UWP.Lib
             if (showConfiguration != null)
                 return showConfiguration;
 
-            var listShow = await new Eztv().GetListShow();
+            var listShow = await ClientContext.Current.Eztv.GetListShow();
             var show = new ShowConfiguration
             {
                 HasSubtitle = true,

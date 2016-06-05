@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BezyFB_UWP.Lib.BetaSerie;
+using BetaseriesPortableLib;
 using CommonLib;
 
 namespace BezyFB_UWP.Lib
@@ -25,17 +25,19 @@ namespace BezyFB_UWP.Lib
 
         public T411Client T411 => Container.Resolve<T411Client>();
 
-        public BetaSerie.BetaSerie BetaSerie => Container.Resolve<BetaSerie.BetaSerie>();
+        public BetaSerie BetaSerie => Container.Resolve<BetaSerie>();
 
         public Eztv Eztv => Container.Resolve<Eztv>();
 
         public static void Init()
         {
+            Container = new UnityContainer();
+
             Container.RegisterType<Freebox>(new ContainerControlledLifetimeManager()
                 , new InjectionConstructor(Settings.Current));
             Container.RegisterType<IMessageDialogService>(new ContainerControlledLifetimeManager()
                 , new InjectionFactory(c => new MessageDialogService()));
-            Container.RegisterType<BetaSerie.BetaSerie>(new ContainerControlledLifetimeManager()
+            Container.RegisterType<BetaSerie>(new ContainerControlledLifetimeManager()
                 , new InjectionConstructor(Settings.Current.LoginBetaSerie, Settings.Current.PwdBetaSerie));
             Container.RegisterType<T411Client>(new ContainerControlledLifetimeManager()
                 , new InjectionConstructor(Settings.Current.LoginT411, Settings.Current.PassT411));
@@ -52,7 +54,7 @@ namespace BezyFB_UWP.Lib
 
             Container.RegisterType<IApiConnectorService, ApiConnector>(new ContainerControlledLifetimeManager());
 
-            Container.RegisterType<BetaSerie.BetaSerie>(new ContainerControlledLifetimeManager()
+            Container.RegisterType<BetaSerie>(new ContainerControlledLifetimeManager()
                 , new InjectionConstructor(Settings.Current.LoginBetaSerie, Settings.Current.PwdBetaSerie));
 
             Container.RegisterType<T411Client>(new ContainerControlledLifetimeManager()

@@ -1,40 +1,36 @@
-﻿using BezyFB_UWP.Lib.Helpers;
-using CommonLib;
-using CommonPortableLib;
+﻿using CommonPortableLib;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 
-namespace BezyFB_UWP.Lib.BetaSerie
+namespace BetaseriesPortableLib
 {
     public class OMDb
     {
-        public static IApiConnectorService ApiConnector { get; set; }
-
-        public static async Task<OMDb> GetNote(string nom, string fileName = null)
+        public static async Task<OMDb> GetNote(string nom, IApiConnectorService apiConnector, string fileName = null)
         {
-            var jsonOmdb = await ApiConnector.Call("http://www.omdbapi.com/?t=" + nom, WebMethod.Get);
+            var jsonOmdb = await apiConnector.Call("http://www.omdbapi.com/?t=" + nom, WebMethod.Get);
             if (null == jsonOmdb)
                 return new OMDb();
-            var jobj = JsonObject.Parse(jsonOmdb);
-            if (jobj["Response"].GetBoolean())
+            var jobj = JObject.Parse(jsonOmdb);
+            if ((bool)jobj["Response"])
                 return new OMDb
                 {
                     Note = GetNote(jobj["imdbRating"]),
-                    Title = jobj["Title"].GetString(),
-                    Year = jobj["Year"].GetString(),
-                    Resume = jobj["Plot"].GetString(),
-                    Poster = jobj["Poster"].GetString(),
+                    Title = (string)jobj["Title"],
+                    Year = (string)jobj["Year"],
+                    Resume = (string)jobj["Plot"],
+                    Poster = (string)jobj["Poster"],
                     FileName = fileName ?? nom,
                 };
             return new OMDb { FileName = fileName ?? nom, };
         }
 
-        private static double GetNote(IJsonValue token)
+        private static double GetNote(JToken token)
         {
             try
             {
-                return token.GetNumber();
+                return (double)token;
             }
             catch (Exception)
             {

@@ -57,7 +57,7 @@ namespace BezyFB_UWP.Lib.T411
             return t4;
         }
 
-        private T411Client(string username, string password)
+        public T411Client(string username, string password)
         {
             _username = username;
             _password = password;

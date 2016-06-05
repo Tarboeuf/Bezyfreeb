@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using BezyFB_UWP.Lib;
 
 namespace BezyFB_UWP
 {
@@ -32,6 +33,7 @@ namespace BezyFB_UWP
                 Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
                 Microsoft.ApplicationInsights.WindowsCollectors.Session);
             this.InitializeComponent();
+            ClientContext.Init();
             this.Suspending += OnSuspending;
         }
 

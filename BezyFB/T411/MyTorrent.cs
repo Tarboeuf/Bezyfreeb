@@ -1,9 +1,9 @@
-﻿using BezyFB.BetaSerieLib;
-using CommonPortableLib;
+﻿using CommonPortableLib;
 using Essy.Tools.InputBox;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using BetaseriesPortableLib;
 
 namespace BezyFB.T411
 {

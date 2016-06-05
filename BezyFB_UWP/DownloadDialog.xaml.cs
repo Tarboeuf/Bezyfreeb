@@ -1,35 +1,26 @@
 ﻿using BezyFB_UWP.Lib;
 using BezyFB_UWP.Lib.EzTv;
-using BezyFB_UWP.Lib.Helpers;
 using CommonPortableLib;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
+using BetaseriesPortableLib;
 
 // Pour plus d'informations sur le modèle d'élément Boîte de dialogue de contenu, voir la page http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace BezyFB_UWP
 {
-    public sealed partial class DownloadDialog : ContentDialog
+    public sealed partial class DownloadDialog
     {
-        private Episode _episode;
+        private readonly Episode _episode;
 
         public IMessageDialogService DialogService { get; set; }
         public IEztv Eztv { get; set; }
@@ -82,13 +73,13 @@ namespace BezyFB_UWP
                 var serie = await Settings.Current.User.GetSerie(episode);
                 if (serie.IdEztv == null)
                 {
-                    DialogService.AfficherMessage("La série n'est pas configuré");
+                    await DialogService.AfficherMessage("La série n'est pas configuré");
                     return false;
                 }
 
                 var magnet = await Eztv.GetMagnetSerieEpisode(serie.IdEztv, episode.code);
                 if (magnet != null)
-                    episode.IdDownload = await ClientContext.Current.Freebox.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""));
+                    episode.IdDownload = await ClientContext.Current.Freebox.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), false);
                 else
                 {
                     // try to get torrent file.
@@ -101,7 +92,7 @@ namespace BezyFB_UWP
                     }
                     else
                     {
-                        DialogService.AfficherMessage("Episode " + episode.code + " de la serie " + serie.ShowName + " non trouvé");
+                        await DialogService.AfficherMessage("Episode " + episode.code + " de la serie " + serie.ShowName + " non trouvé");
                         return false;
                     }
                 }
@@ -140,13 +131,10 @@ namespace BezyFB_UWP
                     if (string.IsNullOrEmpty(episode.IdDownload))
                     {
                         var lst = await ClientContext.Current.Freebox.Ls(Settings.Current.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), false);
-                        if (lst != null)
+                        string f = lst?.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
+                        if (f != null)
                         {
-                            string f = lst.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
-                            if (null != f)
-                            {
-                                fileName = f.Replace(f.Substring(f.LastIndexOf('.')), ".srt");
-                            }
+                            fileName = f.Replace(f.Substring(f.LastIndexOf('.')), ".srt");
                         }
                     }
 
@@ -174,7 +162,7 @@ namespace BezyFB_UWP
                         }
                         catch (Exception ex)
                         {
-                            DialogService.AfficherMessage(ex.Message);
+                            await DialogService.AfficherMessage(ex.Message);
                             return false;
                         }
 
@@ -187,7 +175,7 @@ namespace BezyFB_UWP
                 }
                 else
                 {
-                    DialogService.AfficherMessage("Aucun sous titre disponible");
+                    await DialogService.AfficherMessage("Aucun sous titre disponible");
                     return false;
                 }
             }

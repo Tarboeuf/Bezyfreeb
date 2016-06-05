@@ -1,14 +1,10 @@
-﻿using BezyFB.Annotations;
-using BezyFB.Helpers;
-using BezyFB.Properties;
+﻿using BezyFB.Properties;
 using System;
-using System.ComponentModel;
-using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Forms;
+using BetaseriesPortableLib;
 using BezyFB.T411;
 using FreeboxPortableLib;
-using BezyFB.BetaSerieLib;
 
 namespace BezyFB.Configuration
 {

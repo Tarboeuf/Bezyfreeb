@@ -73,6 +73,10 @@
     <Compile Include="FreeboxFixture.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BetaseriesPortableLib\BetaseriesPortableLib.csproj">
+      <Project>{4d1b5fa1-5d78-4164-bf90-79cd28b32b34}</Project>
+      <Name>BetaseriesPortableLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BezyFB\BezyFB.csproj">
       <Project>{01b751cd-0a24-4ca7-803f-714f8edfe81b}</Project>
       <Name>BezyFB</Name>

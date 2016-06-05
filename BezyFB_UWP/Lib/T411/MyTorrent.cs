@@ -1,7 +1,8 @@
-﻿using BezyFB_UWP.Lib.BetaSerie;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using BetaseriesPortableLib;
+using CommonLib;
 
 namespace BezyFB_UWP.Lib.T411
 {
@@ -11,6 +12,7 @@ namespace BezyFB_UWP.Lib.T411
         private double _note;
         private string _nom;
         private OMDb _omDb;
+        private ApiConnector _apiConnector;
         private IGuessIt GuessIt { get; set; }
 
         public MyTorrent(Torrent torrent)
@@ -50,11 +52,11 @@ namespace BezyFB_UWP.Lib.T411
             {
                 if (!string.IsNullOrEmpty(nom))
                 {
-                    omDb = await OMDb.GetNote(nom);
+                    omDb = await OMDb.GetNote(nom, _apiConnector);
                 }
                 else
                 {
-                    omDb = await OMDb.GetNote(Name);
+                    omDb = await OMDb.GetNote(Name, _apiConnector);
                 }
             }
             catch (Exception)

@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BetaseriesPortableLib;
 using BezyFB.Configuration;
 using BezyFB.Helpers;
 using BezyFB.Properties;
@@ -224,7 +225,7 @@ namespace BezyFB
                 var serie = await _user.Value.GetSerie(episode);
                 var magnet = await ClientContext.Current.Eztv.GetMagnetSerieEpisode(serie.IdEztv, episode.code);
                 if (magnet != null)
-                    episode.IdDownload = await ClientContext.Current.Freebox.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""));
+                    episode.IdDownload = await ClientContext.Current.Freebox.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), false);
                 else if (serie.IdEztv == null)
                 {
                     await ClientContext.Current.MessageDialogService.AfficherMessage("Serie " + serie.ShowName + " + non configurée");

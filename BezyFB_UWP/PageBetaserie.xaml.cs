@@ -1,5 +1,4 @@
 ﻿using BezyFB_UWP.Lib;
-using BezyFB_UWP.Lib.BetaSerie;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +14,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using BetaseriesPortableLib;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, voir la page http://go.microsoft.com/fwlink/?LinkId=234238
 

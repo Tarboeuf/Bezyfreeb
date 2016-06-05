@@ -2,10 +2,10 @@
     x:Class="BezyFB_UWP.PageBetaserie"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:BezyFB_UWP"
-    xmlns:lib="using:BezyFB_UWP.Lib"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Loading="Page_Loading"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:betaseriesPortableLib="using:BetaseriesPortableLib"
+    Loading="Page_Loading"
     NavigationCacheMode="Enabled" DataContext="{x:Null}"
     mc:Ignorable="d">
     <Page.Transitions>
@@ -16,7 +16,7 @@
 
     <Page.Resources>
 
-        <DataTemplate x:Key="DetailContentTemplate" x:DataType="lib:rootShowsShow">
+        <DataTemplate x:Key="DetailContentTemplate" x:DataType="betaseriesPortableLib:rootShowsShow">
             <StackPanel ScrollViewer.VerticalScrollMode="Auto">
                 <TextBlock
                     Margin="0,8"
