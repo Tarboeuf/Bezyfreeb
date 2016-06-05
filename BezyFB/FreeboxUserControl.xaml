@@ -13,7 +13,6 @@
         
     </local:MyUserControl.Resources>
     <Grid>
-
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -28,6 +27,7 @@
             </Grid.RowDefinitions>
             <Button Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Click="FreeSpace_OnClick">Espace libre : </Button>
             <StackPanel Orientation="Horizontal" Grid.Row="0"  Grid.Column="3" HorizontalAlignment="Right">
+                <Button Click="DeplacerTelechargementFini_OnClick">Déplacer téléchargements finis</Button>
                 <Button Click="DeleteTerminated_OnClick">Supprimer Téléchargement fini</Button>
                 <Button Click="Refresh_OnClick">Refresh</Button>
             </StackPanel>
@@ -53,7 +53,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <GridSplitter Grid.Row="2" Grid.Column="2" Width="6" ResizeBehavior="PreviousAndNext" ResizeDirection="Auto" />
+            <GridSplitter Grid.Row="2" Grid.Column="2" Width="6" ResizeBehavior="PreviousAndNext" ShowsPreview="False" ResizeDirection="Auto" />
             <ListView Grid.Row="2" Grid.Column="3" ItemsSource="{Binding Movies}">
                 <ListView.View>
                     <GridView>

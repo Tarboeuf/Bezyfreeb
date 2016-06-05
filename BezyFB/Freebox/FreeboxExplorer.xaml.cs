@@ -41,19 +41,19 @@ namespace BezyFB.FreeboxLib
             if (null != b)
             {
                 FilePath += "/" + b.CommandParameter as string;
-                var list = await Freebox.Ls(FilePath, true);
+                var list = await Freebox.Ls(FilePath, true, false);
                 fichiers.ItemsSource = list;
                 labelResume.Content = FilePath;
-                NbItems.Content = list.Count(s => !(s[0] == '.'));
+                NbItems.Content = list.Count(s => s[0] != '.');
             }
         }
 
         private async void Window_Initialized(object sender, System.EventArgs e)
         {
-            var list = await Freebox.Ls("/", true);
+            var list = await Freebox.Ls("/", true, false);
             fichiers.ItemsSource = list;
             labelResume.Content = FilePath;
-            NbItems.Content = list.Count(s => !(s[0] == '.'));
+            NbItems.Content = list.Count(s => s[0] != '.');
         }
     }
 }

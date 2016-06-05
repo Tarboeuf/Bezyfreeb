@@ -29,7 +29,6 @@ namespace FreeboxPortableLib
             AppId = current.AppId;
             AppName = current.AppName;
             AppVersion = current.AppVersion;
-            PathVideo = current.PathVideo;
             MachineName = current.Hostname;
         }
 
@@ -38,8 +37,9 @@ namespace FreeboxPortableLib
         public string AppId { get; private set; }
         public string AppName { get; private set; }
         public string AppVersion { get; private set; }
-        public string PathVideo { get; private set; }
         public string MachineName { get; private set; }
+
+        private const string _DOSSIER_FINIT = "__finit";
 
         public async Task<bool> ConnectNewFreebox()
         {
@@ -160,7 +160,7 @@ namespace FreeboxPortableLib
             return JObject.Parse(json).ToString();
         }
 
-        public async Task<List<string>> Ls(string directory, bool onlyFolder)
+        public async Task<List<string>> Ls(string directory, bool onlyFolder, bool supprimerDossierSystem)
         {
             if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
@@ -181,7 +181,13 @@ namespace FreeboxPortableLib
             }
             var result = jobject["result"];
 
-            return result.Select(t => (string)t["name"]).ToList();
+            var list = result.Select(t => (string)t["name"]);
+            if (supprimerDossierSystem)
+            {
+                list = list.Where(f => f != "." && f != "..");
+            }
+
+            return list.ToList();
         }
 
         public async Task<string> Download(string magnetUrl, string directory, bool isRelativeDir)
@@ -192,10 +198,10 @@ namespace FreeboxPortableLib
             string pathDir;
             if (isRelativeDir)
             {
-                pathDir = PathVideo;
+                pathDir = _current.PathVideo;
                 foreach (var s in directory.Split('\\', '/').Where(s => !String.IsNullOrEmpty(s)))
                 {
-                    CreerDossier(s, pathDir);
+                    await CreerDossier(s, pathDir);
                     pathDir += "/" + s;
                 }
             }
@@ -218,11 +224,6 @@ namespace FreeboxPortableLib
 
             return ((int)jobject["result"]["id"]).ToString();
         }
-
-        //public async Task<string> DownloadFile(FileInfo torrentURL, string directory, bool isRelativeDir)
-        //{
-        //    return await DownloadFile(File.ReadAllBytes(torrentURL.FullName), torrentURL.Name, directory, isRelativeDir);
-        //}
 
         public async Task<string> DownloadFile(string urlFichier, string directory, bool isRelativeDir)
         {
@@ -251,7 +252,7 @@ namespace FreeboxPortableLib
             string pathDir;
             if (isRelativeDir)
             {
-                pathDir = PathVideo;
+                pathDir = _current.PathVideo;
                 foreach (var s in directory.Split('\\', '/').Where(s => !string.IsNullOrEmpty(s)))
                 {
                     await CreerDossier(s, pathDir);
@@ -289,7 +290,7 @@ namespace FreeboxPortableLib
             if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
-            var pathDir = PathVideo;
+            var pathDir = _current.PathVideo;
 
             foreach (var s in outputDir.Split('\\', '/').Where(s => !string.IsNullOrEmpty(s)))
             {
@@ -405,6 +406,31 @@ namespace FreeboxPortableLib
             }
         }
 
+
+        public async Task<bool> Move(string[] files, string destination)
+        {
+            try
+            {
+                var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/fs/mv/", WebMethod.Post, "application/json",
+                    new JObject
+                    {
+                        {"files", new JArray(files.Select(f => Crypto.EncodeTo64(f)))},
+                        {"dst", Crypto.EncodeTo64(destination)},
+                        { "mode", "overwrite"}
+                    }.ToString(), null,
+                    new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+                if (null == json)
+                {
+                    return false;
+                }
+                var job = JObject.Parse(json);
+                return (bool)job["success"];
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
 
         public async Task<string> DeleteFile(string filePath)
         {
@@ -534,43 +560,25 @@ namespace FreeboxPortableLib
                                          new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
 
         }
-    }
 
-    public class UserFreebox
-    {
-        private readonly Freebox _fb;
-
-        public UserFreebox(Freebox fb)
+        public async Task<List<string>> GetTelechargementFini()
         {
-            _fb = fb;
-            Downloads = new List<DownloadItem>();
-            //Movies = new ObservableCollection<OMDb>();
+            var fichiers = await Ls(_current.PathFilm, false, true);
+            var user = await GetInfosFreebox();
+            var fichierDownloaded = new List<string>();
+            foreach (var downloadItem in user.Downloads)
+            {
+                fichierDownloaded.Add(await GetFileNameDownloaded(downloadItem.Id.ToString()));
+            }
+            var fichiersNonTrouved = fichiers.Where(fichier => fichier != _DOSSIER_FINIT).Where(fichier => !fichierDownloaded.Contains(fichier)).ToList();
+            return fichiersNonTrouved;
         }
 
-        public long FreeSpace { get; set; }
-        public double Ratio { get; set; }
-        public List<DownloadItem> Downloads { get; set; }
-
-        //public ObservableCollection<OMDb> Movies { get; set; }
-        public string PathFilm { get; private set; }
-
-        //public async void LoadMovies()
-        //{
-        //    foreach (var item in await _fb.Ls(PathFilm, false))
-        //    {
-        //        var nom = await GuessIt.GuessNom(item);
-        //        var omdb = await OMDb.GetNote(nom, item);
-        //        Movies.Add(omdb);
-        //    }
-        //}
-    }
-
-    public class DownloadItem
-    {
-        public string Name { get; set; }
-        public string Status { get; set; }
-        public double Pourcentage { get; set; }
-        public double RxPourcentage { get; set; }
-        public int Id { get; set; }
+        public async Task DeplacerTelechargementFini()
+        {
+            var list = await GetTelechargementFini();
+            await CreerDossier(_DOSSIER_FINIT, _current.PathFilm);
+            await Move(list.Select(f => _current.PathFilm + "/" + f).ToArray(), _current.PathFilm + "/" + _DOSSIER_FINIT);
+        }
     }
 }

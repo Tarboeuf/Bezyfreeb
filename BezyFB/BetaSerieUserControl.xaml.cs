@@ -67,14 +67,11 @@ namespace BezyFB
 
                     if (string.IsNullOrEmpty(episode.IdDownload))
                     {
-                        var lst = await ClientContext.Current.Freebox.Ls(Settings.Default.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), false);
-                        if (lst != null)
+                        var lst = await ClientContext.Current.Freebox.Ls(Settings.Default.PathVideo + "/" + userShow.PathFreebox + "/" + (userShow.ManageSeasonFolder ? episode.season : ""), false, true);
+                        string f = lst?.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
+                        if (f != null)
                         {
-                            string f = lst.FirstOrDefault(s => s.Contains(episode.code) && !s.EndsWith(".srt"));
-                            if (null != f)
-                            {
-                                fileName = f.Replace(f.Substring(f.LastIndexOf('.')), ".srt");
-                            }
+                            fileName = f.Replace(f.Substring(f.LastIndexOf('.')), ".srt");
                         }
                     }
                     if (string.IsNullOrEmpty(Settings.Default.PathNonReseau))
@@ -225,7 +222,7 @@ namespace BezyFB
                 var serie = await _user.Value.GetSerie(episode);
                 var magnet = await ClientContext.Current.Eztv.GetMagnetSerieEpisode(serie.IdEztv, episode.code);
                 if (magnet != null)
-                    episode.IdDownload = await ClientContext.Current.Freebox.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), false);
+                    episode.IdDownload = await ClientContext.Current.Freebox.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), true);
                 else if (serie.IdEztv == null)
                 {
                     await ClientContext.Current.MessageDialogService.AfficherMessage("Serie " + serie.ShowName + " + non configurée");

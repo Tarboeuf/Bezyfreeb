@@ -86,6 +86,14 @@ namespace BezyFreebTest
             File.Delete(testFilePath);
         }
 
+        [TestMethod]
+        public async Task GetTelechargementFiniTest()
+        {
+            var task = await ClientContext.Current.Freebox.GetTelechargementFini();
+
+            Console.WriteLine(task.Count);
+        }
+        
 
         [TestMethod]
         public async Task ApiConnectorCallUploadFileTest()

@@ -64,5 +64,10 @@ namespace BezyFB
         {
             DataContext = await ClientContext.Current.Freebox.GetInfosFreebox();
         }
+
+        private async void DeplacerTelechargementFini_OnClick(object sender, RoutedEventArgs e)
+        {
+            await ClientContext.Current.Freebox.DeplacerTelechargementFini();
+        }
     }
 }

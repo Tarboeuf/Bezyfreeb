@@ -11,9 +11,9 @@ namespace BezyFreebTest.Data
 
         public string AppVersion { get; } = "Beta";
 
-        public string FreeboxIp { get; set; } = "à définir";
-        public string PathVideo { get; set; } = "/Disque dur/Vidéos/";
+        public string FreeboxIp { get; set; } = "192.168.2.254";
+        public string PathVideo { get; set; } = "/Disque dur/Vidéos/__FILM";
         public string Hostname { get; } = Environment.MachineName;
-        public string TokenFreebox { get; set; } = "à définir";
+        public string TokenFreebox { get; set; } = "Pq3ZVNifoGF/ePYD6ZPHQaF1O+EL8S9Ujv3HOhLuHY8XgzgIp3RzatPXvPm5mH0h";
     }
 }

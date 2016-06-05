@@ -7,6 +7,7 @@
         string AppVersion { get;  }
         string FreeboxIp { get; set; }
         string PathVideo { get; set; }
+        string PathFilm { get; set; }
         string Hostname { get; }
         string TokenFreebox { get; set; }
     }
