@@ -22,4 +22,35 @@ namespace CommonPortableLib
             }
         }
     }
+    public enum WebMethod
+    {
+        Get,
+        Post,
+        Put,
+        DELETE,
+    };
+
+    public static class Extensions
+    {
+        public static string GetLibelle(this WebMethod method)
+        {
+            switch (method)
+            {
+                case WebMethod.Get:
+                    return "GET";
+
+                case WebMethod.Post:
+                    return "POST";
+
+                case WebMethod.Put:
+                    return "PUT";
+
+                case WebMethod.DELETE:
+                    return "DELETE";
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(method));
+            }
+        }
+    }
 }

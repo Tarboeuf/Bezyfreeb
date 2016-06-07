@@ -39,7 +39,6 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApiConnector.cs" />
     <Compile Include="AsyncLazy.cs" />
     <Compile Include="CryptoHelper.cs" />
     <Compile Include="FileParameter.cs" />
@@ -48,6 +47,7 @@
     <Compile Include="ICryptographic.cs" />
     <Compile Include="IFormUploadService.cs" />
     <Compile Include="IMessageDialogService.cs" />
+    <Compile Include="OperationResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

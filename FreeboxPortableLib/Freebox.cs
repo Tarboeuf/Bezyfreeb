@@ -391,14 +391,14 @@ namespace FreeboxPortableLib
         {
             try
             {
-                var json = await ApiConnector.Call("http://" + IpFreebox + "/api/fs/info/" + pathDir + outputFileName, WebMethod.Get, null, null, null,
+                var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/fs/info/" + Crypto.EncodeTo64(pathDir + "/" + outputFileName), WebMethod.Get, null, null, null,
                     new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
                 if (null == json)
                 {
                     return false;
                 }
                 var job = JObject.Parse(json);
-                return (bool)job["result"];
+                return (bool)job["success"];
             }
             catch (Exception)
             {

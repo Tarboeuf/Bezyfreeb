@@ -17,6 +17,7 @@ using BetaseriesPortableLib;
 using BezyFB.Configuration;
 using BezyFB.Helpers;
 using BezyFB.Properties;
+using CommonPortableLib;
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace BezyFB
@@ -30,14 +31,14 @@ namespace BezyFB
         {
             InitializeComponent();
         }
-       
+
         private Lazy<Utilisateur> _user = new Lazy<Utilisateur>(Utilisateur.Current);
-        
+
         public void InitialiseElements()
         {
             _user = new Lazy<Utilisateur>(Utilisateur.Current);
         }
-        
+
         private async Task<bool> DownloadSsTitre(Episode episode)
         {
             Cursor = Cursors.Wait;
@@ -88,25 +89,16 @@ namespace BezyFB
                     var encoding = ExtractEncoding(fileName);
                     var sousTitre = str.subtitles.OrderByDescending(c => c.quality).Select(s => s.url).FirstOrDefault();
 
-                    var wc = new WebClient();
                     if (sousTitre != null)
                     {
-                        var st = wc.DownloadData(sousTitre);
-                        Clipboard.SetText(sousTitre);
-                        try
+                        var result = await DownloadSousTitreHelper.DownloadAndUnzip(encoding, sousTitre);
+                        if (!result.IsOk)
                         {
-                            var st2 = UnzipFromStream(st, encoding);
-                            if (st2 != null)
-                            {
-                                st = Encoding.Convert(Encoding.Default, Encoding.UTF8, st2);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            await ClientContext.Current.MessageDialogService.AfficherMessage(ex.Message);
+                            await ClientContext.Current.MessageDialogService.AfficherMessage(result.Exception.Message);
                             Cursor = Cursors.Arrow;
                             return false;
                         }
+                        byte[] st = result.Result;
 
                         File.WriteAllBytes(pathreseau + fileName, st);
                         try
@@ -133,81 +125,7 @@ namespace BezyFB
             Cursor = Cursors.Arrow;
             return true;
         }
-
-        private static byte[] UnzipFromStream(byte[] st, string encoding)
-        {
-            MemoryStream zipStream = new MemoryStream(st);
-            var zipInputStream = new ZipInputStream(zipStream);
-
-            if (!zipInputStream.CanRead)
-                return null;
-            ZipEntry zipEntry;
-            try
-            {
-                zipEntry = zipInputStream.GetNextEntry();
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-            if (zipEntry == null)
-                return new byte[0];
-            while (zipEntry != null)
-            {
-                String entryFileName = zipEntry.Name;
-
-                if (entryFileName.Contains(".srt") && entryFileName.Contains(encoding))
-                {
-                    Clipboard.SetText(entryFileName);
-                    int fileSize = (int)zipEntry.Size;
-                    byte[] blob = new byte[(int)zipEntry.Size];
-
-                    while ((zipInputStream.Read(blob, 0, fileSize)) != 0)
-                    {
-                    }
-
-                    //closing every thing
-                    zipInputStream.Close();
-                    return blob;
-                }
-
-                zipEntry = zipInputStream.GetNextEntry();
-            }
-            if (zipInputStream.CanSeek)
-            {
-                zipInputStream.Seek(0, SeekOrigin.Begin);
-            }
-            else
-            {
-                zipStream = new MemoryStream(st);
-                zipInputStream = new ZipInputStream(zipStream);
-            }
-            zipEntry = zipInputStream.GetNextEntry();
-            if (zipEntry == null)
-                return new byte[0];
-            while (true)
-            {
-                String entryFileName = zipEntry.Name;
-
-                if (entryFileName.Contains(".srt"))
-                {
-                    Clipboard.SetText(entryFileName);
-                    int fileSize = (int)zipEntry.Size;
-                    byte[] blob = new byte[(int)zipEntry.Size];
-
-                    while ((zipInputStream.Read(blob, 0, fileSize)) != 0)
-                    {
-                    }
-
-                    //closing every thing
-                    zipInputStream.Close();
-                    return blob;
-                }
-
-                zipEntry = zipInputStream.GetNextEntry();
-            }
-        }
-
+        
         private async void GetMagnetClick(object sender, RoutedEventArgs e)
         {
             var episode = ((Button)sender).CommandParameter as Episode;
@@ -343,6 +261,8 @@ namespace BezyFB
                 return "LOL";
             if (movieFilePath.Contains("2HD"))
                 return "2HD";
+            if (movieFilePath.Contains("FQM"))
+                return "FQM";
             return "";
         }
 

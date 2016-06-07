@@ -189,6 +189,7 @@
     </Compile>
     <Compile Include="Helpers\ApiConnector.cs" />
     <Compile Include="Helpers\AsyncLazy.cs" />
+    <Compile Include="Helpers\DownloadSousTitreHelper.cs" />
     <Compile Include="Helpers\ExceptionExtension.cs" />
     <Compile Include="Helpers\GridViewSort.cs" />
     <Compile Include="Helpers\Cryptographic.cs" />
