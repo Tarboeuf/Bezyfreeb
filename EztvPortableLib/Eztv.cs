@@ -88,7 +88,7 @@ namespace EztvPortableLib
             if (string.IsNullOrEmpty(html))
                 return new List<Show>();
 
-            html = html.Split(new[] { "<select name=\"SearchString\">" }, StringSplitOptions.RemoveEmptyEntries)[1];
+            html = html.Split(new[] { "<select name=\"q2\" class=\"tv-show-search-select\">" }, StringSplitOptions.RemoveEmptyEntries)[1];
             html = html.Split(new[] { "</select>" }, StringSplitOptions.RemoveEmptyEntries)[0];
 
             html = html.Replace("<option value=\"", "");

@@ -73,15 +73,15 @@ namespace BezyFreebTest
         }
 
 
-        [TestMethod]
-        public async Task GetTorrentSerieEpisodeTest()
-        {
-            Eztv eztv = new Eztv();
-            eztv.ApiConnector = new ApiConnector();
-            var e = await eztv.GetTorrentSerieEpisode("42", "S01E01");
+        //[TestMethod]
+        //public async Task GetTorrentSerieEpisodeTest()
+        //{
+        //    Eztv eztv = new Eztv();
+        //    eztv.ApiConnector = new ApiConnector();
+        //    var e = await eztv.GetTorrentSerieEpisode("42", "S01E01");
 
-            Assert.AreNotEqual("", e);
-            Assert.AreNotEqual(null, e);
-        }
+        //    Assert.AreNotEqual("", e);
+        //    Assert.AreNotEqual(null, e);
+        //}
     }
 }
