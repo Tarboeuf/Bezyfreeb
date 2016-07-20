@@ -5,7 +5,10 @@
         public SousCategorie(Category cat, string parentName)
         {
             Cat = cat;
-            NameWithParent = parentName + " / " + cat.Name;
+            if (null != cat)
+                NameWithParent = parentName + " / " + cat.Name;
+            else
+                NameWithParent = parentName;
         }
 
         public Category Cat { get; set; }

@@ -90,7 +90,14 @@
         </Grid.RowDefinitions>
         <TextBlock x:Name="textBlock" Margin="5"  Style="{StaticResource HeaderTextBlockStyle}" HorizontalAlignment="Left" TextWrapping="Wrap" Text="T411" VerticalAlignment="Top"/>
         <StackPanel Grid.Column="0"  Grid.Row="0" HorizontalAlignment="Right" Orientation="Horizontal">
-            <ToggleButton Content="" Name="IsSearch" FontFamily="Segoe MDL2 Assets" Width="50" Height="50" Margin="5" Checked="IsSearch_OnChecked" Unchecked="IsSearch_OnUnChecked"/>
+            <ToggleButton Content="" Name="IsSearch" FontFamily="Segoe MDL2 Assets" Width="50" Height="50" Margin="5" 
+                          Checked="IsSearch_OnChecked" Unchecked="IsSearch_OnUnChecked">
+                <ToggleButton.ContentTransitions>
+                    <TransitionCollection>
+                        <ContentThemeTransition/>
+                    </TransitionCollection>
+                </ToggleButton.ContentTransitions>
+            </ToggleButton>
             <Button Content="" Click="Refresh_Click" FontFamily="Segoe MDL2 Assets" Width="50" Height="50" Margin="5" />
         </StackPanel>
         <Border x:Name="border" Grid.Row="1" BorderThickness="2" BorderBrush="DarkGray" Background="DarkGRay" Style="{StaticResource BorderSearchStyle}">
@@ -107,7 +114,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Catégorie : " VerticalAlignment="Center"/>
-                <ComboBox Grid.Row="0" Grid.Column="1" x:Name="comboBox" HorizontalAlignment="Stretch" DisplayMemberPath="Name" />
+                <ComboBox Grid.Row="0" Grid.Column="1" x:Name="comboBox" HorizontalAlignment="Stretch" DisplayMemberPath="NameWithParent" />
                 <TextBlock  Grid.Row="1" Grid.Column="0" Text="Nom : " VerticalAlignment="Center"/>
                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="textBoxNom" />
 

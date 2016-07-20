@@ -27,7 +27,7 @@ namespace BezyFB_UWP
     {
         private Torrent _torrent;
         private static List<Torrent> _movies;
-        private static List<Category> _categories;
+        private static List<SousCategorie> _categories;
 
         public IMessageDialogService MessageDialog { get; set; }
 
@@ -44,7 +44,7 @@ namespace BezyFB_UWP
             ProgressBarDC.Current.IsProgress = true;
             if (forcer || _movies == null)
             {
-                var categorie = comboBox.SelectedItem as Category;
+                var categorie = comboBox.SelectedItem as SousCategorie;
 
                 if (string.IsNullOrEmpty(textBoxNom.Text))
                 {
@@ -64,22 +64,22 @@ namespace BezyFB_UWP
                     {
                         _movies = await ClientContext.Current.T411.GetTopWeek();
                     }
-                    if (categorie != null && categorie.Id != -1)
+                    if (categorie?.Cat != null && categorie.Cat.Id != -1)
                     {
-                        var hashCat = categorie.Cats.Select(c => c.Value.Id).ToImmutableHashSet();
-                        _movies = _movies.Where(t => t.Category == categorie.Id || hashCat.Contains(t.Category)).ToList();
+                        var hashCat = categorie.Cat.Cats.Select(c => c.Value.Id).ToImmutableHashSet();
+                        _movies = _movies.Where(t => t.Category == categorie.Cat.Id || hashCat.Contains(t.Category)).ToList();
                     }
                 }
                 else
                 {
-                    if (categorie == null || categorie.Id == -1)
+                    if (categorie == null || categorie.Cat.Id == -1)
                     {
                         _movies = (await ClientContext.Current.T411.GetQuery(string.Format("{0}", WebUtility.UrlEncode(textBoxNom.Text)))).Torrents;
                     }
                     else
                     {
                         _movies = (await ClientContext.Current.T411.GetQuery(string.Format("{0}", WebUtility.UrlEncode(textBoxNom.Text)),
-                                new QueryOptions { CategoryIds = new List<int> { categorie.Id }, Limit = 1000 })).Torrents;
+                                new QueryOptions { CategoryIds = new List<int> { categorie.Cat.Id }, Limit = 1000 })).Torrents;
                     }
                 }
             }
@@ -110,13 +110,15 @@ namespace BezyFB_UWP
             {
                 try
                 {
-                    var cats = await ClientContext.Current.T411.GetCategory();
-                    _categories = cats.Select(c => c.Value).ToList();
-                    _categories.Insert(0, new Category
+                    _categories = new List<SousCategorie>();
+                    foreach (var category1 in (await ClientContext.Current.T411.GetCategory()))
                     {
-                        Id = -1,
-                        Name = "Toutes"
-                    });
+                        foreach (var cat in category1.Value.Cats)
+                        {
+                            _categories.Add(new SousCategorie(cat.Value, category1.Value.Name));
+                        }
+                    }
+                    _categories.Insert(0, new SousCategorie(null, "Toutes"));
                 }
                 catch (Exception e)
                 {
