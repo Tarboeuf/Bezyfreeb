@@ -30,6 +30,6 @@
         <WebView Grid.Row="0" Name="View" Margin="5">
             
         </WebView>
-        <local:T411UserControl DataContext="{x:Bind Item}" Grid.Row="1"/>
+        <local:T411UserControl Item="{x:Bind Item, Mode=OneWay}" Grid.Row="1"/>
     </Grid>
 </Page>

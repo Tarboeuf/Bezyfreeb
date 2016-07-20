@@ -34,7 +34,10 @@
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="{Binding Name}" />
                                         <StackPanel Orientation="Horizontal" Grid.Row="1">
-                                            <ProgressBar Value="{Binding RxPourcentage}" Width="100" Maximum="10000"/>
+                                            <StackPanel>
+                                                <ProgressBar Value="{Binding Pourcentage}" Width="100" Maximum="10000"/>
+                                                <ProgressBar Value="{Binding RxPourcentage}" Width="100" Maximum="10000"/>
+                                            </StackPanel>
                                             <TextBlock Text="{Binding Status}" Foreground="DimGray" Margin="10 0"/>
                                         </StackPanel>
                                     </Grid>

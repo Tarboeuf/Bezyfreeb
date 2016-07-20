@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using BezyFB_UWP.Lib;
-using BezyFB_UWP.Lib.EzTv;
+using EztvPortableLib;
 
 // Pour plus d'informations sur le modèle d'élément Boîte de dialogue de contenu, voir la page http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -30,9 +30,9 @@ namespace BezyFB_UWP
         private FilteredCollection<Eztv.Show> _list;
 
 
-        public ConfigSerieDialog(Eztv eztv, ShowConfiguration showConfiguration)
+        public ConfigSerieDialog(ShowConfiguration showConfiguration)
         {
-            _eztv = eztv;
+            _eztv = ClientContext.Current.Eztv;
             _showConfiguration = showConfiguration;
             this.InitializeComponent();
             this.Loaded += ConfigSerieDialog_Loaded;
@@ -41,7 +41,7 @@ namespace BezyFB_UWP
         private async void ConfigSerieDialog_Loaded(object sender, RoutedEventArgs e)
         {
             ProgressBarDC.Current.IsProgress = true;
-            _list = new FilteredCollection<Eztv.Show>(await _eztv.GetListShow());
+            _list = new FilteredCollection<Eztv.Show>((await _eztv.GetListShow()).ToList());
             ListView.ItemsSource = _list;
 
             var texte = _showConfiguration.ShowName

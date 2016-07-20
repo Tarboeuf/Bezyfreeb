@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -14,7 +11,6 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using BezyFB_UWP.Annotations;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, consultez la page http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -29,7 +25,8 @@ namespace BezyFB_UWP
         {
             this.InitializeComponent();
 
-            ProgressBar.DataContext = ProgressBarDC.Current;
+            ProgressBar1.DataContext = ProgressBarDC.Current;
+            ProgressBar2.DataContext = ProgressBarDC.Current;
         }
 
         private void HamburgerButton_Click(object sender, RoutedEventArgs e)
@@ -75,37 +72,6 @@ namespace BezyFB_UWP
             {
                 frame.Navigate(typeof(PageSettings));
             }
-        }
-    }
-
-    public class ProgressBarDC : INotifyPropertyChanged
-    {
-        private static readonly Lazy<ProgressBarDC> _current = new Lazy<ProgressBarDC>();
-
-        public static ProgressBarDC Current => _current.Value;
-
-        private bool _isProgress;
-
-        public bool IsProgress
-        {
-            get { return _isProgress; }
-            set
-            {
-                _isProgress = value; 
-                OnPropertyChanged(); 
-                // ReSharper disable once ExplicitCallerInfoArgument
-                OnPropertyChanged(nameof(Visibility));
-            }
-        }
-
-        public Visibility Visibility => IsProgress ? Visibility.Visible : Visibility.Collapsed;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

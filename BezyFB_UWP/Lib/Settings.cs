@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
-using BezyFB_UWP.Lib.EzTv;
+using EztvPortableLib;
 using BezyFB_UWP.Lib.T411;
 using CommonLib;
 using FreeboxPortableLib;

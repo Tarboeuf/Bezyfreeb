@@ -15,6 +15,8 @@ namespace EztvPortableLib
     {
         private const string Url = "https://eztv.ag/";
 
+        private IEnumerable<Show> _shows = null;
+
         private static Dictionary<string, string> _PagesSeries = new Dictionary<string, string>();
 
         public IApiConnectorService ApiConnector { get; set; }
@@ -83,22 +85,27 @@ namespace EztvPortableLib
 
         public async Task<IEnumerable<Show>> GetListShow()
         {
-            string html = await ApiConnector.Call(Url + "search/", WebMethod.Get, null, null, "text/xml");
+            if (_shows == null)
+            {
+                string html = await ApiConnector.Call(Url + "search/", WebMethod.Get, null, null, "text/xml");
 
-            if (string.IsNullOrEmpty(html))
-                return new List<Show>();
+                if (string.IsNullOrEmpty(html))
+                    return new List<Show>();
 
-            html = html.Split(new[] { "<select name=\"q2\" class=\"tv-show-search-select\">" }, StringSplitOptions.RemoveEmptyEntries)[1];
-            html = html.Split(new[] { "</select>" }, StringSplitOptions.RemoveEmptyEntries)[0];
+                html =
+                    html.Split(new[] {"<select name=\"q2\" class=\"tv-show-search-select\">"},
+                        StringSplitOptions.RemoveEmptyEntries)[1];
+                html = html.Split(new[] {"</select>"}, StringSplitOptions.RemoveEmptyEntries)[0];
 
-            html = html.Replace("<option value=\"", "");
-            html = html.Replace("\r\n", "");
+                html = html.Replace("<option value=\"", "");
+                html = html.Replace("\r\n", "");
 
-            var series = html.Split(new[] { "</option>" }, StringSplitOptions.RemoveEmptyEntries);
+                var series = html.Split(new[] {"</option>"}, StringSplitOptions.RemoveEmptyEntries);
 
-            IEnumerable<Show> shows = series.Skip(1).Select(s => GetShow(s.Trim())).Where(s => s != null);
+                _shows = series.Skip(1).Select(s => GetShow(s.Trim())).Where(s => s != null);
+            }
 
-            return shows;
+            return _shows;
         }
 
         private Show GetShow(string str)

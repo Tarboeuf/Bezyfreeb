@@ -29,20 +29,32 @@ namespace BezyFB_UWP
             this.InitializeComponent();
         }
 
+
+
+        public Torrent Item
+        {
+            get { return (Torrent)GetValue(ItemProperty); }
+            set { SetValue(ItemProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Item.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ItemProperty =
+            DependencyProperty.Register("Item", typeof(Torrent), typeof(T411UserControl), new PropertyMetadata(0));
+
+
+
         private async void Download_OnClick(object sender, RoutedEventArgs e)
         {
-
-            if (await ClientContext.Current.MessageDialogService.ShowYesNoDialog("Êtes-vous sûr de vouloir télécharger ce film ?") == DialogResult.Yes)
+            if (null != Item)
             {
-                ProgressBarDC.Current.IsProgress = true;
-                var torrent = DataContext as Torrent;
-                if (null != torrent)
+                if (await ClientContext.Current.MessageDialogService.ShowYesNoDialog("Êtes-vous sûr de vouloir télécharger ce film ?\r\n" + Item.Name) == DialogResult.Yes)
                 {
-                    using (var stream = ClientContext.Current.T411.DownloadTorrent(torrent.Id))
+                    ProgressBarDC.Current.IsProgress = true;
+                    using (var stream = ClientContext.Current.T411.DownloadTorrent(Item.Id))
                     {
                         try
                         {
-                            await ClientContext.Current.Freebox.DownloadFile(stream, torrent.Name + ".torrent", Settings.Current.PathFilm, false);
+                            await ClientContext.Current.Freebox.DownloadFile(stream, Item.Name + ".torrent", Settings.Current.PathFilm, false);
                             await ClientContext.Current.MessageDialogService.AfficherMessage("Le téléchargement a été rajouté");
                         }
                         catch (Exception)

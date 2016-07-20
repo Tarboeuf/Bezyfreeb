@@ -1,4 +1,4 @@
-﻿using BezyFB_UWP.Lib.EzTv;
+﻿using EztvPortableLib;
 using BezyFB_UWP.Lib.T411;
 using CommonPortableLib;
 using FreeboxPortableLib;
@@ -31,19 +31,6 @@ namespace BezyFB_UWP.Lib
 
         public static void Init()
         {
-            Container = new UnityContainer();
-
-            Container.RegisterType<Freebox>(new ContainerControlledLifetimeManager()
-                , new InjectionConstructor(Settings.Current));
-            Container.RegisterType<IMessageDialogService>(new ContainerControlledLifetimeManager()
-                , new InjectionFactory(c => new MessageDialogService()));
-            Container.RegisterType<BetaSerie>(new ContainerControlledLifetimeManager()
-                , new InjectionConstructor(Settings.Current.LoginBetaSerie, Settings.Current.PwdBetaSerie));
-            Container.RegisterType<T411Client>(new ContainerControlledLifetimeManager()
-                , new InjectionConstructor(Settings.Current.LoginT411, Settings.Current.PassT411));
-            Container.RegisterType<Eztv>(new ContainerControlledLifetimeManager());
-
-
             Container = new UnityContainer();
             Container.AddNewExtension<PropertiesInjectionExtension>(); // active l'injection par propriétés pour toutes les instance résolue dans le container
 

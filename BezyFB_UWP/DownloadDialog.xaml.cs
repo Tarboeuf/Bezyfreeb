@@ -1,5 +1,4 @@
 ﻿using BezyFB_UWP.Lib;
-using BezyFB_UWP.Lib.EzTv;
 using CommonPortableLib;
 using System;
 using System.IO;
@@ -13,6 +12,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.Web.Http;
 using BetaseriesPortableLib;
+using EztvPortableLib;
 
 // Pour plus d'informations sur le modèle d'élément Boîte de dialogue de contenu, voir la page http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -22,8 +22,8 @@ namespace BezyFB_UWP
     {
         private readonly Episode _episode;
 
-        public IMessageDialogService DialogService { get; set; }
-        public IEztv Eztv { get; set; }
+        private IMessageDialogService DialogService => ClientContext.Current.MessageDialogService;
+        private Eztv Eztv => ClientContext.Current.Eztv;
 
         public DownloadDialog(Episode episode)
         {
@@ -47,8 +47,10 @@ namespace BezyFB_UWP
         private async void Telecharger_Click(object sender, RoutedEventArgs e)
         {
             ProgressBarDC.Current.IsProgress = true;
-            await DownloadMagnet(_episode);
-            await DownloadSsTitre(_episode);
+
+            var ok = await DownloadMagnet(_episode);
+            if (ok)
+                await DownloadSsTitre(_episode);
             ProgressBarDC.Current.IsProgress = false;
         }
         private async void Vu_Click(object sender, RoutedEventArgs e)
@@ -79,7 +81,7 @@ namespace BezyFB_UWP
 
                 var magnet = await Eztv.GetMagnetSerieEpisode(serie.IdEztv, episode.code);
                 if (magnet != null)
-                    episode.IdDownload = await ClientContext.Current.Freebox.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), false);
+                    episode.IdDownload = await ClientContext.Current.Freebox.Download(magnet, serie.PathFreebox + "/" + (serie.ManageSeasonFolder ? episode.season : ""), true);
                 else
                 {
                     // try to get torrent file.

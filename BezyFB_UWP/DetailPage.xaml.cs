@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using BetaseriesPortableLib;
-using BezyFB_UWP.Lib.EzTv;
+using EztvPortableLib;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, voir la page http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -188,7 +188,7 @@ namespace BezyFB_UWP
             ProgressBarDC.Current.IsProgress = true;
             var show = await Utilisateur.Current().GetSerie(Item);
             ProgressBarDC.Current.IsProgress = false;
-            ConfigSerieDialog dialog = new ConfigSerieDialog(ClientContext.Current.Eztv, show);
+            ConfigSerieDialog dialog = new ConfigSerieDialog(show);
             await dialog.ShowAsync();
         }
 
