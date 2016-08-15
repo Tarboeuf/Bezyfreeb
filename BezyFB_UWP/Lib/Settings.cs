@@ -12,6 +12,7 @@ using CommonLib;
 using FreeboxPortableLib;
 using CommonPortableLib;
 using Windows.Networking.Connectivity;
+using System.IO;
 
 namespace BezyFB_UWP.Lib
 {
@@ -37,7 +38,7 @@ namespace BezyFB_UWP.Lib
         {
             get { return _current.Value; }
         }
-        
+
         public string FreeboxIp
         {
             get { return ApplicationData.Current.LocalSettings.Values["IpFreebox"] as string; }
@@ -130,14 +131,40 @@ namespace BezyFB_UWP.Lib
 
         public string ShowConfigurationList
         {
-            get { return ApplicationData.Current.LocalSettings.Values["ShowConfigurationList"] as string; }
+            get
+            {
+                var file = ApplicationData.Current.LocalFolder.TryGetItemAsync("ShowConfigurationList").GetAwaiter().GetResult() as StorageFile;
+                if (file == null)
+                {
+                    return null;
+                }
+                using (var stream = file.OpenAsync(FileAccessMode.Read).GetAwaiter().GetResult())
+                {
+                    using (StreamReader sr = new StreamReader(stream.AsStream()))
+                    {
+                        return sr.ReadToEnd();
+                    }
+                }
+            }
             set
             {
-                ApplicationData.Current.LocalSettings.Values["ShowConfigurationList"] = value;
+                var file = ApplicationData.Current.LocalFolder.TryGetItemAsync("ShowConfigurationList").GetAwaiter().GetResult() as StorageFile;
+                if (file == null)
+                {
+                    file = ApplicationData.Current.LocalFolder.CreateFileAsync("ShowConfigurationList").GetAwaiter().GetResult();
+                }
+                using (var stream = file.OpenStreamForWriteAsync().GetAwaiter().GetResult())
+                {
+                    using (StreamWriter sw = new StreamWriter(stream))
+                    {
+                        sw.Write(value);
+                    }
+                }
+
                 OnPropertyChanged("ShowConfigurationList");
             }
         }
-        
+
         public string Hostname
         {
             get

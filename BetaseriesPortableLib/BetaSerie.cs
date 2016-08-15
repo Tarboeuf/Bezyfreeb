@@ -32,6 +32,7 @@ namespace BetaseriesPortableLib
 
         //private const string Comments = "/comments";
         private const string Episodes = "/episodes";
+        private const string Shows = "/shows";
 
         //private const string Friends = "/friends";
         private const string Members = "/members";
@@ -45,7 +46,6 @@ namespace BetaseriesPortableLib
 
         private const string Watched = "/watched";
         private const string Note = "/note";
-        private const string Shows = "/shows";
 
         //private const string Timeline = "/timeline";
 
@@ -271,6 +271,50 @@ namespace BetaseriesPortableLib
             {
                 Error = "GetListeNouveauxEpisodesTest : " + e.Message;
             }
+            return null;
+        }
+
+        public async Task<List<rootShowsShow>>  GetListeSeries()
+        {
+            if (!await GenereToken())
+                return null;
+
+            Error = "";
+            try
+            {
+                string link = ApiAdresse + Members + "/infos" + EnteteArgs;
+                link += "&userid=" + _login + "&token=" + Token + "&only=shows";
+                var xml = await ApiConnector.Call(link, WebMethod.Get, null, null, "text/xml");
+
+                XDocument dom = XDocument.Parse(xml);
+                List<rootShowsShow> list = new List<rootShowsShow>();
+                foreach (var xElement in dom.Descendants("show"))
+                {
+                    var show = new rootShowsShow();
+                    list.Add(show);
+                    show.id = xElement.Element("id").Value;
+                    show.title = xElement.Element("title").Value;
+                }
+                return list;
+                //var serializer = new XmlSerializer(typeof(EpisodeRoot), new XmlRootAttribute("root"));
+                //using (var reader = GenerateStreamFromString(xml))
+                //{
+                //    if (null == xml)
+                //    {
+                //        Error = "Erreur lors de la récupération des nouveaux épisodes.";
+                //        return null;
+                //    }
+                //    var rt = (EpisodeRoot)serializer.Deserialize(reader);
+                //    Root = rt;
+                //    return rt;
+                //}
+
+            }
+            catch (Exception e)
+            {
+                Error = "GetListeSeries : " + e.Message;
+            }
+            Root = null;
             return null;
         }
     }

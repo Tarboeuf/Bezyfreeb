@@ -6,17 +6,19 @@
              xmlns:local="clr-namespace:BezyFB"
              xmlns:betaseriesPortableLib="clr-namespace:BetaseriesPortableLib;assembly=BetaseriesPortableLib"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="600">
     <Grid>
 
         <DockPanel>
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                 <Button Content="Charger la liste des non vus" Click="Button_Click" Margin="5" />
                 <Button Content="Telecharger tout" Click="Download_All_Click" Margin="5" />
 
                 <TextBlock Margin="20 0" VerticalAlignment="Center"> Reste à voir</TextBlock>
                 <TextBlock Margin="0 0" VerticalAlignment="Center" Name="TextBlockResteAVoir"></TextBlock>
-            </StackPanel>
+                
+                <Button Content="Voir toutes les séries" Click="VoirToutesLesSeries_OnClick" DockPanel.Dock="Right"></Button>
+            </DockPanel>
             <TreeView Name="tv" DockPanel.Dock="Bottom">
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate DataType="betaseriesPortableLib:rootShowsShow" ItemsSource="{Binding unseen}">

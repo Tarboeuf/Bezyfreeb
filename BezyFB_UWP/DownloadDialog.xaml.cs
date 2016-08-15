@@ -226,10 +226,21 @@ namespace BezyFB_UWP
         }
         private string ExtractEncoding(string movieFilePath)
         {
+            if (movieFilePath.ToUpper().Contains("X264-") && movieFilePath.ToUpper().Contains("[EZTV]"))
+            {
+                int idDebut = movieFilePath.IndexOf("X264-", StringComparison.CurrentCultureIgnoreCase) + 5;
+                return movieFilePath.Substring(idDebut,
+                    movieFilePath.IndexOf("[EZTV]", StringComparison.CurrentCultureIgnoreCase) - idDebut);
+            }
+
             if (movieFilePath.Contains("LOL"))
                 return "LOL";
             if (movieFilePath.Contains("2HD"))
                 return "2HD";
+            if (movieFilePath.Contains("FQM"))
+                return "FQM";
+            if (movieFilePath.Contains("TURBO"))
+                return "TURBO";
             return "";
         }
 

@@ -125,7 +125,7 @@ namespace BezyFB
             Cursor = Cursors.Arrow;
             return true;
         }
-        
+
         private async void GetMagnetClick(object sender, RoutedEventArgs e)
         {
             var episode = ((Button)sender).CommandParameter as Episode;
@@ -257,12 +257,22 @@ namespace BezyFB
 
         private string ExtractEncoding(string movieFilePath)
         {
+
+            if (movieFilePath.ToUpper().Contains("X264-") && movieFilePath.ToUpper().Contains("[EZTV]"))
+            {
+                int idDebut = movieFilePath.IndexOf("X264-", StringComparison.CurrentCultureIgnoreCase) + 5;
+                return movieFilePath.Substring(idDebut,
+                    movieFilePath.IndexOf("[EZTV]", StringComparison.CurrentCultureIgnoreCase) - idDebut);
+            }
+
             if (movieFilePath.Contains("LOL"))
                 return "LOL";
             if (movieFilePath.Contains("2HD"))
                 return "2HD";
             if (movieFilePath.Contains("FQM"))
                 return "FQM";
+            if (movieFilePath.Contains("TURBO"))
+                return "TURBO";
             return "";
         }
 
@@ -318,5 +328,22 @@ namespace BezyFB
             }
         }
 
+        private async void VoirToutesLesSeries_OnClick(object sender, RoutedEventArgs e)
+        {
+            Window.pb.Visibility = Visibility.Visible;
+            if (!string.IsNullOrEmpty(ClientContext.Current.BetaSerie.Error))
+                SetStatusText(ClientContext.Current.BetaSerie.Error);
+            else
+                SetStatusText("Récupération des séries depuis BetaSeries");
+
+            var root = await ClientContext.Current.BetaSerie.GetListeSeries();
+
+            if (root != null)
+                tv.ItemsSource = root;
+            Window.gridButton.Visibility = Visibility.Collapsed;
+            Window.pb.Visibility = Visibility.Collapsed;
+            SetStatusText("Séries récupérés");
+        }
     }
+
 }
