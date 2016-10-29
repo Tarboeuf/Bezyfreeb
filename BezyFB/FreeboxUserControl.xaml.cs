@@ -15,6 +15,11 @@ using System.Windows.Shapes;
 using BetaseriesPortableLib;
 using BezyFB.Properties;
 using FreeboxPortableLib;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using BezyFB.Annotations;
 
 namespace BezyFB
 {
@@ -46,7 +51,7 @@ namespace BezyFB
 
         private async void DeleteTerminated_OnClick(object sender, RoutedEventArgs e)
         {
-            var user = DataContext as UserFreebox;
+            var user = DataContext as UserFreeboxVM;
             if (null != user)
             {
                 foreach (var downloadItem in user.Downloads)
@@ -57,17 +62,126 @@ namespace BezyFB
                     }
                 }
             }
-            DataContext = await ClientContext.Current.Freebox.GetInfosFreebox();
+            await Refresh();
         }
 
         private async void Refresh_OnClick(object sender, RoutedEventArgs e)
         {
-            DataContext = await ClientContext.Current.Freebox.GetInfosFreebox();
+            await Refresh();
+        }
+
+        public async Task Refresh()
+        {
+            var dc = new UserFreeboxVM(await ClientContext.Current.Freebox.GetInfosFreebox());
+            DataContext = dc;
+            foreach (var item in dc.Downloads)
+            {
+                await item.LoadImage();
+            }
         }
 
         private async void DeplacerTelechargementFini_OnClick(object sender, RoutedEventArgs e)
         {
             await ClientContext.Current.Freebox.DeplacerTelechargementFini();
+        }
+    }
+
+    public class UserFreeboxVM : INotifyPropertyChanged
+    {
+
+        public UserFreeboxVM(UserFreebox fb)
+        {
+            Downloads = fb.Downloads.Select(d => new DownloadItemVM(d)).ToList();
+            FreeSpace = fb.FreeSpace;
+            Ratio = fb.Ratio;
+            PathFilm = fb.PathFilm;
+        }
+
+        public long FreeSpace { get; set; }
+        public double Ratio { get; set; }
+        public List<DownloadItemVM> Downloads { get; set; }
+        public string PathFilm { get; private set; }
+
+        //public ObservableCollection<OMDb> Movies { get; set; }
+        //public async void LoadMovies()
+        //{
+        //    foreach (var item in await _fb.Ls(PathFilm, false))
+        //    {
+        //        var nom = await GuessIt.GuessNom(item);
+        //        var omdb = await OMDb.GetNote(nom, item);
+        //        Movies.Add(omdb);
+        //    }
+        //}
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+
+    public class DownloadItemVM : INotifyPropertyChanged
+    {
+        public DownloadItemVM(DownloadItem item)
+        {
+            Name = item.Name;
+            Status = item.Status;
+            Pourcentage = item.Pourcentage;
+            RxPourcentage = item.RxPourcentage;
+            Id = item.Id;
+        }
+
+        public async Task LoadImage()
+        {
+            var guess = await ClientContext.Current.GuessIt.GuessNom(Name + ".mkv");
+            if (!string.IsNullOrEmpty(guess))
+                NomPropre = guess;
+            else
+            {
+                NomPropre = Name;
+            }
+            var note = await OMDb.GetNote(guess, ClientContext.Current.ApiConnector);
+
+            ImagePath = note?.Poster;
+        }
+
+        public string Name { get; set; }
+        public string Status { get; set; }
+        public double Pourcentage { get; set; }
+        public double RxPourcentage { get; set; }
+        public int Id { get; set; }
+
+        public string NomPropre
+        {
+            get { return _nomPropre; }
+            set
+            {
+                _nomPropre = value; 
+                RaisePropertyChanged(nameof(NomPropre));
+            }
+        }
+
+
+        private string _ImagePath;
+        private string _nomPropre;
+
+        public string ImagePath
+        {
+            get { return _ImagePath; }
+            set
+            {
+                _ImagePath = value;
+                RaisePropertyChanged(nameof(ImagePath));
+            }
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void RaisePropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

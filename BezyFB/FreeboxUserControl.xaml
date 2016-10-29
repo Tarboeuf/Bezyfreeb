@@ -7,10 +7,34 @@
              xmlns:betaSerieLib="clr-namespace:BetaseriesPortableLib;assembly=BetaseriesPortableLib"
              xmlns:freeboxPortableLib="clr-namespace:FreeboxPortableLib;assembly=FreeboxPortableLib"
              xmlns:helpers="clr-namespace:BezyFB.Helpers"
-             mc:Ignorable="d" d:DesignWidth="1028" d:DesignHeight="492" >
+             mc:Ignorable="d" d:DesignWidth="1028" d:DesignHeight="492" d:DataContext="{d:DesignData /SampleData/UserFreeboxSampleData.xaml}" >
     <local:MyUserControl.Resources>
         <helpers:SizeMoConverter x:Key="SizeConverter" />
-        
+        <ItemsPanelTemplate x:Key="ItemsPanelTemplate1">
+            <UniformGrid IsItemsHost="True" Columns="8" HorizontalAlignment="Stretch"/>
+        </ItemsPanelTemplate>
+        <DataTemplate x:Key="DataTemplate2" DataType="local:DownloadItemVM">
+            <Grid>
+                <DockPanel Margin="5">
+                    <Grid DockPanel.Dock="Top">
+                        <ProgressBar Foreground="#FF535353" Height="30" Value="{Binding Pourcentage}" Maximum="10000" DockPanel.Dock="Top" />
+                        <TextBlock Text="{Binding NomPropre, FallbackValue='Le seigneur des anneaux'}" VerticalAlignment="Top" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" TextAlignment="Center" FontFamily="Stencil" Foreground="#FFF9F9F9" />
+                    </Grid>
+                    <ProgressBar Foreground="Blue" Height="10" Value="{Binding RxPourcentage}" Maximum="10000" DockPanel.Dock="Bottom" />
+                    <Grid Background="#FFE4E4E4">
+                        <Image Source="{Binding ImagePath}" Stretch="UniformToFill"  />
+                    </Grid>
+                </DockPanel>
+            </Grid>
+        </DataTemplate>
+        <Style x:Key="TextBlockStyleTitre" TargetType="{x:Type TextBlock}">
+            <Setter Property="TextWrapping" Value="NoWrap"/>
+            <Setter Property="TextTrimming" Value="None"/>
+            <Setter Property="Foreground" Value="#FFDEDEDE"/>
+            <Setter Property="FontSize" Value="36"/>
+            <Setter Property="FontFamily" Value="Stencil"/>
+        </Style>
+
     </local:MyUserControl.Resources>
     <Grid>
         <Grid>
@@ -25,35 +49,31 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Button Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Click="FreeSpace_OnClick">Espace libre : </Button>
-            <StackPanel Orientation="Horizontal" Grid.Row="0"  Grid.Column="3" HorizontalAlignment="Right">
-                <Button Click="DeplacerTelechargementFini_OnClick">Déplacer téléchargements finis</Button>
-                <Button Click="DeleteTerminated_OnClick">Supprimer Téléchargement fini</Button>
-                <Button Click="Refresh_OnClick">Refresh</Button>
+            <Button Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Click="FreeSpace_OnClick">Espace libre :</Button>
+            <StackPanel Orientation="Horizontal" Grid.Row="0"  Grid.ColumnSpan="3" Grid.Column="1" HorizontalAlignment="Right">
+                <Menu>
+                    <MenuItem Header="Actions">
+                        <MenuItem.Items>
+                            <MenuItem Click="DeplacerTelechargementFini_OnClick" Header="Déplacer téléchargements finis" />
+                            <MenuItem Click="DeleteTerminated_OnClick" Header="Supprimer Téléchargement fini"/>
+                            <MenuItem Click="Refresh_OnClick" Header="Refresh"/>
+                        </MenuItem.Items>
+                    </MenuItem>
+                </Menu>
             </StackPanel>
             <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Content="{Binding FreeSpace, Converter={StaticResource SizeConverter}}"></Label>
             <Label Grid.Row="1" Grid.Column="0">Ratio</Label>
             <ProgressBar Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Maximum="100" Minimum="0" Height="15" Value="{Binding Ratio}"></ProgressBar>
-            <ListView Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0"
-                              ItemsSource="{Binding Downloads}">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Name" />
-                        <GridViewColumn DisplayMemberBinding="{Binding Status}" Header="Status" />
-                        <GridViewColumn Header="Pourcentage" Width="200">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate DataType="freeboxPortableLib:DownloadItem">
-                                    <StackPanel>
-                                        <ProgressBar Foreground="Red" Height="10" Value="{Binding Pourcentage}" Maximum="10000" Width="180"></ProgressBar>
-                                        <ProgressBar Foreground="Blue" Height="10" Value="{Binding RxPourcentage}" Maximum="10000" Width="180"></ProgressBar>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-            <GridSplitter Grid.Row="2" Grid.Column="2" Width="6" ResizeBehavior="PreviousAndNext" ShowsPreview="False" ResizeDirection="Auto" />
+            <DockPanel Background="Black" Grid.Row="2" Grid.ColumnSpan="4" Grid.Column="0">
+                <TextBlock DockPanel.Dock="Top" Text="Téléchargements en cours" Style="{DynamicResource TextBlockStyleTitre}"></TextBlock>
+                <ItemsControl Margin="-5 0" HorizontalAlignment="Stretch" ScrollViewer.CanContentScroll="True" 
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              ItemsSource="{Binding Downloads}" ItemsPanel="{DynamicResource ItemsPanelTemplate1}" 
+                             ItemTemplate="{DynamicResource DataTemplate2}" 
+                             VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                </ItemsControl>
+            </DockPanel>
+            <!--<GridSplitter Grid.Row="2" Grid.Column="2" Width="6" ResizeBehavior="PreviousAndNext" ShowsPreview="False" ResizeDirection="Auto" />
             <ListView Grid.Row="2" Grid.Column="3" ItemsSource="{Binding Movies}">
                 <ListView.View>
                     <GridView>
@@ -69,7 +89,7 @@
                         </GridViewColumn>
                     </GridView>
                 </ListView.View>
-            </ListView>
+            </ListView>-->
         </Grid>
     </Grid>
 </local:MyUserControl>

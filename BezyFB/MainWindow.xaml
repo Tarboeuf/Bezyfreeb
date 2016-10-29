@@ -23,7 +23,7 @@
         </Menu>
         <DockPanel  DockPanel.Dock="Bottom">
             <ProgressBar Name="pb" IsIndeterminate="True" Width="200" DockPanel.Dock="Right" Visibility="Collapsed"></ProgressBar>
-            <wpfTemplateLib:Notification Name="Notification" NotificationTime="2000" >
+            <wpfTemplateLib:Notification Name="Notification" NotificationTime="2000"  >
                 <wpfTemplateLib:Notification.NotificationTemplate>
                     <DataTemplate >
                         <Border BorderBrush="WhiteSmoke" Background="DarkGray" BorderThickness="2" CornerRadius="3">

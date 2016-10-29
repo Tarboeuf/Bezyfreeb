@@ -60,9 +60,23 @@ namespace BezyFB.Helpers
                 dataStream.Close();
             }
 
-            using (var webResponse = await httpWebRequest.GetResponseAsync())
+            try
             {
-                using (Stream httpResponse = webResponse.GetResponseStream())
+                using (var webResponse = await httpWebRequest.GetResponseAsync())
+                {
+                    using (Stream httpResponse = webResponse.GetResponseStream())
+                    {
+                        if (null == httpResponse) return null;
+                        using (var streamReader = new StreamReader(httpResponse))
+                        {
+                            return streamReader.ReadToEnd();
+                        }
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+                using (Stream httpResponse = ex.Response.GetResponseStream())
                 {
                     if (null == httpResponse) return null;
                     using (var streamReader = new StreamReader(httpResponse))

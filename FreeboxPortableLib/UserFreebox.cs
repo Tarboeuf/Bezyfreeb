@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace FreeboxPortableLib
 {
@@ -19,7 +20,6 @@ namespace FreeboxPortableLib
 
         //public ObservableCollection<OMDb> Movies { get; set; }
         public string PathFilm { get; private set; }
-
         //public async void LoadMovies()
         //{
         //    foreach (var item in await _fb.Ls(PathFilm, false))

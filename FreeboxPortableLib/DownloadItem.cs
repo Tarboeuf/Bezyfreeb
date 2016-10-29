@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace FreeboxPortableLib
 {
     public class DownloadItem

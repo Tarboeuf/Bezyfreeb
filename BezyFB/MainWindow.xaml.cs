@@ -51,14 +51,11 @@ namespace BezyFB
             }
             if (tc.SelectedIndex == 2)
             {
-                if (!(TabFreebox.DataContext is UserFreebox))
+                if (!(TabFreebox.DataContext is UserFreeboxVM))
                 {
                     try
                     {
-                        var uf = await ClientContext.Current.Freebox.GetInfosFreebox();
-                        TabFreebox.DataContext = uf;
-
-                        //await uf.LoadMovies(Dispatcher);
+                        await FreeboxUserControl.Refresh();
                     }
                     catch (Exception ex)
                     {

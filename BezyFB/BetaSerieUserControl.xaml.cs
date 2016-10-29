@@ -264,6 +264,11 @@ namespace BezyFB
                 return movieFilePath.Substring(idDebut,
                     movieFilePath.IndexOf("[EZTV]", StringComparison.CurrentCultureIgnoreCase) - idDebut);
             }
+            if (movieFilePath.ToUpper().Contains("X264-"))
+            {
+                int idDebut = movieFilePath.IndexOf("X264-", StringComparison.CurrentCultureIgnoreCase) + 5;
+                return movieFilePath.Substring(idDebut, movieFilePath.Length - idDebut - 4);
+            }
 
             if (movieFilePath.Contains("LOL"))
                 return "LOL";

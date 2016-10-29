@@ -132,10 +132,9 @@ namespace FreeboxPortableLib
                 if (string.IsNullOrEmpty(SessionToken))
                     return null;
 
-                var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/login/logout/", WebMethod.Post, null, null,
-                                             null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+                var json = await CallJson("/login/logout/");
 
-                return JObject.Parse(json).ToString();
+                return json.ToString();
             }
             catch (Exception ex)
             {
@@ -149,15 +148,14 @@ namespace FreeboxPortableLib
             if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
-            var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/fs/mkdir/", WebMethod.Post,
+            var json = await CallJson("/fs/mkdir/", WebMethod.Post,
                                          "application/x-www-form-urlencoded", new JObject
                                          {
                                              { "parent", Crypto.EncodeTo64(parent) },
                                              { "dirname", directory}
-                                         }.ToString(),
-                                         null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+                                         }.ToString());
 
-            return JObject.Parse(json).ToString();
+            return json.ToString();
         }
 
         public async Task<List<string>> Ls(string directory, bool onlyFolder, bool supprimerDossierSystem)
@@ -165,14 +163,8 @@ namespace FreeboxPortableLib
             if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
-            var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/fs/ls/" + Crypto.EncodeTo64(directory) + "?onlyFolder=" + (onlyFolder ? 1 : 0),
-                                         WebMethod.Get, "application/x-www-form-urlencoded", null, null,
-                                         new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
-
-            if (json == null)
-                return new List<string>();
-
-            var jobject = JObject.Parse(json);
+            var jobject = await CallJson("/fs/ls/" + Crypto.EncodeTo64(directory) + "?onlyFolder=" + (onlyFolder ? 1 : 0),
+                                         WebMethod.Get, "application/x-www-form-urlencoded");
 
             if (!(bool)jobject["success"])
             {
@@ -212,10 +204,9 @@ namespace FreeboxPortableLib
 
             var path = WebUtility.UrlEncode(magnetUrl);
             var content = "download_url=" + path + "\r\n&download_dir=" + Crypto.EncodeTo64(pathDir);
-            var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/downloads/add/", WebMethod.Post,
-                                         "application/x-www-form-urlencoded", content,
-                                         null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
-            var jobject = JObject.Parse(json);
+            var jobject = await CallJson("/downloads/add/", WebMethod.Post,
+                                         "application/x-www-form-urlencoded", content);
+
             if (!(bool)jobject["success"])
             {
                 await MessageDialogService.AfficherMessage(IpFreebox + " (Download magnet ) : " + (string)jobject["msg"]);
@@ -285,7 +276,7 @@ namespace FreeboxPortableLib
             return ((int)jobject["result"]["id"]).ToString();
         }
 
-        public async Task<string> UploadFile(string inputFile, string outputDir, string outputFileName)
+        public async Task<JObject> UploadFile(string inputFile, string outputDir, string outputFileName)
         {
             if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
@@ -312,14 +303,13 @@ namespace FreeboxPortableLib
 
                 const string boundary = "----WebKitFormBoundary0Qvwx7fycAF2CWmh";
 
-                var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/upload/" + id + "/send", WebMethod.Post, "multipart/form-data; boundary=" + boundary,
+                var jobject = await CallJson("/upload/" + id + "/send", WebMethod.Post, "multipart/form-data; boundary=" + boundary,
                                          "--" + boundary + Environment.NewLine +
                                          "Content-Disposition: form-data; name=\"" + outputFileName + "\"; filename=\"" + outputFileName + "\"" + Environment.NewLine +
                                          "Content-Type: text/plain" + Environment.NewLine + Environment.NewLine + text + Environment.NewLine +
-                                         "--" + boundary + "--",
-                                         null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+                                         "--" + boundary + "--");
 
-                return json;
+                return jobject;
             }
             catch (Exception ex)
             {
@@ -335,11 +325,10 @@ namespace FreeboxPortableLib
                 await DeleteFile(pathDir + "/" + outputFileName);
             }
 
-            var json = await GetJsonIdUpload(pathDir, outputFileName);
+            var jobj = await GetJsonIdUpload(pathDir, outputFileName);
 
-            if (json != null)
+            if (jobj != null)
             {
-                var jobj = JObject.Parse(json);
                 if (!(bool)jobj["success"])
                 {
                     return -1;
@@ -347,38 +336,29 @@ namespace FreeboxPortableLib
                 return (int)jobj["result"]["id"];
             }
 
-            if (json == null)
+            // tentative de récupération d'un upload en cours : 
+            jobj = await CallJson("/upload/", WebMethod.Get);
+            if (null != jobj)
             {
-                // tentative de récupération d'un upload en cours : 
-                json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/upload/", WebMethod.Get, null,
-                                        null, null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
-                if (null != json)
+                if ((bool)jobj["success"])
                 {
-                    var jobj = JObject.Parse(json);
-                    if ((bool)jobj["success"])
+                    var token = jobj["result"].FirstOrDefault(j => (string)j["status"] == "authorized");
+                    if (null != token)
                     {
-                        var token = jobj["result"].FirstOrDefault(j => (string)j["status"] == "authorized");
-                        if (null != token)
-                        {
-                            return (int)token["id"];
-                        }
+                        return (int)token["id"];
                     }
                 }
             }
+
             return -1;
         }
 
-        private async Task<string> GetJsonIdUpload(string pathDir, string outputFileName)
+        private async Task<JObject> GetJsonIdUpload(string pathDir, string outputFileName)
         {
             try
             {
-                var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/upload/", WebMethod.Post, "application/json",
-                    new JObject
-                    {
-                    {"dirname", Crypto.EncodeTo64(pathDir)},
-                    {"upload_name", outputFileName}
-                    }.ToString(), null,
-                    new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+                var json = await CallJson("/upload/", WebMethod.Post, "application/json",
+                    new JObject { { "dirname", Crypto.EncodeTo64(pathDir) }, { "upload_name", outputFileName } }.ToString());
                 return json;
             }
             catch (Exception)
@@ -391,13 +371,11 @@ namespace FreeboxPortableLib
         {
             try
             {
-                var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/fs/info/" + Crypto.EncodeTo64(pathDir + "/" + outputFileName), WebMethod.Get, null, null, null,
-                    new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
-                if (null == json)
+                var job = await CallJson("/fs/info/" + Crypto.EncodeTo64(pathDir + "/" + outputFileName), WebMethod.Get);
+                if (null == job)
                 {
                     return false;
                 }
-                var job = JObject.Parse(json);
                 return (bool)job["success"];
             }
             catch (Exception)
@@ -407,23 +385,22 @@ namespace FreeboxPortableLib
         }
 
 
-        public async Task<bool> Move(string[] files, string destination)
+        private async Task<bool> Move(string[] files, string destination)
         {
             try
             {
-                var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/fs/mv/", WebMethod.Post, "application/json",
+                var job = await CallJson("/fs/mv/", WebMethod.Post, "application/json",
                     new JObject
                     {
                         {"files", new JArray(files.Select(f => Crypto.EncodeTo64(f)))},
                         {"dst", Crypto.EncodeTo64(destination)},
                         { "mode", "overwrite"}
-                    }.ToString(), null,
-                    new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
-                if (null == json)
+                    }.ToString());
+
+                if (null == job)
                 {
                     return false;
                 }
-                var job = JObject.Parse(json);
                 return (bool)job["success"];
             }
             catch (Exception)
@@ -434,22 +411,19 @@ namespace FreeboxPortableLib
 
         public async Task<string> DeleteFile(string filePath)
         {
-            var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/fs/rm/", WebMethod.Post,
+            var jobject = await CallJson("/fs/rm/", WebMethod.Post,
                                             "application/json",
                                              new JObject
                                                  {
                                                       {"files", new JArray() { Crypto.EncodeTo64(filePath) } }
-                                                }.ToString(),
-                                            headers: new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) }
-                                            );
-            return JObject.Parse(json).ToString();
+                                                }.ToString());
+            return jobject.ToString();
         }
 
         public async Task<string> CleanUpload()
         {
-            var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/upload/clean", WebMethod.DELETE,
-                                           headers: new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
-            return JObject.Parse(json).ToString();
+            var jobject = await CallJson("/upload/clean", WebMethod.DELETE);
+            return jobject.ToString();
         }
 
         public async Task<string> GetFileNameDownloaded(string idDownload)
@@ -457,10 +431,8 @@ namespace FreeboxPortableLib
             if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
-            var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/downloads/" + idDownload, WebMethod.Get,
-                                         "application/x-www-form-urlencoded", "",
-                                         null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
-            var jobject = JObject.Parse(json);
+            var jobject = await CallJson("/downloads/" + idDownload, WebMethod.Get, "application/x-www-form-urlencoded", "");
+
             if (!(bool)jobject["success"])
             {
                 await MessageDialogService.AfficherMessage(IpFreebox + " (GetFileNameDownloaded " + idDownload + " ) : " + (string)jobject["msg"]);
@@ -474,16 +446,13 @@ namespace FreeboxPortableLib
             if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
-            var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/storage/disk/", WebMethod.Get,
-                                         "application/x-www-form-urlencoded", null, null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+            var jobject = await CallJson("/storage/disk/", WebMethod.Get, "application/x-www-form-urlencoded");
 
-            if (json == null)
+            if (jobject == null)
             {
                 await MessageDialogService.AfficherMessage(IpFreebox + " (GetInfosFreebox ) : la requête n'a pas retournée de résultat");
                 return null;
             }
-            var jobject = JObject.Parse(json);
-
             if (!(bool)jobject["success"])
             {
                 await MessageDialogService.AfficherMessage(IpFreebox + " (GetInfosFreebox ) : " + (string)jobject["msg"]);
@@ -493,10 +462,7 @@ namespace FreeboxPortableLib
             userFreebox.FreeSpace = (long)jobject["result"][0]["partitions"][0]["free_bytes"];
             userFreebox.Ratio = 100.0 - userFreebox.FreeSpace / (double)jobject["result"][0]["total_bytes"] * 100;
 
-            json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/downloads/", WebMethod.Get,
-                                         "application/x-www-form-urlencoded", null, null, new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
-
-            jobject = JObject.Parse(json);
+            jobject = await CallJson("/downloads/", WebMethod.Get, "application/x-www-form-urlencoded");
 
             if (!(bool)jobject["success"])
             {
@@ -535,14 +501,12 @@ namespace FreeboxPortableLib
             if (string.IsNullOrEmpty(SessionToken))
                 await GenererSessionToken();
 
-            var json = await ApiConnector.Call("http://" + _current.FreeboxIp + "/api/v3/fs/ls/" + Crypto.EncodeTo64(directory) + "?onlyFolder=0&countSubFolder=1",
-                                         WebMethod.Get, "application/x-www-form-urlencoded", null, null,
-                                         new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+            var jsonObject = await CallJson("/fs/ls/" + Crypto.EncodeTo64(directory) + "?onlyFolder=0&countSubFolder=1",
+                                         WebMethod.Get, "application/x-www-form-urlencoded");
 
-            if (json == null)
+            if (jsonObject == null)
                 return null;
 
-            var jsonObject = JObject.Parse(json);
 
             if (!(bool)jsonObject["success"])
             {
@@ -555,9 +519,7 @@ namespace FreeboxPortableLib
 
         public async Task DeleteTerminated(int id)
         {
-            var json = await ApiConnector.Call("http://" + _current.FreeboxIp + "/api/v3/downloads/" + id,
-                                         WebMethod.DELETE, null, null, null,
-                                         new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) });
+            await CallJson("/downloads/" + id, WebMethod.DELETE);
 
         }
 
@@ -578,7 +540,37 @@ namespace FreeboxPortableLib
         {
             var list = await GetTelechargementFini();
             await CreerDossier(_DOSSIER_FINIT, _current.PathFilm);
-            await Move(list.Select(f => _current.PathFilm + "/" + f).ToArray(), _current.PathFilm + "/" + _DOSSIER_FINIT);
+            await Move(list.Select(f => _current.PathFilm + f).ToArray(), _current.PathFilm + _DOSSIER_FINIT);
+        }
+
+        private async Task<JObject> CallJson(string finUrl, WebMethod method = WebMethod.Post, string contentType = null,
+            string content = null,
+            string headerAccept = null,
+            Encoding encoding = null)
+        {
+            var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3" + finUrl, method, contentType, content, headerAccept,
+                        new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) }, encoding);
+
+            if (string.IsNullOrEmpty(json))
+                return null;
+
+            var jobject = JObject.Parse(json);
+
+            if (!(bool)jobject["success"] && (string)jobject["error_code"] == "invalid_token")
+            {
+                SessionToken = null;
+                await GenererSessionToken();
+
+                json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/" + finUrl, method, contentType, content, headerAccept,
+                            new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) }, encoding);
+
+                if (string.IsNullOrEmpty(json))
+                    return null;
+
+                return JObject.Parse(json);
+            }
+            return jobject;
+
         }
     }
 }

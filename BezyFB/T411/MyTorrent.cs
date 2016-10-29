@@ -44,7 +44,7 @@ namespace BezyFB.T411
                 nom = "";
                 try
                 {
-                    nom = await _guessIt.GuessNom(_torrent.Name.Trim());
+                    nom = await _guessIt.GuessNom(_torrent.Name.Trim() + ".mkv");
                 }
                 catch (Exception e)
                 {

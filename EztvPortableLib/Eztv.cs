@@ -15,7 +15,7 @@ namespace EztvPortableLib
     {
         private const string Url = "https://eztv.ag/";
 
-        private IEnumerable<Show> _shows = null;
+        private List<Show> _shows = null;
 
         private static Dictionary<string, string> _PagesSeries = new Dictionary<string, string>();
 
@@ -83,26 +83,20 @@ namespace EztvPortableLib
             return null;
         }
 
-        public async Task<IEnumerable<Show>> GetListShow()
+        public async Task<List<Show>> GetListShow()
         {
             if (_shows == null)
             {
-                string html = await ApiConnector.Call(Url + "search/", WebMethod.Get, null, null, "text/xml");
+                string html = await ApiConnector.Call(Url + "showlist/", WebMethod.Get, null, null, "text/xml");
 
                 if (string.IsNullOrEmpty(html))
                     return new List<Show>();
 
-                html =
-                    html.Split(new[] {"<select name=\"q2\" class=\"tv-show-search-select\">"},
-                        StringSplitOptions.RemoveEmptyEntries)[1];
-                html = html.Split(new[] {"</select>"}, StringSplitOptions.RemoveEmptyEntries)[0];
-
-                html = html.Replace("<option value=\"", "");
-                html = html.Replace("\r\n", "");
-
-                var series = html.Split(new[] {"</option>"}, StringSplitOptions.RemoveEmptyEntries);
-
-                _shows = series.Skip(1).Select(s => GetShow(s.Trim())).Where(s => s != null);
+                var lines =
+                    html.Split(new [] {"\r", "\n"}, StringSplitOptions.RemoveEmptyEntries)
+                        .Where(l => l.Contains("thread_link"));
+                
+                _shows = lines.Select(s => GetShow(s.Trim())).Where(s => s != null).ToList();
             }
 
             return _shows;
@@ -110,13 +104,14 @@ namespace EztvPortableLib
 
         private Show GetShow(string str)
         {
-            if (str.IndexOf('"') == -1 || str.IndexOf('>') == -1)
-                return null;
-
+            string name = str.Substring(str.IndexOf("\"thread_link\">", StringComparison.Ordinal) + 14);
+            name = name.Substring(0, name.IndexOf("</a>", StringComparison.Ordinal));
+            string id = str.Substring(str.IndexOf("/shows/", StringComparison.Ordinal)+7);
+            id = id.Substring(0, id.IndexOf("/", StringComparison.Ordinal));
             return new Show
             {
-                Id = str.Substring(0, str.IndexOf('"')),
-                Name = str.Substring(str.IndexOf('>') + 1)
+                Id = id,
+                Name = name
             };
         }
 
