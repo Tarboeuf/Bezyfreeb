@@ -12,17 +12,24 @@ namespace BetaseriesPortableLib
             var jsonOmdb = await apiConnector.Call("http://www.omdbapi.com/?t=" + nom, WebMethod.Get);
             if (null == jsonOmdb)
                 return new OMDb();
-            var jobj = JObject.Parse(jsonOmdb);
-            if ((bool)jobj["Response"])
-                return new OMDb
-                {
-                    Note = GetNote(jobj["imdbRating"]),
-                    Title = (string)jobj["Title"],
-                    Year = (string)jobj["Year"],
-                    Resume = (string)jobj["Plot"],
-                    Poster = (string)jobj["Poster"],
-                    FileName = fileName ?? nom,
-                };
+            try
+            {
+                var jobj = JObject.Parse(jsonOmdb);
+                if ((bool)jobj["Response"])
+                    return new OMDb
+                    {
+                        Note = GetNote(jobj["imdbRating"]),
+                        Title = (string)jobj["Title"],
+                        Year = (string)jobj["Year"],
+                        Resume = (string)jobj["Plot"],
+                        Poster = (string)jobj["Poster"],
+                        FileName = fileName ?? nom,
+                    };
+            }
+            catch (Exception)
+            {
+
+            }
             return new OMDb { FileName = fileName ?? nom, };
         }
 

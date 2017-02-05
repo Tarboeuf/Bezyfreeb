@@ -3,10 +3,6 @@ using BezyFB_UWP.Lib.T411;
 using CommonPortableLib;
 using FreeboxPortableLib;
 using Microsoft.Practices.Unity;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BetaseriesPortableLib;
 using CommonLib;
 
@@ -41,10 +37,12 @@ namespace BezyFB_UWP.Lib
 
             Container.RegisterType<IApiConnectorService, ApiConnector>(new ContainerControlledLifetimeManager());
 
-            Container.RegisterType<BetaSerie>(new ContainerControlledLifetimeManager()
-                , new InjectionConstructor(Settings.Current.LoginBetaSerie, Settings.Current.PwdBetaSerie));
+            if (!string.IsNullOrEmpty(Settings.Current.LoginBetaSerie) && !string.IsNullOrEmpty(Settings.Current.PwdBetaSerie))
+                Container.RegisterType<BetaSerie>(new ContainerControlledLifetimeManager()
+                    , new InjectionConstructor(Settings.Current.LoginBetaSerie, Settings.Current.PwdBetaSerie));
 
-            Container.RegisterType<T411Client>(new ContainerControlledLifetimeManager()
+            if (!string.IsNullOrEmpty(Settings.Current.LoginT411) && !string.IsNullOrEmpty(Settings.Current.PassT411))
+                Container.RegisterType<T411Client>(new ContainerControlledLifetimeManager()
                 , new InjectionConstructor(Settings.Current.LoginT411, Settings.Current.PassT411));
 
             Container.RegisterType<Eztv>(new ContainerControlledLifetimeManager());

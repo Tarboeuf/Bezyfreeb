@@ -20,6 +20,7 @@ using System.Threading;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using BezyFB.Annotations;
+using System.Collections.ObjectModel;
 
 namespace BezyFB
 {
@@ -70,13 +71,29 @@ namespace BezyFB
             await Refresh();
         }
 
-        public async Task Refresh()
+        public async Task Refresh(bool forcer = true)
         {
-            var dc = new UserFreeboxVM(await ClientContext.Current.Freebox.GetInfosFreebox());
-            DataContext = dc;
-            foreach (var item in dc.Downloads)
+            if (forcer || !(DataContext is UserFreeboxVM))
             {
-                await item.LoadImage();
+                var dc = new UserFreeboxVM(await ClientContext.Current.Freebox.GetInfosFreebox());
+                DataContext = dc;
+                foreach (var item in dc.Downloads)
+                {
+                    await item.LoadImage();
+                }
+            }
+            else
+            {
+                var dc = DataContext as UserFreeboxVM;
+                dc.Update(await ClientContext.Current.Freebox.GetInfosFreebox());
+
+                foreach (var item in dc.Downloads)
+                {
+                    if (string.IsNullOrEmpty(item.ImagePath))
+                    {
+                        await item.LoadImage();
+                    }
+                }
             }
         }
 
@@ -91,7 +108,7 @@ namespace BezyFB
 
         public UserFreeboxVM(UserFreebox fb)
         {
-            Downloads = fb.Downloads.Select(d => new DownloadItemVM(d)).ToList();
+            Downloads = new ObservableCollection<DownloadItemVM>(fb.Downloads.Select(d => new DownloadItemVM(d)));
             FreeSpace = fb.FreeSpace;
             Ratio = fb.Ratio;
             PathFilm = fb.PathFilm;
@@ -99,7 +116,7 @@ namespace BezyFB
 
         public long FreeSpace { get; set; }
         public double Ratio { get; set; }
-        public List<DownloadItemVM> Downloads { get; set; }
+        public ObservableCollection<DownloadItemVM> Downloads { get; set; }
         public string PathFilm { get; private set; }
 
         //public ObservableCollection<OMDb> Movies { get; set; }
@@ -118,6 +135,29 @@ namespace BezyFB
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        internal void Update(UserFreebox userFreebox)
+        {
+            foreach (var item in Downloads.ToList())
+            {
+                var freeboxItem = userFreebox.Downloads.FirstOrDefault(d => d.Id == item.Id);
+                if (null != freeboxItem)
+                {
+                    item.Update(freeboxItem);
+                }
+                else
+                {
+                    Downloads.Remove(item);
+                }
+            }
+            foreach (var item in userFreebox.Downloads)
+            {
+                if(!Downloads.Any(d => d.Id == item.Id))
+                {
+                    Downloads.Add(new DownloadItemVM(item));
+                }
+            }
         }
     }
 
@@ -155,10 +195,10 @@ namespace BezyFB
 
         public string NomPropre
         {
-            get { return _nomPropre; }
+            get { return _nomPropre ?? Name; }
             set
             {
-                _nomPropre = value; 
+                _nomPropre = value;
                 RaisePropertyChanged(nameof(NomPropre));
             }
         }
@@ -182,6 +222,13 @@ namespace BezyFB
         private void RaisePropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        internal void Update(DownloadItem freeboxItem)
+        {
+            Status = freeboxItem.Status;
+            Pourcentage = freeboxItem.Pourcentage;
+            RxPourcentage = freeboxItem.RxPourcentage;
         }
     }
 }

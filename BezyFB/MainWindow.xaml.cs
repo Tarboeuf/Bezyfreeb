@@ -55,7 +55,7 @@ namespace BezyFB
                 {
                     try
                     {
-                        await FreeboxUserControl.Refresh();
+                        await FreeboxUserControl.Refresh(false);
                     }
                     catch (Exception ex)
                     {

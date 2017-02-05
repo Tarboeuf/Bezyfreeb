@@ -1,17 +1,11 @@
-﻿using BezyFB_UWP.Lib.Helpers;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Storage;
-using EztvPortableLib;
-using BezyFB_UWP.Lib.T411;
-using CommonLib;
 using FreeboxPortableLib;
 using CommonPortableLib;
 using Windows.Networking.Connectivity;
+using Microsoft.Practices.Unity;
 using System.IO;
 
 namespace BezyFB_UWP.Lib
@@ -32,7 +26,8 @@ namespace BezyFB_UWP.Lib
 
         public Utilisateur User => _users.Value;
 
-        public ICryptographic Crypto { get; set; }
+        public ICryptographic Crypto { get
+            { return ClientContext.Container.Resolve<ICryptographic>(); } }
 
         public static Settings Current
         {
@@ -121,7 +116,7 @@ namespace BezyFB_UWP.Lib
 
         public string T411Address
         {
-            get { return ApplicationData.Current.LocalSettings.Values["T411Address"] as string ?? "https://api.t411.in/"; }
+            get { return ApplicationData.Current.LocalSettings.Values["T411Address"] as string ?? "https://api.t411.li/"; }
             set
             {
                 ApplicationData.Current.LocalSettings.Values["T411Address"] = value;

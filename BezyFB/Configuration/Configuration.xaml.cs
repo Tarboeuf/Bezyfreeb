@@ -28,7 +28,7 @@ namespace BezyFB.Configuration
         private async void ButtonSynchroniser_Click(object sender, RoutedEventArgs e)
         {
             if (await _freeboxApi.ConnectNewFreebox())
-                MySettings.Current.FreeboxIp = Settings.Default.IpFreebox;
+                MySettings.Current.FreeboxIp = _freeboxApi.IpFreebox;
         }
 
         private void Ok_Click(object sender, RoutedEventArgs e)
