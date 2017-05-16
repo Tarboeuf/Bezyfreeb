@@ -77,6 +77,16 @@ namespace FreeboxPortableLib
             if (IpFreebox.StartsWith("http:"))
                 return false;
 
+            if (!string.IsNullOrEmpty(SessionToken))
+            {
+                // on vérifie que la connexion est toujours valable
+
+                var jobject = await CallJson("/downloads/stats", WebMethod.Get);
+
+                if ((bool)jobject["success"])
+                    return true;
+            }
+
             var json = await ApiConnector.Call("http://" + IpFreebox + "/api/v2/login/", WebMethod.Get);
             if (json == null)
                 return false;
@@ -145,8 +155,7 @@ namespace FreeboxPortableLib
 
         public async Task<string> CreerDossier(string directory, string parent)
         {
-            if (string.IsNullOrEmpty(SessionToken))
-                await GenererSessionToken();
+            await GenererSessionToken();
 
             var json = await CallJson("/fs/mkdir/", WebMethod.Post,
                                          "application/x-www-form-urlencoded", new JObject
@@ -160,8 +169,7 @@ namespace FreeboxPortableLib
 
         public async Task<List<string>> Ls(string directory, bool onlyFolder, bool supprimerDossierSystem)
         {
-            if (string.IsNullOrEmpty(SessionToken))
-                await GenererSessionToken();
+            await GenererSessionToken();
 
             var jobject = await CallJson("/fs/ls/" + Crypto.EncodeTo64(directory) + "?onlyFolder=" + (onlyFolder ? 1 : 0),
                                          WebMethod.Get, "application/x-www-form-urlencoded");
@@ -184,8 +192,7 @@ namespace FreeboxPortableLib
 
         public async Task<string> Download(string magnetUrl, string directory, bool isRelativeDir)
         {
-            if (String.IsNullOrEmpty(SessionToken))
-                await GenererSessionToken();
+            await GenererSessionToken();
 
             string pathDir;
             if (isRelativeDir)
@@ -222,6 +229,15 @@ namespace FreeboxPortableLib
             Uri uri = new Uri(lien);
             string nomFichier = uri.Segments[uri.Segments.Length - 1];
 
+            if (uri.IsFile)
+            {
+                FileInfo fi = new FileInfo(lien);
+                using (Stream s = fi.OpenRead())
+                {
+                    return await DownloadFile(s, nomFichier, directory, isRelativeDir);
+                }
+            }
+
             var content = await ApiConnector.GetResponse(lien, "application/x-bittorrent");
             if (null != content)
             {
@@ -237,8 +253,7 @@ namespace FreeboxPortableLib
 
         public async Task<string> DownloadFile(byte[] fichier, string nomFichier, string directory, bool isRelativeDir)
         {
-            if (string.IsNullOrEmpty(SessionToken))
-                await GenererSessionToken();
+            await GenererSessionToken();
 
             string pathDir;
             if (isRelativeDir)
@@ -278,8 +293,7 @@ namespace FreeboxPortableLib
 
         public async Task<JObject> UploadFile(string inputFile, string outputDir, string outputFileName)
         {
-            if (string.IsNullOrEmpty(SessionToken))
-                await GenererSessionToken();
+            await GenererSessionToken();
 
             var pathDir = _current.PathVideo;
 
@@ -384,6 +398,90 @@ namespace FreeboxPortableLib
             }
         }
 
+        public async Task DeleteEmptyFolder()
+        {
+            await GenererSessionToken();
+
+            await DeleteEmptyFolder("/Disque dur/Vidéos");
+        }
+        private async Task<int> DeleteEmptyFolder(string currentFolderPath)
+        {
+            var jobject = await CallJson("/fs/ls/" + Crypto.EncodeTo64(currentFolderPath) + "?onlyFolder=1&countSubFolder=1",
+                                         WebMethod.Get, "application/x-www-form-urlencoded");
+
+            int nbDeletedFolder = 0;
+            bool subFolderDeleted = false;
+
+            if (!(bool)jobject["success"])
+            {
+                await MessageDialogService.AfficherMessage(IpFreebox + " (Ls Vidéos) : " + (string)jobject["msg"]);
+                return 0;
+            }
+
+            var result = jobject["result"];
+
+            foreach (var item in result)
+            {
+                int fileCount = (int)item["filecount"];
+                int folderCount = (int)item["foldercount"];
+                var name = (string)item["name"];
+
+                if(name == "." || name == "..")
+                {
+                    continue;
+                }
+
+                if (fileCount == 0 && folderCount == 0)
+                {
+                    // suppression du dossier
+                    await DeleteFile(currentFolderPath + "/" + name);
+                    nbDeletedFolder++;
+                }
+
+                if (fileCount == 0 && folderCount != 0)
+                {
+                    // on parcourt le dossier enfant pour le vider si besoin
+                    var nbSubfolderDeleted = await DeleteEmptyFolder(currentFolderPath + "/" + name);
+                    nbDeletedFolder += nbSubfolderDeleted;
+                    if(nbSubfolderDeleted > 0)
+                    {
+                        subFolderDeleted = true;
+                    }
+                }
+            }
+
+            if (!subFolderDeleted)
+                return nbDeletedFolder;
+
+            // on repasse si jamais des dossiers doivent maintenant être supprimé
+            jobject = await CallJson("/fs/ls/" + Crypto.EncodeTo64(currentFolderPath) + "?onlyFolder=1&countSubFolder=1",
+                                         WebMethod.Get, "application/x-www-form-urlencoded");
+
+
+
+            if (!(bool)jobject["success"])
+            {
+                await MessageDialogService.AfficherMessage(IpFreebox + " (Ls Vidéos) : " + (string)jobject["msg"]);
+                return 0;
+            }
+
+            result = jobject["result"];
+
+            foreach (var item in result)
+            {
+                int fileCount = (int)item["filecount"];
+                int folderCount = (int)item["foldercount"];
+                var name = (string)item["name"];
+
+                if (fileCount == 0 && folderCount == 0)
+                {
+                    // suppression du dossier
+                    await DeleteFile(currentFolderPath + "/" + name);
+                    nbDeletedFolder++;
+                }
+            }
+            return nbDeletedFolder;
+        }
 
         private async Task<bool> Move(string[] files, string destination)
         {
@@ -428,8 +526,7 @@ namespace FreeboxPortableLib
 
         public async Task<string> GetFileNameDownloaded(string idDownload)
         {
-            if (string.IsNullOrEmpty(SessionToken))
-                await GenererSessionToken();
+            await GenererSessionToken();
 
             var jobject = await CallJson("/downloads/" + idDownload, WebMethod.Get, "application/x-www-form-urlencoded", "");
 
@@ -443,8 +540,7 @@ namespace FreeboxPortableLib
 
         public async Task<UserFreebox> GetInfosFreebox()
         {
-            if (string.IsNullOrEmpty(SessionToken))
-                await GenererSessionToken();
+            await GenererSessionToken();
 
             var jobject = await CallJson("/storage/disk/", WebMethod.Get, "application/x-www-form-urlencoded");
 
@@ -498,8 +594,7 @@ namespace FreeboxPortableLib
         {
             if (directory.EndsWith(".")) return null;
 
-            if (string.IsNullOrEmpty(SessionToken))
-                await GenererSessionToken();
+            await GenererSessionToken();
 
             var jsonObject = await CallJson("/fs/ls/" + Crypto.EncodeTo64(directory) + "?onlyFolder=0&countSubFolder=1",
                                          WebMethod.Get, "application/x-www-form-urlencoded");
@@ -556,19 +651,19 @@ namespace FreeboxPortableLib
 
             var jobject = JObject.Parse(json);
 
-            if (!(bool)jobject["success"] && (string)jobject["error_code"] == "invalid_token")
-            {
-                SessionToken = null;
-                await GenererSessionToken();
+            //if (!(bool)jobject["success"] && (string)jobject["error_code"] == "invalid_token")
+            //{
+            //    SessionToken = null;
+            //    await GenererSessionToken();
 
-                json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/" + finUrl, method, contentType, content, headerAccept,
-                            new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) }, encoding);
+            //    json = await ApiConnector.Call("http://" + IpFreebox + "/api/v3/" + finUrl, method, contentType, content, headerAccept,
+            //                new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", SessionToken) }, encoding);
 
-                if (string.IsNullOrEmpty(json))
-                    return null;
+            //    if (string.IsNullOrEmpty(json))
+            //        return null;
 
-                return JObject.Parse(json);
-            }
+            //    return JObject.Parse(json);
+            //}
             return jobject;
 
         }

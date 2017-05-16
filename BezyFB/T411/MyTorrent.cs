@@ -30,11 +30,14 @@ namespace BezyFB.T411
                 Nom = InputBox.ShowInputBox("Quel est le nom du film ?", Nom, false);
             }
 
-            var value = await InitialiserDataAsync(Nom);
+            var detail = await ClientContext.Current.T411.GetTorrentDetails(_torrent.Id);
+            Html = detail.Description;
 
-            Nom = value.Nom;
-            Note = value.OMDB.Note;
-            OmDb = value.OMDB;
+            //var value = await InitialiserDataAsync(Nom);
+
+            //Nom = value.Nom;
+            //Note = value.OMDB.Note;
+            //OmDb = value.OMDB;
         }
 
         private async Task<RetourOMDB> InitialiserData(string nom)
@@ -85,6 +88,20 @@ namespace BezyFB.T411
         public int Times_completed { get { return _torrent.Times_completed; } }
 
         public double TimesCompletedByHours { get { return _torrent.Times_completed / (DateTime.Now - _torrent.Added).TotalHours; } }
+
+        private string _Html;
+        public string Html
+        {
+            get
+            {
+                return _Html;
+            }
+            set
+            {
+                _Html = value;
+                OnPropertyChanged(nameof(Html));
+            }
+        }
 
         public double Note
         {

@@ -10,7 +10,6 @@ namespace BezyFB_UWP.Lib
 {
     public class ClientContext
     {
-        private static ClientContext _current;
         public static ClientContext Current { get; } = new ClientContext();
 
         public static UnityContainer Container { get; set; }

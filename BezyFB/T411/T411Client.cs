@@ -45,7 +45,7 @@ namespace BezyFB.T411
 
         static T411Client()
         {
-            BaseAddress = "https://api.t411.ch/";
+            BaseAddress = "https://api.t411.li/";
         }
 
         public async static Task<T411Client> New(string username, string password)

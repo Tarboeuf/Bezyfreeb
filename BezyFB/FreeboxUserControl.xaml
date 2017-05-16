@@ -17,8 +17,8 @@
             <Grid>
                 <DockPanel Margin="5">
                     <Grid DockPanel.Dock="Top">
-                        <ProgressBar Foreground="#FF535353" Height="30" Value="{Binding Pourcentage}" Maximum="10000" DockPanel.Dock="Top" />
-                        <TextBlock Text="{Binding NomPropre, FallbackValue='Le seigneur des anneaux'}" VerticalAlignment="Top" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" TextAlignment="Center" FontFamily="Stencil" Foreground="#FFF9F9F9" />
+                        <ProgressBar Foreground="#FF535353" Value="{Binding Pourcentage}" Maximum="10000" DockPanel.Dock="Top" Background="#FF530000" />
+                        <TextBlock Text="{Binding NomPropre, FallbackValue='Le seigneur des anneaux'}" VerticalAlignment="Stretch" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" TextAlignment="Center" FontFamily="Stencil" Foreground="#FFF9F9F9" />
                     </Grid>
                     <ProgressBar Foreground="Blue" Height="10" Value="{Binding RxPourcentage}" Maximum="10000" DockPanel.Dock="Bottom" />
                     <Grid Background="#FFE4E4E4">
@@ -56,6 +56,8 @@
                         <MenuItem.Items>
                             <MenuItem Click="DeplacerTelechargementFini_OnClick" Header="Déplacer téléchargements finis" />
                             <MenuItem Click="DeleteTerminated_OnClick" Header="Supprimer Téléchargement fini"/>
+                            <MenuItem Click="DeleteEmptyFolder_OnClick" Header="Supprimer dossiers vides"/>
+                            <Separator />
                             <MenuItem Click="Refresh_OnClick" Header="Refresh"/>
                         </MenuItem.Items>
                     </MenuItem>

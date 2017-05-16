@@ -182,6 +182,11 @@ namespace BezyFB
                 if (null != torrent)
                 {
                     await torrent.Initialiser();
+                    WebBrowser browser = new WebBrowser();
+                    Window w = new System.Windows.Window();
+                    w.Content = browser;
+                    browser.NavigateToString(torrent.Html);
+                    w.ShowDialog();
                 }
             }
             SetStatusText("Extra infos récupérées");

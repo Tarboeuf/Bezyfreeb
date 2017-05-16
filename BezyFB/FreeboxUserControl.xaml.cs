@@ -101,6 +101,11 @@ namespace BezyFB
         {
             await ClientContext.Current.Freebox.DeplacerTelechargementFini();
         }
+
+        private async void DeleteEmptyFolder_OnClick(object sender, RoutedEventArgs e)
+        {
+            await ClientContext.Current.Freebox.DeleteEmptyFolder();
+        }
     }
 
     public class UserFreeboxVM : INotifyPropertyChanged
