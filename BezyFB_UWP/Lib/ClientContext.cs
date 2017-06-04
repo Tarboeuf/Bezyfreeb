@@ -32,6 +32,7 @@ namespace BezyFB_UWP.Lib
             Container.RegisterType<Freebox>(new ContainerControlledLifetimeManager()
                 , new InjectionConstructor(Settings.Current));
 
+
             Container.RegisterType<IMessageDialogService, MessageDialogService>(new ContainerControlledLifetimeManager());
 
             Container.RegisterType<IApiConnectorService, ApiConnector>(new ContainerControlledLifetimeManager());
@@ -43,6 +44,9 @@ namespace BezyFB_UWP.Lib
             if (!string.IsNullOrEmpty(Settings.Current.LoginT411) && !string.IsNullOrEmpty(Settings.Current.PassT411))
                 Container.RegisterType<T411Client>(new ContainerControlledLifetimeManager()
                 , new InjectionConstructor(Settings.Current.LoginT411, Settings.Current.PassT411));
+
+
+            T411Client.BaseAddress = Settings.Current.T411Address;
 
             Container.RegisterType<Eztv>(new ContainerControlledLifetimeManager());
 

@@ -7,6 +7,7 @@ using CommonPortableLib;
 using Windows.Networking.Connectivity;
 using Microsoft.Practices.Unity;
 using System.IO;
+using BezyFB_UWP.Lib.T411;
 
 namespace BezyFB_UWP.Lib
 {
@@ -121,6 +122,7 @@ namespace BezyFB_UWP.Lib
             {
                 ApplicationData.Current.LocalSettings.Values["T411Address"] = value;
                 OnPropertyChanged("T411Address");
+                T411Client.BaseAddress = Settings.Current.T411Address;
             }
         }
 

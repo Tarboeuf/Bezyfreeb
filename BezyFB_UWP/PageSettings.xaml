@@ -86,6 +86,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -99,6 +100,10 @@
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Password : " />
                         <PasswordBox Grid.Row="2" Grid.Column="1" Name="pwdT411" Width="Auto" />
                         <Button Grid.Row="2" Grid.Column="2" Content="Tester" Click="TesterT411" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="@ddr T411: " />
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding T411Address, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                 Margin="5"/>
                     </Grid>
                 </Border>
 
