@@ -44,7 +44,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Path pour copie locale : " />
                         <TextBox Text="{Binding PathLocal}" MinWidth="200" Margin="5" VerticalAlignment="Center" VerticalContentAlignment="Center" />
-                        <Button Click="pathLocalclick" Margin="5" Style="{StaticResource ButtonImage}">
+                        <Button Click="pathLocalclick" Margin="5">
                             <Image Source="..\Image\dossier.png" Width="24" Height="24" />
                         </Button>
                     </StackPanel>

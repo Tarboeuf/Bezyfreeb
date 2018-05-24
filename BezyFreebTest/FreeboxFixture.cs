@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BezyFB;
 using BezyFreebTest.Data;
 using CommonStandardLib;
+using FreeboxStandardLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -49,7 +50,7 @@ namespace BezyFreebTest
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
-            ClientContext.InitForTest(new TestSettings());
+            ClientContext.InitForTest(new TestSettingsIgnored());
             ClientContext.Register<IMessageDialogService, TestMessageDialog>();
         }
         //
@@ -96,13 +97,14 @@ namespace BezyFreebTest
         {
             ApiConnector connector = new ApiConnector();
             Cryptographic crypto = new Cryptographic();
+            ISettingsFreebox settings = new TestSettingsIgnored();
             
-            var json = await connector.Call("http://" + "78.217.179.93" + "/api/v2/upload/", WebMethod.Post, "application/json",
+            var json = await connector.Call("http://" + settings.FreeboxIp + "/api/v2/upload/", WebMethod.Post, "application/json",
                                          new JObject
                                          {
                                              { "dirname", crypto.EncodeTo64("/Disque dur/Vidéos/") },
                                          }.ToString(), null,
-                                         new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", "Ru5xflEAX9jexUJtm/mVDVfXuu1Hm9WXrrR4jEexmptXGcpPhB0QNs5FJsjWYZXD") });
+                                         new List<Tuple<string, string>> { new Tuple<string, string>("X-Fbx-App-Auth", settings.TokenFreebox) });
         }
     }
 }

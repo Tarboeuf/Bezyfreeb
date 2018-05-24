@@ -64,15 +64,10 @@ namespace BezyFB
             await BetaSerieUserControl.LoadBetaseries();
         }
 
-        private void T411_OnClick(object sender, RoutedEventArgs e)
-        {
-            tc.SelectedIndex = 1;
-        }
-
         private void Freebox_OnClick(object sender, RoutedEventArgs e)
         {
             gridButton.Visibility = Visibility.Collapsed;
-            tc.SelectedIndex = 2;
+            tc.SelectedIndex = 1;
         }
 
         private void Configuration_Click(object sender, RoutedEventArgs e)

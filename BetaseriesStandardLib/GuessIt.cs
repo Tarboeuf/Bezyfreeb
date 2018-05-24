@@ -15,7 +15,7 @@ namespace BetaseriesStandardLib
                 return name;
 
             var jobj = JObject.Parse(jsonGuessit);
-            var obj = jobj["title"];
+            var obj = jobj["title"] ?? jobj["series"];
             string nom = "";
             if (null != obj)
                 nom = obj.ToString();

@@ -65,7 +65,7 @@
   <ItemGroup>
     <Compile Include="CryptoFixture.cs" />
     <Compile Include="Data\TestMessageDialog.cs" />
-    <Compile Include="Data\TestSettings.cs" />
+    <Compile Include="Data\TestSettingsIgnored.cs" />
     <Compile Include="EztvTest.cs" />
     <Compile Include="GuessItFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

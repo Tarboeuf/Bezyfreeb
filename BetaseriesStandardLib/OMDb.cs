@@ -9,7 +9,7 @@ namespace BetaseriesStandardLib
     {
         public static async Task<OMDb> GetNote(string nom, IApiConnectorService apiConnector, string fileName = null)
         {
-            var jsonOmdb = await apiConnector.Call("http://www.omdbapi.com/?t=" + nom, WebMethod.Get);
+            var jsonOmdb = await apiConnector.Call($"http://www.omdbapi.com/?t={nom}&apikey=4437f6fc", WebMethod.Get);
             if (null == jsonOmdb)
                 return new OMDb();
             try
