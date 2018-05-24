@@ -2,12 +2,12 @@
 using System.ComponentModel;
 using System.Linq;
 using Windows.Storage;
-using FreeboxPortableLib;
-using CommonPortableLib;
 using Windows.Networking.Connectivity;
 using Microsoft.Practices.Unity;
 using System.IO;
 using BezyFB_UWP.Lib.T411;
+using CommonStandardLib;
+using FreeboxStandardLib;
 
 namespace BezyFB_UWP.Lib
 {

@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:betaseriesPortableLib="using:BetaseriesPortableLib"
+    xmlns:BetaseriesStandardLib="using:BetaseriesStandardLib"
     Loading="Page_Loading"
     NavigationCacheMode="Enabled" DataContext="{x:Null}"
     mc:Ignorable="d">
@@ -16,7 +16,7 @@
 
     <Page.Resources>
 
-        <DataTemplate x:Key="DetailContentTemplate" x:DataType="betaseriesPortableLib:rootShowsShow">
+        <DataTemplate x:Key="DetailContentTemplate" x:DataType="BetaseriesStandardLib:rootShowsShow">
             <StackPanel ScrollViewer.VerticalScrollMode="Auto">
                 <TextBlock
                     Margin="0,8"

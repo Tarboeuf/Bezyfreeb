@@ -735,14 +735,6 @@
         "runtime": {
           "lib/net46/_._": {}
         }
-      },
-      "CommonPortableLib/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.0",
-        "dependencies": {
-          "Microsoft.NETCore": "5.0.0",
-          "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
-        }
       }
     },
     ".NETFramework,Version=v4.6/win-x64": {
@@ -1516,14 +1508,6 @@
         "runtime": {
           "lib/net46/_._": {}
         }
-      },
-      "CommonPortableLib/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.0",
-        "dependencies": {
-          "Microsoft.NETCore": "5.0.0",
-          "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
-        }
       }
     },
     ".NETFramework,Version=v4.6/win-x86": {
@@ -2296,14 +2280,6 @@
         },
         "runtime": {
           "lib/net46/_._": {}
-        }
-      },
-      "CommonPortableLib/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.0",
-        "dependencies": {
-          "Microsoft.NETCore": "5.0.0",
-          "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
         }
       }
     },
@@ -3163,14 +3139,6 @@
         },
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
-        }
-      },
-      "CommonPortableLib/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.0",
-        "dependencies": {
-          "Microsoft.NETCore": "5.0.0",
-          "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
         }
       }
     },
@@ -4560,14 +4528,6 @@
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
         }
-      },
-      "CommonPortableLib/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.0",
-        "dependencies": {
-          "Microsoft.NETCore": "5.0.0",
-          "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
-        }
       }
     },
     "UAP,Version=v10.0/win10-arm": {
@@ -5851,14 +5811,6 @@
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
         }
-      },
-      "CommonPortableLib/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.0",
-        "dependencies": {
-          "Microsoft.NETCore": "5.0.0",
-          "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
-        }
       }
     },
     "UAP,Version=v10.0/win10-arm-aot": {
@@ -7076,14 +7028,6 @@
         },
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
-        }
-      },
-      "CommonPortableLib/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.0",
-        "dependencies": {
-          "Microsoft.NETCore": "5.0.0",
-          "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
         }
       }
     },
@@ -8375,14 +8319,6 @@
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
         }
-      },
-      "CommonPortableLib/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.0",
-        "dependencies": {
-          "Microsoft.NETCore": "5.0.0",
-          "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
-        }
       }
     },
     "UAP,Version=v10.0/win10-x64-aot": {
@@ -9600,14 +9536,6 @@
         },
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
-        }
-      },
-      "CommonPortableLib/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.0",
-        "dependencies": {
-          "Microsoft.NETCore": "5.0.0",
-          "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
         }
       }
     },
@@ -10899,14 +10827,6 @@
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
         }
-      },
-      "CommonPortableLib/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.0",
-        "dependencies": {
-          "Microsoft.NETCore": "5.0.0",
-          "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
-        }
       }
     },
     "UAP,Version=v10.0/win10-x86-aot": {
@@ -12124,14 +12044,6 @@
         },
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
-        }
-      },
-      "CommonPortableLib/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.0",
-        "dependencies": {
-          "Microsoft.NETCore": "5.0.0",
-          "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
         }
       }
     }
@@ -14764,11 +14676,6 @@
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._"
       ]
-    },
-    "CommonPortableLib/1.0.0": {
-      "type": "project",
-      "path": "../CommonPortableLib/project.json",
-      "msbuildProject": "../CommonPortableLib/CommonPortableLib.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -14800,15 +14707,6 @@
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "http://team-nuget.toulouse:8080/nuget/nuget": {},
         "https://api.nuget.org/v3/index.json": {}
-      },
-      "frameworks": {
-        "dotnet5.0": {
-          "projectReferences": {
-            "D:\\Sources\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj": {
-              "projectPath": "D:\\Sources\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj"
-            }
-          }
-        }
       }
     },
     "dependencies": {

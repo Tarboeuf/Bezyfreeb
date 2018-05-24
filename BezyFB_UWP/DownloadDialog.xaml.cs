@@ -1,5 +1,4 @@
 ﻿using BezyFB_UWP.Lib;
-using CommonPortableLib;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -11,8 +10,9 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.Web.Http;
-using BetaseriesPortableLib;
-using EztvPortableLib;
+using BetaseriesStandardLib;
+using CommonStandardLib;
+using EztvStandardLib;
 
 // Pour plus d'informations sur le modèle d'élément Boîte de dialogue de contenu, voir la page http://go.microsoft.com/fwlink/?LinkId=234238
 

@@ -1,6 +1,4 @@
 ﻿using BezyFB.Properties;
-using BezyFB.T411;
-using FreeboxPortableLib;
 using Microsoft.Win32;
 using System;
 using System.Configuration;
@@ -9,21 +7,19 @@ using System.Windows.Controls;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using WpfTemplateBaseLib;
-using WpfTemplateLib;
 
 namespace BezyFB
 {
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public MainWindow()
         {
             InitializeComponent();
             SetStatusText("Veuillez choisir votre catégorie");
             gridButton.Visibility = Visibility.Visible;
-            T411Client.BaseAddress = Settings.Default.T411Address;
             CheckConfiguration();
         }
 
@@ -41,15 +37,7 @@ namespace BezyFB
 
         private async void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (tc.SelectedIndex == 1 && T411UserControl.lv.ItemsSource == null)
-            {
-                pb.Visibility = Visibility.Visible;
-                SetStatusText("Chargement depuis T411");
-                await T411UserControl.LoadT411();
-                SetStatusText("T411 chargé");
-                pb.Visibility = Visibility.Collapsed;
-            }
-            if (tc.SelectedIndex == 2)
+            if (tc.SelectedIndex == 1)
             {
                 if (!(TabFreebox.DataContext is UserFreeboxVM))
                 {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using BetaseriesPortableLib;
-using CommonLib;
+using BetaseriesStandardLib;
+using CommonStandardLib;
 
 namespace BezyFB_UWP.Lib.T411
 {

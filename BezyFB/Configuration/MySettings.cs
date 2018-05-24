@@ -1,14 +1,8 @@
 ﻿using BezyFB.Annotations;
-using BezyFB.Helpers;
 using BezyFB.Properties;
-using FreeboxPortableLib;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+using FreeboxStandardLib;
 
 namespace BezyFB.Configuration
 {

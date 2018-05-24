@@ -1,8 +1,8 @@
 ﻿using BezyFB_UWP.Lib;
-using FreeboxPortableLib;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using FreeboxStandardLib;
 
 // Pour plus d'informations sur le modèle d'élément Page vierge, voir la page http://go.microsoft.com/fwlink/?LinkId=234238
 

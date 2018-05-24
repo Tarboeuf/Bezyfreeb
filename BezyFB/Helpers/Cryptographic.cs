@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using CommonPortableLib;
+using CommonStandardLib;
 
 namespace BezyFB.Helpers
 {

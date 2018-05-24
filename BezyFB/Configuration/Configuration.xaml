@@ -34,8 +34,8 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Password : " />
-                        <Button Content="Changer de password" Style="{StaticResource ButtonImage}" Click="password_Click" />
-                        <Button Content="Tester"  Style="{StaticResource ButtonImage}" Click="TesterBetaseries" />
+                        <Button Content="Changer de password" Click="password_Click" />
+                        <Button Content="Tester"  Click="TesterBetaseries" />
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
@@ -49,23 +49,6 @@
                         </Button>
                     </StackPanel>
                     <CheckBox Content="Affichage erreurs dans des MessagesBox" IsChecked="{Binding AffichageErreurMessageBox}" />
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Header="T411">
-                <StackPanel Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Adresse API : " />
-                        <TextBox Text="{Binding T411Address, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" Margin="5" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Login : " />
-                        <TextBox Text="{Binding LoginT411, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" Margin="5" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Password : " />
-                        <Button Content="Changer de password" Style="{StaticResource ButtonImage}" Click="passwordT411_Click"/>
-                        <Button Content="Tester"  Style="{StaticResource ButtonImage}" Click="TesterT411" />
-                    </StackPanel>
                 </StackPanel>
             </GroupBox>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

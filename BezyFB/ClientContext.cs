@@ -1,22 +1,19 @@
 ﻿using BezyFB.Configuration;
 using BezyFB.Helpers;
-using BezyFB.T411;
-using CommonPortableLib;
-using FreeboxPortableLib;
-using Microsoft.Practices.Unity;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BetaseriesPortableLib;
-using EztvPortableLib;
+using BetaseriesStandardLib;
+using CommonStandardLib;
+using EztvStandardLib;
+using FreeboxStandardLib;
 using Unity;
 using Unity.Builder;
 using Unity.Builder.Strategy;
 using Unity.Extension;
 using Unity.Injection;
 using Unity.Lifetime;
+using ApiConnector = BezyFB.Helpers.ApiConnector;
+using Cryptographic = BezyFB.Helpers.Cryptographic;
+using FormUpload = BezyFB.Helpers.FormUpload;
 
 namespace BezyFB
 {
@@ -30,8 +27,6 @@ namespace BezyFB
         public IApiConnectorService ApiConnector => Container.Resolve<IApiConnectorService>();
 
         public Freebox Freebox => Container.Resolve<Freebox>();
-
-        public T411Client T411 => Container.Resolve<T411Client>();
 
         public BetaSerie BetaSerie => Container.Resolve<BetaSerie>();
 
@@ -59,9 +54,6 @@ namespace BezyFB
 
             Container.RegisterType<BetaSerie>(new ContainerControlledLifetimeManager()
                 , new InjectionConstructor(MySettings.Current.LoginBetaSerie, MySettings.Current.PwdBetaSerie));
-
-            Container.RegisterType<T411Client>(new ContainerControlledLifetimeManager()
-                , new InjectionConstructor(MySettings.Current.LoginT411, MySettings.Current.PassT411));
 
             Container.RegisterType<Eztv>(new ContainerControlledLifetimeManager());
 

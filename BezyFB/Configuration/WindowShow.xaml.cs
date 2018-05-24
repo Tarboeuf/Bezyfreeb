@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using EztvPortableLib;
+using EztvStandardLib;
 
 namespace BezyFB.Configuration
 {

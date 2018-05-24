@@ -1,11 +1,8 @@
 ﻿using BezyFB.Configuration;
-using CommonPortableLib;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using CommonStandardLib;
 
 namespace BezyFB.Helpers
 {

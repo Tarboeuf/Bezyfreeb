@@ -1,10 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using BezyFB.Helpers;
-using EztvPortableLib;
+using CommonStandardLib;
+using EztvStandardLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BezyFreebTest

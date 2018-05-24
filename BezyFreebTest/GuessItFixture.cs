@@ -1,7 +1,6 @@
-﻿using System;
-using BetaseriesPortableLib;
+﻿using BetaseriesStandardLib;
+using CommonStandardLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BezyFB.Helpers;
 
 namespace BezyFreebTest
 {

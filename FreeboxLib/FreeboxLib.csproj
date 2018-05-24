@@ -104,8 +104,6 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Freebox.cs" />
-    <Compile Include="ISettingsFreebox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\FreeboxLib.rd.xml" />
   </ItemGroup>

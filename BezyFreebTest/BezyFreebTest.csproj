@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BezyFreebTest</RootNamespace>
     <AssemblyName>BezyFreebTest</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -73,25 +73,25 @@
     <Compile Include="DownloadSousTitreHelperFixture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BetaseriesPortableLib\BetaseriesPortableLib.csproj">
-      <Project>{4d1b5fa1-5d78-4164-bf90-79cd28b32b34}</Project>
-      <Name>BetaseriesPortableLib</Name>
+    <ProjectReference Include="..\BetaseriesStandardLib\BetaseriesStandardLib.csproj">
+      <Project>{09A9E7AA-3FED-4E83-B457-E123A8834DCC}</Project>
+      <Name>BetaseriesStandardLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\BezyFB\BezyFB.csproj">
       <Project>{01b751cd-0a24-4ca7-803f-714f8edfe81b}</Project>
       <Name>BezyFB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CommonPortableLib\CommonPortableLib.csproj">
-      <Project>{78bf2ea6-7f31-44f8-92af-3d37da9f8ce9}</Project>
-      <Name>CommonPortableLib</Name>
+    <ProjectReference Include="..\CommonStandardLib\CommonStandardLib.csproj">
+      <Project>{276A5A8B-D9E3-4524-BBF5-0A111F4099F3}</Project>
+      <Name>CommonStandardLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EztvPortableLib\EztvPortableLib.csproj">
-      <Project>{116dfc09-45e4-49f5-9d49-67af0f4968c5}</Project>
-      <Name>EztvPortableLib</Name>
+    <ProjectReference Include="..\EztvStandardLib\EztvStandardLib.csproj">
+      <Project>{05A90D53-6177-41AC-9E04-551332A85C80}</Project>
+      <Name>EztvStandardLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\FreeboxPortableLib\FreeboxPortableLib.csproj">
-      <Project>{e45155c4-5e1f-40e3-b054-8142ba7eaefb}</Project>
-      <Name>FreeboxPortableLib</Name>
+    <ProjectReference Include="..\FreeboxStandardLib\FreeboxStandardLib.csproj">
+      <Project>{90ADE511-F772-409C-9C75-4A08D2C7BE57}</Project>
+      <Name>FreeboxStandardLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

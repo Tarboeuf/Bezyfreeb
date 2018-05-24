@@ -39,20 +39,8 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BetaSerie.cs" />
-    <Compile Include="Episodes.cs" />
-    <Compile Include="GuessIt.cs" />
-    <Compile Include="IGuessIt.cs" />
-    <Compile Include="OMDb.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SousTitre.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CommonPortableLib\CommonPortableLib.csproj">
-      <Project>{78bf2ea6-7f31-44f8-92af-3d37da9f8ce9}</Project>
-      <Name>CommonPortableLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Xml.XmlSerializer">

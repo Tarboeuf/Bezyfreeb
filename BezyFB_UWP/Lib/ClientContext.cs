@@ -1,10 +1,9 @@
-﻿using EztvPortableLib;
+﻿using BetaseriesStandardLib;
 using BezyFB_UWP.Lib.T411;
-using CommonPortableLib;
-using FreeboxPortableLib;
+using CommonStandardLib;
+using EztvStandardLib;
+using FreeboxStandardLib;
 using Microsoft.Practices.Unity;
-using BetaseriesPortableLib;
-using CommonLib;
 
 namespace BezyFB_UWP.Lib
 {

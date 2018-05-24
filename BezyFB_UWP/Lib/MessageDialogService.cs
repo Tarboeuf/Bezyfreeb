@@ -1,10 +1,7 @@
-﻿using CommonPortableLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
+using CommonStandardLib;
 
 namespace BezyFB_UWP.Lib
 {

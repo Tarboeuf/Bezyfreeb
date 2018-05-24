@@ -4,8 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BezyFB"
-             xmlns:betaSerieLib="clr-namespace:BetaseriesPortableLib;assembly=BetaseriesPortableLib"
-             xmlns:freeboxPortableLib="clr-namespace:FreeboxPortableLib;assembly=FreeboxPortableLib"
              xmlns:helpers="clr-namespace:BezyFB.Helpers"
              mc:Ignorable="d" d:DesignWidth="1028" d:DesignHeight="492" d:DataContext="{d:DesignData /SampleData/UserFreeboxSampleData.xaml}" >
     <local:MyUserControl.Resources>

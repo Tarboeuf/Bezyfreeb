@@ -12,7 +12,7 @@
     <DefaultLanguage>fr-FR</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.17134.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -220,32 +220,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BetaseriesPortableLib\BetaseriesPortableLib.csproj">
-      <Project>{4d1b5fa1-5d78-4164-bf90-79cd28b32b34}</Project>
-      <Name>BetaseriesPortableLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CommonLib\CommonLib.csproj">
-      <Project>{7b587d62-0a0e-4436-a8e1-ddd2d36b9c83}</Project>
-      <Name>CommonLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CommonPortableLib\CommonPortableLib.csproj">
-      <Project>{78bf2ea6-7f31-44f8-92af-3d37da9f8ce9}</Project>
-      <Name>CommonPortableLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EztvPortableLib\EztvPortableLib.csproj">
-      <Project>{116DFC09-45E4-49F5-9D49-67AF0F4968C5}</Project>
-      <Name>EztvPortableLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FreeboxLib\FreeboxLib.csproj">
-      <Project>{248af8eb-0449-4fcf-9b57-dd543b196761}</Project>
-      <Name>FreeboxLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FreeboxPortableLib\FreeboxPortableLib.csproj">
-      <Project>{e45155c4-5e1f-40e3-b054-8142ba7eaefb}</Project>
-      <Name>FreeboxPortableLib</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights">
       <Version>1.0.0</Version>
     </PackageReference>
@@ -267,6 +241,24 @@
     <PackageReference Include="Unity">
       <Version>4.0.1</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BetaseriesStandardLib\BetaseriesStandardLib.csproj">
+      <Project>{09a9e7aa-3fed-4e83-b457-e123a8834dcc}</Project>
+      <Name>BetaseriesStandardLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommonStandardLib\CommonStandardLib.csproj">
+      <Project>{276a5a8b-d9e3-4524-bbf5-0a111f4099f3}</Project>
+      <Name>CommonStandardLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EztvStandardLib\EztvStandardLib.csproj">
+      <Project>{05A90D53-6177-41AC-9E04-551332A85C80}</Project>
+      <Name>EztvStandardLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FreeboxStandardLib\FreeboxStandardLib.csproj">
+      <Project>{90ade511-f772-409c-9c75-4a08d2c7be57}</Project>
+      <Name>FreeboxStandardLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using BezyFB;
-using BezyFB.Helpers;
 using BezyFreebTest.Data;
-using CommonPortableLib;
-using FreeboxPortableLib;
+using CommonStandardLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 

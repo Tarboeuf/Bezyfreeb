@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BezyFB</RootNamespace>
     <AssemblyName>BezyFB</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -222,14 +222,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Configuration\Utilisateur.cs" />
-    <Compile Include="T411UserControl.xaml.cs">
-      <DependentUpon>T411UserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="T411\ErrorCodeException.cs" />
-    <Compile Include="T411\Models.cs" />
-    <Compile Include="T411\MyTorrent.cs" />
-    <Compile Include="T411\SousCategorie.cs" />
-    <Compile Include="T411\T411Client.cs" />
     <Compile Include="TailleDossierFreebox.xaml.cs">
       <DependentUpon>TailleDossierFreebox.xaml</DependentUpon>
     </Compile>
@@ -277,10 +269,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </DesignData>
-    <Page Include="T411UserControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="TailleDossierFreebox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -343,25 +331,25 @@
     <Resource Include="Image\T411.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BetaseriesPortableLib\BetaseriesPortableLib.csproj">
-      <Project>{4d1b5fa1-5d78-4164-bf90-79cd28b32b34}</Project>
-      <Name>BetaseriesPortableLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CommonPortableLib\CommonPortableLib.csproj">
-      <Project>{78bf2ea6-7f31-44f8-92af-3d37da9f8ce9}</Project>
-      <Name>CommonPortableLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EztvPortableLib\EztvPortableLib.csproj">
-      <Project>{116dfc09-45e4-49f5-9d49-67af0f4968c5}</Project>
-      <Name>EztvPortableLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FreeboxPortableLib\FreeboxPortableLib.csproj">
-      <Project>{e45155c4-5e1f-40e3-b054-8142ba7eaefb}</Project>
-      <Name>FreeboxPortableLib</Name>
-    </ProjectReference>
+    <Folder Include="SampleData\SampleDataSource\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="SampleData\SampleDataSource\" />
+    <ProjectReference Include="..\BetaseriesStandardLib\BetaseriesStandardLib.csproj">
+      <Project>{09a9e7aa-3fed-4e83-b457-e123a8834dcc}</Project>
+      <Name>BetaseriesStandardLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommonStandardLib\CommonStandardLib.csproj">
+      <Project>{276a5a8b-d9e3-4524-bbf5-0a111f4099f3}</Project>
+      <Name>CommonStandardLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EztvStandardLib\EztvStandardLib.csproj">
+      <Project>{05a90d53-6177-41ac-9e04-551332a85c80}</Project>
+      <Name>EztvStandardLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FreeboxStandardLib\FreeboxStandardLib.csproj">
+      <Project>{90ade511-f772-409c-9c75-4a08d2c7be57}</Project>
+      <Name>FreeboxStandardLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

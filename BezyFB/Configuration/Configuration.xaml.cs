@@ -2,9 +2,8 @@
 using System;
 using System.Windows;
 using System.Windows.Forms;
-using BetaseriesPortableLib;
-using BezyFB.T411;
-using FreeboxPortableLib;
+using BetaseriesStandardLib;
+using FreeboxStandardLib;
 
 namespace BezyFB.Configuration
 {
@@ -84,26 +83,6 @@ namespace BezyFB.Configuration
                 else
                 {
                     await ClientContext.Current.MessageDialogService.AfficherMessage("Impossible de se connecter à BetaSeries :\r\n" + client.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                await ClientContext.Current.MessageDialogService.AfficherMessage("Impossible de se connecter à T411 :\r\n" + ex.Message);
-            }
-        }
-
-        private async void TesterT411(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                T411Client client = await T411Client.New(MySettings.Current.LoginT411, MySettings.Current.PassT411);
-                if (client.IsTokenCreated)
-                {
-                    await ClientContext.Current.MessageDialogService.AfficherMessage("La connexion s'est réalisé avec succés");
-                }
-                else
-                {
-                    await ClientContext.Current.MessageDialogService.AfficherMessage("Impossible de se connecter à T411 :\r\nLe token n'est pas créé");
                 }
             }
             catch (Exception ex)

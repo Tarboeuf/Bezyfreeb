@@ -1,4 +1,4 @@
-﻿<Window x:Class="BezyFB.MainWindow"
+﻿<mah:MetroWindow x:Class="BezyFB.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:helpers="clr-namespace:BezyFB.Helpers"
@@ -6,6 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wpfTemplateLib="clr-namespace:WpfTemplateLib;assembly=WpfTemplateLib"
         xmlns:bezyFb="clr-namespace:BezyFB"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
         Title="BezyFreeb" Height="500" Width="1225"
         Closed="MainWindow_OnClosed">
@@ -45,15 +46,6 @@
                         </TabItem.Header>
                         <bezyFb:BetaSerieUserControl x:Name="BetaSerieUserControl" Margin="0,4,0,-4" />
                     </TabItem>
-                    <TabItem>
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="Image/T411.png" Height="32" />
-                                <TextBlock Margin="10 0" VerticalAlignment="Center">T411</TextBlock>
-                            </StackPanel>
-                        </TabItem.Header>
-                        <bezyFb:T411UserControl x:Name="T411UserControl" />
-                    </TabItem>
                     <TabItem  x:Name="TabFreebox" d:DataContext="{d:DesignData UserFreebox}">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
@@ -89,4 +81,4 @@
             </Grid>
         </Grid>
     </DockPanel>
-</Window>
+</mah:MetroWindow>

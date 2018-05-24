@@ -1,17 +1,22 @@
-﻿<FreeboxPortableLib:UserFreebox xmlns:FreeboxPortableLib="clr-namespace:FreeboxPortableLib;assembly=FreeboxPortableLib" xmlns:System="clr-namespace:System;assembly=mscorlib" PathFilm="Libero eget vestibulum" Ratio="928.55">
-	<FreeboxPortableLib:UserFreebox.Downloads>
-		<FreeboxPortableLib:DownloadItem Id="45" Name="Vestibulum nam class sed curae" Pourcentage="207.06" RxPourcentage="417.78" Status="Curabitur aliquam"/>
-		<FreeboxPortableLib:DownloadItem Id="84" Name="Cras maecenas aenean" Pourcentage="162.78" RxPourcentage="383.66" Status="Donec integer"/>
-		<FreeboxPortableLib:DownloadItem Id="68" Name="Mauris phasellus adipiscing" Pourcentage="871.28" RxPourcentage="648.34" Status="Dis duis nunc consequat est"/>
-		<FreeboxPortableLib:DownloadItem Id="87" Name="Etiam nullam fusce lorem" Pourcentage="219.5" RxPourcentage="731.25" Status="Parturient amet"/>
-		<FreeboxPortableLib:DownloadItem Id="87" Name="Aptent praesent convallis morbi" Pourcentage="515.48" RxPourcentage="416.28" Status="Quisque auctor ante"/>
-		<FreeboxPortableLib:DownloadItem Id="98" Name="Nulla dignissim vivamus" Pourcentage="604.21" RxPourcentage="538.83" Status="Accumsan elementum aliquam facilisis"/>
-		<FreeboxPortableLib:DownloadItem Id="24" Name="Proin aliquet bibendum" Pourcentage="796.75" RxPourcentage="973.55" Status="Dictumst hac fermentum fringilla vestibulum"/>
-		<FreeboxPortableLib:DownloadItem Id="66" Name="Arcu congue leo blandit commodo" Pourcentage="175.54" RxPourcentage="288.63" Status="Mus augue"/>
-		<FreeboxPortableLib:DownloadItem Id="61" Name="Cursus habitasse" Pourcentage="275.56" RxPourcentage="798.43" Status="Nec diam"/>
-		<FreeboxPortableLib:DownloadItem Id="18" Name="Non dictum vestibulum dolor lectus" Pourcentage="161.73" RxPourcentage="364.44" Status="Adipiscing parturient"/>
-	</FreeboxPortableLib:UserFreebox.Downloads>
-	<FreeboxPortableLib:UserFreebox.FreeSpace>
+﻿<FreeboxStandardLib:UserFreebox xmlns:System="clr-namespace:System;assembly=mscorlib"
+                                xmlns:FreeboxStandardLib="clr-namespace:FreeboxStandardLib;assembly=FreeboxStandardLib"
+                                PathFilm="Libero eget vestibulum" Ratio="928.55">
+	<FreeboxStandardLib:UserFreebox.Downloads>
+		<FreeboxStandardLib:DownloadItem Id="45" Name="Vestibulum nam class sed curae" Pourcentage="207.06" RxPourcentage="417.78" Status="Curabitur aliquam"/>
+		<FreeboxStandardLib:DownloadItem Id="84" Name="Cras maecenas aenean" Pourcentage="162.78" RxPourcentage="383.66" Status="Donec integer"/>
+        <FreeboxStandardLib:DownloadItem Id="68" Name="Mauris phasellus adipiscing" Pourcentage="871.28" RxPourcentage="648.34" Status="Dis duis nunc consequat est"/>
+        <FreeboxStandardLib:DownloadItem Id="87" Name="Etiam nullam fusce lorem" Pourcentage="219.5" RxPourcentage="731.25" Status="Parturient amet"/>
+        <FreeboxStandardLib:DownloadItem Id="87" Name="Aptent praesent convallis morbi" Pourcentage="515.48" RxPourcentage="416.28" Status="Quisque auctor ante"/>
+        <FreeboxStandardLib:DownloadItem Id="98" Name="Nulla dignissim vivamus" Pourcentage="604.21" RxPourcentage="538.83" Status="Accumsan elementum aliquam facilisis"/>
+        <FreeboxStandardLib:DownloadItem Id="24" Name="Proin aliquet bibendum" Pourcentage="796.75" RxPourcentage="973.55" Status="Dictumst hac fermentum fringilla vestibulum"/>
+        <FreeboxStandardLib:DownloadItem Id="66" Name="Arcu congue leo blandit commodo" Pourcentage="175.54" RxPourcentage="288.63" Status="Mus augue"/>
+        <FreeboxStandardLib:DownloadItem Id="61" Name="Cursus habitasse" Pourcentage="275.56" RxPourcentage="798.43" Status="Nec diam"/>
+        <FreeboxStandardLib:DownloadItem Id="18" Name="Non dictum vestibulum dolor lectus" Pourcentage="161.73" RxPourcentage="364.44" Status="Adipiscing parturient"/>
+	</FreeboxStandardLib:UserFreebox.Downloads>
+	<FreeboxStandardLib:UserFreebox.FreeSpace>
 		<System:Int64/>
-	</FreeboxPortableLib:UserFreebox.FreeSpace>
-</FreeboxPortableLib:UserFreebox>
+	</FreeboxStandardLib:UserFreebox.FreeSpace>
+</FreeboxStandardLib:UserFreebox>
+
+
+
