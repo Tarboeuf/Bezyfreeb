@@ -212,6 +212,7 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
-/.vs/BezyFB/v15/Server/sqlite3
+.vs/*
 
 TestSettingsIgnored.cs
+

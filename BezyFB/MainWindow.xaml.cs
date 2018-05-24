@@ -144,12 +144,11 @@ namespace BezyFB
         {
             ButtonBetaserie.IsEnabled = !string.IsNullOrEmpty(Settings.Default.LoginBetaSerie) &&
                                         !string.IsNullOrEmpty(Settings.Default.PwdBetaSerie);
-            ButtonT411.IsEnabled = !string.IsNullOrEmpty(Settings.Default.LoginT411) &&
-                                        !string.IsNullOrEmpty(Settings.Default.PassT411);
+            
             ButtonFreebox.IsEnabled = !string.IsNullOrEmpty(Settings.Default.IpFreebox) &&
                                         !Settings.Default.IpFreebox.Contains("freebox");
 
-            LabelAvertissement.Visibility = ButtonBetaserie.IsEnabled && ButtonT411.IsEnabled && ButtonBetaserie.IsEnabled
+            LabelAvertissement.Visibility = ButtonBetaserie.IsEnabled && ButtonBetaserie.IsEnabled
                 ? Visibility.Collapsed
                 : Visibility.Visible;
         }
