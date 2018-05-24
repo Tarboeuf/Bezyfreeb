@@ -43,7 +43,6 @@ namespace BezyFB_UWP
             try
             {   
                 Settings.PwdBetaSerie = pwdBetaSerie.Password;
-                ClientContext.Current.ResetBetaserie();
                 var client = ClientContext.Current.BetaSerie;
                 
                 if (await client.GenereToken(true))
@@ -60,28 +59,5 @@ namespace BezyFB_UWP
                 await ClientContext.Current.MessageDialogService.AfficherMessage("Impossible de se connecter à T411 :\r\n" + ex.Message);
             }
         }
-
-        private async void TesterT411(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Settings.Current.PassT411 = pwdT411.Password;
-                T411Client client = await T411Client.New(Settings.Current.LoginT411, Settings.Current.PassT411);
-                if (client.IsTokenCreated)
-                {
-                    await ClientContext.Current.MessageDialogService.AfficherMessage("La connexion s'est réalisé avec succés");
-                    ClientContext.Current.ResetT411();
-                }
-                else
-                {
-                    await ClientContext.Current.MessageDialogService.AfficherMessage("Impossible de se connecter à T411 :\r\nLe token n'est pas créé");
-                }
-            }
-            catch (Exception ex)
-            {
-                await ClientContext.Current.MessageDialogService.AfficherMessage("Impossible de se connecter à T411 :\r\n" + ex.Message);
-            }
-        }
-        
     }
 }

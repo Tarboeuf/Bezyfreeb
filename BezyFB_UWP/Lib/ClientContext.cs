@@ -3,7 +3,9 @@ using BezyFB_UWP.Lib.T411;
 using CommonStandardLib;
 using EztvStandardLib;
 using FreeboxStandardLib;
-using Microsoft.Practices.Unity;
+using Unity;
+using Unity.Injection;
+using Unity.Lifetime;
 
 namespace BezyFB_UWP.Lib
 {
@@ -54,16 +56,6 @@ namespace BezyFB_UWP.Lib
             Container.RegisterType<IFormUploadService, FormUpload>(new ContainerControlledLifetimeManager());
 
             Container.RegisterType<ICryptographic, Cryptographic>(new ContainerControlledLifetimeManager());
-        }
-
-        public void ResetBetaserie()
-        {
-            Container.Teardown(BetaSerie);
-        }
-
-        public void ResetT411()
-        {
-            Container.Teardown(T411);
         }
     }
 }

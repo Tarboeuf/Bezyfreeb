@@ -1,7 +1,7 @@
 using System;
-using System.Reflection;
-using Microsoft.Practices.ObjectBuilder2;
-using Microsoft.Practices.Unity;
+using Unity;
+using Unity.Builder;
+using Unity.Builder.Strategy;
 
 namespace BezyFB_UWP.Lib
 {

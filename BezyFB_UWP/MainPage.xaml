@@ -22,11 +22,6 @@
                             <TextBlock Text="BetaSeries" FontSize="18" VerticalAlignment="Center" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Button Click="T411_Click" x:Name="MenuButton2" Content="T" FontWeight="Bold" FontSize="22"
-                        Width="50" Height="50" Background="Transparent"/>
-                            <TextBlock Text="T411" FontSize="18" VerticalAlignment="Center" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
                             <Button Click="Freebox_Click" x:Name="MenuButton3" Content="F" FontWeight="Bold" FontSize="22"
                         Width="50" Height="50" Background="Transparent"/>
                             <TextBlock Text="Freebox" FontSize="18" VerticalAlignment="Center" />

@@ -33,16 +33,6 @@ namespace BezyFB_UWP
             }
         }
 
-        private void T411_Click(object sender, RoutedEventArgs e)
-        {
-            var frame = this.DataContext as Frame;
-            Page page = frame?.Content as Page;
-            if (page?.GetType() != typeof(PageT411))
-            {
-                frame.Navigate(typeof(PageT411));
-            }
-        }
-
         private void Freebox_Click(object sender, RoutedEventArgs e)
         {
             var frame = this.DataContext as Frame;

@@ -54,8 +54,8 @@
                              Text="{Binding PathFilm, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinWidth="100" Margin="5" />
                         <Button Grid.Row="3" Grid.Column="0"  Grid.ColumnSpan="2" Margin="5" HorizontalAlignment="Stretch"
                             Content="Synchroniser" Click="Freebox_Click" Width="Auto" />
-                        <TextBlock Grid.Row="4" Grid.ColumnSpan="2" TextWrapping="Wrap"
-                                   Style="{StaticResource CaptionTextBlockStyle}" >Veuillez cliquer sur synchroniser tout en étant sur le wifi de la freebox</TextBlock>
+                        <TextBlock Grid.Row="4" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="Veuillez cliquer sur synchroniser tout en étant sur le wifi de la freebox"
+                                   Style="{StaticResource CaptionTextBlockStyle}" />
                     </Grid>
                 </Border>
                 <Border BorderThickness="1" BorderBrush="Gray" Margin="5">
@@ -99,7 +99,6 @@
                                  Margin="5"/>
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Password : " />
                         <PasswordBox Grid.Row="2" Grid.Column="1" Name="pwdT411" Width="Auto" />
-                        <Button Grid.Row="2" Grid.Column="2" Content="Tester" Click="TesterT411" />
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="@ddr T411: " />
                         <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding T411Address, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
