@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "targets": {
     ".NETFramework,Version=v4.6": {
       "Microsoft.CSharp/4.0.0": {
@@ -14781,30 +14781,42 @@
     ".NETPlatform,Version=v5.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Admin\\.nuget\\packages\\": {}
+    "C:\\Users\\Epinat\\.nuget\\packages\\": {}
   },
   "project": {
     "restore": {
-      "projectUniqueName": "E:\\Pimagona\\Bezyfreeb\\FreeboxPortableLib\\FreeboxPortableLib.csproj",
+      "projectUniqueName": "D:\\Sources\\Bezyfreeb\\FreeboxPortableLib\\FreeboxPortableLib.csproj",
       "projectName": "FreeboxPortableLib",
-      "projectPath": "E:\\Pimagona\\Bezyfreeb\\FreeboxPortableLib\\FreeboxPortableLib.csproj",
-      "projectJsonPath": "E:\\Pimagona\\Bezyfreeb\\FreeboxPortableLib\\project.json",
+      "projectPath": "D:\\Sources\\Bezyfreeb\\FreeboxPortableLib\\FreeboxPortableLib.csproj",
+      "projectJsonPath": "D:\\Sources\\Bezyfreeb\\FreeboxPortableLib\\project.json",
+      "packagesPath": "C:\\Users\\Epinat\\.nuget\\packages\\",
+      "outputPath": "D:\\Sources\\Bezyfreeb\\FreeboxPortableLib\\obj\\",
       "projectStyle": "ProjectJson",
+      "configFilePaths": [
+        "D:\\Sources\\Bezyfreeb\\.nuget\\NuGet.Config",
+        "C:\\Users\\Epinat\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "http://team-nuget.toulouse:8080/nuget/nuget": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
       "frameworks": {
         "dotnet5.0": {
           "projectReferences": {
-            "E:\\Pimagona\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj": {
-              "projectPath": "E:\\Pimagona\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj"
+            "D:\\Sources\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj": {
+              "projectPath": "D:\\Sources\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj"
             }
           }
         }
       }
     },
     "dependencies": {
-      "Microsoft.NETCore": "5.0.0",
-      "Microsoft.NETCore.Portable.Compatibility": "1.0.0",
-      "Newtonsoft.Json": "8.0.3",
-      "System.IO.FileSystem": "4.0.0"
+      "Microsoft.NETCore": "[5.0.0, )",
+      "Microsoft.NETCore.Portable.Compatibility": "[1.0.0, )",
+      "Newtonsoft.Json": "[8.0.3, )",
+      "System.IO.FileSystem": "[4.0.0, )"
     },
     "frameworks": {
       "dotnet5.0": {

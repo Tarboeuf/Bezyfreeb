@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "targets": {
     ".NETFramework,Version=v4.6": {
       "HtmlAgilityPack/1.4.9.5": {
@@ -12138,13 +12138,13 @@
   },
   "libraries": {
     "HtmlAgilityPack/1.4.9.5": {
-      "sha512": "i5di/J7GO4y2kx/hhVzctPrBI8G2cefWZDMDU/FdOUD3iVkiidN1q1NDZ0FvqrhB28LSaYaM4Z0hs86Tnp0IzA==",
+      "sha512": "zk7zsIaPkyBvYoVDsnx52SbKtvcmo2bcgNBshhSG++RnHMYoh0dqxRuQSznY+w6luiqR35OiHTk1L73SUAGKLw==",
       "type": "package",
       "path": "htmlagilitypack/1.4.9.5",
       "files": [
         "HAPIcon.png",
-        "HtmlAgilityPack.1.4.9.5.nupkg.sha512",
-        "HtmlAgilityPack.nuspec",
+        "htmlagilitypack.1.4.9.5.nupkg.sha512",
+        "htmlagilitypack.nuspec",
         "lib/Net20/HtmlAgilityPack.dll",
         "lib/Net20/HtmlAgilityPack.pdb",
         "lib/Net20/HtmlAgilityPack.xml",
@@ -14792,29 +14792,41 @@
     ".NETPlatform,Version=v5.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Admin\\.nuget\\packages\\": {}
+    "C:\\Users\\Epinat\\.nuget\\packages\\": {}
   },
   "project": {
     "restore": {
-      "projectUniqueName": "E:\\Pimagona\\Bezyfreeb\\EztvPortableLib\\EztvPortableLib.csproj",
+      "projectUniqueName": "D:\\Sources\\Bezyfreeb\\EztvPortableLib\\EztvPortableLib.csproj",
       "projectName": "EztvPortableLib",
-      "projectPath": "E:\\Pimagona\\Bezyfreeb\\EztvPortableLib\\EztvPortableLib.csproj",
-      "projectJsonPath": "E:\\Pimagona\\Bezyfreeb\\EztvPortableLib\\project.json",
+      "projectPath": "D:\\Sources\\Bezyfreeb\\EztvPortableLib\\EztvPortableLib.csproj",
+      "projectJsonPath": "D:\\Sources\\Bezyfreeb\\EztvPortableLib\\project.json",
+      "packagesPath": "C:\\Users\\Epinat\\.nuget\\packages\\",
+      "outputPath": "D:\\Sources\\Bezyfreeb\\EztvPortableLib\\obj\\",
       "projectStyle": "ProjectJson",
+      "configFilePaths": [
+        "D:\\Sources\\Bezyfreeb\\.nuget\\NuGet.Config",
+        "C:\\Users\\Epinat\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "http://team-nuget.toulouse:8080/nuget/nuget": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
       "frameworks": {
         "dotnet5.0": {
           "projectReferences": {
-            "E:\\Pimagona\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj": {
-              "projectPath": "E:\\Pimagona\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj"
+            "D:\\Sources\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj": {
+              "projectPath": "D:\\Sources\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj"
             }
           }
         }
       }
     },
     "dependencies": {
-      "HtmlAgilityPack": "1.4.9.5",
-      "Microsoft.NETCore": "5.0.0",
-      "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
+      "HtmlAgilityPack": "[1.4.9.5, )",
+      "Microsoft.NETCore": "[5.0.0, )",
+      "Microsoft.NETCore.Portable.Compatibility": "[1.0.0, )"
     },
     "frameworks": {
       "dotnet5.0": {

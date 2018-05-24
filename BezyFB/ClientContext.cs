@@ -11,8 +11,12 @@ using System.Text;
 using System.Threading.Tasks;
 using BetaseriesPortableLib;
 using EztvPortableLib;
-using Microsoft.Practices.ObjectBuilder2;
-using Microsoft.Practices.Unity.ObjectBuilder;
+using Unity;
+using Unity.Builder;
+using Unity.Builder.Strategy;
+using Unity.Extension;
+using Unity.Injection;
+using Unity.Lifetime;
 
 namespace BezyFB
 {
@@ -71,16 +75,6 @@ namespace BezyFB
         public static void Register<T1, T2>() where T2 : T1
         {
             Container.RegisterType<T1, T2>(new ContainerControlledLifetimeManager());
-        }
-
-        public void ResetBetaserie()
-        {
-            Container.Teardown(BetaSerie);
-        }
-
-        public void ResetT411()
-        {
-            Container.Teardown(T411);
         }
     }
     public class PropertiesInjectionExtension : UnityContainerExtension

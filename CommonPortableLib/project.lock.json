@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "targets": {
     ".NETFramework,Version=v4.6": {
       "Microsoft.CSharp/4.0.0": {
@@ -14565,19 +14565,31 @@
     ".NETPlatform,Version=v5.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Admin\\.nuget\\packages\\": {}
+    "C:\\Users\\Epinat\\.nuget\\packages\\": {}
   },
   "project": {
     "restore": {
-      "projectUniqueName": "E:\\Pimagona\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj",
+      "projectUniqueName": "D:\\Sources\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj",
       "projectName": "CommonPortableLib",
-      "projectPath": "E:\\Pimagona\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj",
-      "projectJsonPath": "E:\\Pimagona\\Bezyfreeb\\CommonPortableLib\\project.json",
-      "projectStyle": "ProjectJson"
+      "projectPath": "D:\\Sources\\Bezyfreeb\\CommonPortableLib\\CommonPortableLib.csproj",
+      "projectJsonPath": "D:\\Sources\\Bezyfreeb\\CommonPortableLib\\project.json",
+      "packagesPath": "C:\\Users\\Epinat\\.nuget\\packages\\",
+      "outputPath": "D:\\Sources\\Bezyfreeb\\CommonPortableLib\\obj\\",
+      "projectStyle": "ProjectJson",
+      "configFilePaths": [
+        "D:\\Sources\\Bezyfreeb\\.nuget\\NuGet.Config",
+        "C:\\Users\\Epinat\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "http://team-nuget.toulouse:8080/nuget/nuget": {},
+        "https://api.nuget.org/v3/index.json": {}
+      }
     },
     "dependencies": {
-      "Microsoft.NETCore": "5.0.0",
-      "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
+      "Microsoft.NETCore": "[5.0.0, )",
+      "Microsoft.NETCore.Portable.Compatibility": "[1.0.0, )"
     },
     "frameworks": {
       "dotnet5.0": {
